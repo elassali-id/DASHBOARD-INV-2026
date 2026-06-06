@@ -1214,8 +1214,9 @@ function checkConfirm(){
 }
 async function executeConfirmed(){
   if(!pendingAction)return;
+  const action=pendingAction;
   closeConfirm();
-  const zone=pendingAction.zone;
+  const zone=action.zone;
   const url=apiUrls[zone];
   if(!url||!url.includes('script.google.com')){
     toast('⚠ URL Apps Script non configurée pour '+zone+'. Allez dans l\'onglet Modifier → Configuration.','err');
@@ -1229,11 +1230,13 @@ async function executeConfirmed(){
   try{
     const res=await fetch(url,{
       method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
       body:JSON.stringify({
         token:apiToken,
-        action:pendingAction.type,
-        rowIndex:pendingAction.rowIndex,
-        data:pendingAction.data
+        zone:zone,
+        action:action.type,
+        rowIndex:action.rowIndex,
+        data:action.data
       })
     });
     const result=await res.json();
@@ -1249,7 +1252,6 @@ async function executeConfirmed(){
     toast('Erreur réseau — vérifiez la connexion et l\'URL Apps Script','err');
     document.getElementById('modStatus').textContent='Erreur réseau';
   }
-  pendingAction=null;
 }
 
 // ═══════════ TABS ═══════════
