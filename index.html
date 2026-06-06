@@ -492,13 +492,9 @@ input[type=text]{width:200px}
   <div class="confirm-box">
     <div class="confirm-title">⚠ Confirmation de sécurité requise</div>
     <div class="confirm-msg" id="confirmMsg"></div>
-    <div class="confirm-field" style="margin-bottom:16px">
-      <label>Tapez <strong>CONFIRMER</strong> pour valider cette action</label>
-      <input type="text" id="confirmInput" placeholder="CONFIRMER" oninput="checkConfirm()" autocomplete="off">
-    </div>
     <div class="confirm-btns">
       <button class="btn btn-out" onclick="closeConfirm()">✕ Annuler</button>
-      <button class="confirm-btn-ok" id="confirmBtn" disabled onclick="executeConfirmed()">✓ Valider</button>
+      <button class="confirm-btn-ok" id="confirmBtn" onclick="executeConfirmed()">✓ Confirmer</button>
     </div>
   </div>
 </div>
@@ -976,19 +972,42 @@ function openInlineEditModal(globalIdx){
 
   document.getElementById('modalTitle').textContent=`✏ Modifier — Ligne ${globalIdx+1} · ${zone}`;
   document.getElementById('modalFields').innerHTML=headers.map(h=>{
+    const val=(row[h]!=null?row[h]:'');
     const isObs=h==='Observation';
-    const val=(row[h]||'').toString();
+    const isDate=/date/i.test(h);
+    let fieldHtml;
+    if(isObs){
+      // Déterminer si la valeur actuelle est une DISCORDANCE avec texte libre
+      const valUp=val.toString().toUpperCase();
+      const isDiscVal=valUp.startsWith('DISCORDANCE');
+      const discFreeText=isDiscVal&&val.toString().length>11?val.toString().slice(11).trim():'';
+      const selVal=valUp==='CONFORME'?'CONFORME':valUp==='A VERIFIER'?'A VERIFIER':isDiscVal?'DISCORDANCE':'';
+      fieldHtml=`
+        <select id="mf_obs_sel" onchange="toggleDiscText()" style="width:100%;background:var(--s2);border:1.5px solid var(--bd);border-radius:var(--r);padding:8px 12px;font-family:var(--sans);font-size:12px;color:var(--tx);outline:none;transition:.15s;margin-bottom:6px">
+          <option value="">— Non renseigné —</option>
+          <option value="CONFORME"${selVal==='CONFORME'?' selected':''}>CONFORME</option>
+          <option value="A VERIFIER"${selVal==='A VERIFIER'?' selected':''}>A VERIFIER</option>
+          <option value="DISCORDANCE"${selVal==='DISCORDANCE'?' selected':''}>DISCORDANCE</option>
+        </select>
+        <input type="text" id="mf_obs_disc" placeholder="Préciser la discordance..." value="${esc(discFreeText)}"
+          style="width:100%;background:var(--s2);border:1.5px solid var(--bd);border-radius:var(--r);padding:8px 12px;font-family:var(--sans);font-size:12px;color:var(--tx);outline:none;transition:.15s;display:${selVal==='DISCORDANCE'?'block':'none'}">
+        <input type="hidden" id="mf_${h.replace(/\W/g,'_')}">`;
+    }else if(isDate){
+      // Formater la date en YYYY-MM-DD HH:MM:SS
+      const fmtIso=v=>{
+        if(!v)return'';
+        let d=v instanceof Date?v:new Date(v);
+        if(isNaN(d))return v.toString();
+        const pad=n=>String(n).padStart(2,'0');
+        return`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+      };
+      fieldHtml=`<input type="text" id="mf_${h.replace(/\W/g,'_')}" value="${esc(fmtIso(val)||val.toString())}" placeholder="YYYY-MM-DD HH:MM:SS">`;
+    }else{
+      fieldHtml=`<input type="text" id="mf_${h.replace(/\W/g,'_')}" value="${esc(val.toString())}">`;
+    }
     return `<div class="modal-field${isObs?' full':''}">
       <label>${esc(h)}</label>
-      ${isObs
-        ?`<select id="mf_${h.replace(/\W/g,'_')}">
-            <option value="">— Non renseigné —</option>
-            <option value="CONFORME"${val.toUpperCase()==='CONFORME'?' selected':''}>CONFORME</option>
-            <option value="A VERIFIER"${val.toUpperCase()==='A VERIFIER'?' selected':''}>A VERIFIER</option>
-            <option value="DISCORDANCE"${val.toUpperCase().startsWith('DISCORDANCE')?' selected':''}>DISCORDANCE</option>
-          </select>`
-        :`<input type="text" id="mf_${h.replace(/\W/g,'_')}" value="${esc(val)}">`
-      }
+      ${fieldHtml}
     </div>`;
   }).join('');
   document.getElementById('modalOverlay').style.display='flex';
@@ -1010,6 +1029,12 @@ function askInlineDelete(globalIdx){
   openConfirm(`Supprimer définitivement la ligne ${idxInZone+1} de ${zone} ?\n\n${preview}`);
 }
 
+function toggleDiscText(){
+  const sel=document.getElementById('mf_obs_sel');
+  const disc=document.getElementById('mf_obs_disc');
+  if(sel&&disc)disc.style.display=sel.value==='DISCORDANCE'?'block':'none';
+}
+
 function closeModal(){document.getElementById('modalOverlay').style.display='none';}
 
 function submitModal(){
@@ -1018,8 +1043,22 @@ function submitModal(){
   const headers=inlineEditHeaders.filter(h=>h&&h!=='Source');
   const data={};
   headers.forEach(h=>{
-    const el=document.getElementById('mf_'+h.replace(/\W/g,'_'));
-    if(el)data[h]=el.value;
+    if(h==='Observation'){
+      // Lire depuis le select + champ texte libre si DISCORDANCE
+      const sel=document.getElementById('mf_obs_sel');
+      const disc=document.getElementById('mf_obs_disc');
+      if(sel){
+        const selVal=sel.value;
+        if(selVal==='DISCORDANCE'&&disc&&disc.value.trim()){
+          data[h]='DISCORDANCE '+disc.value.trim();
+        }else{
+          data[h]=selVal;
+        }
+      }
+    }else{
+      const el=document.getElementById('mf_'+h.replace(/\W/g,'_'));
+      if(el)data[h]=el.value;
+    }
   });
 
   // Calculer le rowIndex dans le sheet de la zone
@@ -1027,29 +1066,38 @@ function submitModal(){
   const idxInZone=zoneRows.indexOf(row);
   const sheetRowIndex=idxInZone+2;
 
+  // Résumé des modifications pour la confirmation
+  const changes=headers.filter(h=>{
+    const old=(row[h]!=null?row[h]:'').toString();
+    return(data[h]!=null?data[h]:'').toString()!==old;
+  });
+  let confirmMsg=`Modifier la ligne ${idxInZone+1} dans ${zone}`;
+  if(changes.length){
+    confirmMsg+='\n\nModifications :';
+    changes.forEach(h=>{
+      const old=(row[h]!=null?row[h]:'').toString()||'—';
+      const nw=(data[h]!=null?data[h]:'').toString()||'—';
+      confirmMsg+=`\n• ${h} : "${old}" → "${nw}"`;
+    });
+  }else{
+    confirmMsg+='\n\nAucune modification détectée.';
+  }
+
   pendingAction={type:'update',rowIndex:sheetRowIndex,data,zone};
   closeModal();
-  openConfirm(`Modifier la ligne ${idxInZone+1} dans ${zone} ?`);
+  openConfirm(confirmMsg);
 }
 
 // ═══════════ CONFIRM DOUBLE VALIDATION ═══════════
 function openConfirm(msg){
   document.getElementById('confirmMsg').textContent=msg;
-  document.getElementById('confirmInput').value='';
-  const btn=document.getElementById('confirmBtn');
-  btn.disabled=true;btn.style.opacity='.35';
   document.getElementById('confirmOverlay').style.display='flex';
-  setTimeout(()=>document.getElementById('confirmInput').focus(),100);
 }
 function closeConfirm(){
   document.getElementById('confirmOverlay').style.display='none';
   pendingAction=null;
 }
-function checkConfirm(){
-  const ok=document.getElementById('confirmInput').value.trim()==='CONFIRMER';
-  const btn=document.getElementById('confirmBtn');
-  btn.disabled=!ok;btn.style.opacity=ok?'1':'.35';
-}
+function checkConfirm(){/* plus de saisie requise */}
 async function executeConfirmed(){
   if(!pendingAction)return;
   const action=pendingAction;
