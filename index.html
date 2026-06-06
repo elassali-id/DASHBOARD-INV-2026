@@ -166,8 +166,10 @@ main{padding:0!important;width:100%;max-width:100%!important}
 .tbl-wrap{flex:1;width:100%}
 table{width:100%;border-collapse:separate;border-spacing:0;table-layout:auto}
 thead th{background:var(--thead);padding:12px 15px;text-align:left;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;border-bottom:1.5px solid var(--bd);white-space:nowrap;cursor:pointer;user-select:none;position:sticky;top:0;z-index:150;box-shadow:0 2px 0 var(--bd)}
+thead th.th-actions{cursor:default}
 tbody tr:hover td{background:var(--s3)}
 td{padding:10px 15px;color:var(--tx2);border-bottom:1px solid var(--bd);font-size:12px;white-space:nowrap}
+td.td-actions{white-space:nowrap;text-align:center;padding:6px 10px}
 .pag{background:var(--s1);border-top:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;padding:10px 24px;flex-shrink:0;z-index:200}
 input[type=text],select{background:var(--s2);border:1.5px solid var(--bd);border-radius:var(--r);padding:7px 10px;font-family:var(--sans);font-size:12px;color:var(--tx);outline:none;transition:.15s}
 input[type=text]:focus,select:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(26,54,93,.12)}
@@ -181,6 +183,12 @@ input[type=text]{width:200px}
 .pb:disabled{opacity:.3;cursor:default}
 .pagesize{font-family:var(--mono);font-size:10px;color:var(--tx3);display:flex;align-items:center;gap:6px}
 .pagesize select{padding:4px 8px;font-size:10px}
+
+/* ══ Action buttons inline tableau ══ */
+.btn-tbl-edit{background:color-mix(in srgb,var(--blue) 12%,var(--s1));border:1px solid var(--blue);color:var(--blue);border-radius:5px;padding:3px 8px;font-size:10px;font-family:var(--mono);cursor:pointer;transition:.15s}
+.btn-tbl-edit:hover{background:color-mix(in srgb,var(--blue) 22%,var(--s1))}
+.btn-tbl-del{background:color-mix(in srgb,var(--red) 12%,var(--s1));border:1px solid var(--red);color:var(--red);border-radius:5px;padding:3px 8px;font-size:10px;font-family:var(--mono);cursor:pointer;margin-left:4px;transition:.15s}
+.btn-tbl-del:hover{background:color-mix(in srgb,var(--red) 22%,var(--s1))}
 
 /* ══ BUTTONS ══ */
 .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--r);font-size:12px;font-family:var(--mono);font-weight:600;cursor:pointer;border:none;transition:.15s;text-decoration:none;white-space:nowrap}
@@ -198,22 +206,6 @@ input[type=text]{width:200px}
 .dl-icon{width:46px;height:46px;border-radius:var(--r2);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
 .dl-info{flex:1;min-width:0}.dl-name{font-size:13px;font-weight:700;margin-bottom:3px;color:var(--tx)}.dl-meta{font-family:var(--mono);font-size:10px;color:var(--tx3)}
 .dl-btns{display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0}
-
-/* ══ MODIFIER PANEL ══ */
-.edit-toolbar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
-.edit-table-wrap{background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r2);overflow:auto;max-height:calc(100vh - 320px)}
-.edit-table-wrap table{width:100%;border-collapse:collapse}
-.edit-table-wrap thead th{background:var(--thead);padding:10px 12px;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;border-bottom:1.5px solid var(--bd);white-space:nowrap;position:sticky;top:0;z-index:10}
-.edit-table-wrap tbody tr:hover td{background:var(--s3)}
-.edit-table-wrap td{padding:8px 12px;border-bottom:1px solid var(--bd);font-size:12px;color:var(--tx2);white-space:nowrap}
-.edit-table-wrap td.act{text-align:center;white-space:nowrap}
-.btn-edit-row{background:color-mix(in srgb,var(--blue) 12%,var(--s1));border:1px solid var(--blue);color:var(--blue);border-radius:5px;padding:3px 8px;font-size:10px;font-family:var(--mono);cursor:pointer;transition:.15s}
-.btn-edit-row:hover{background:color-mix(in srgb,var(--blue) 22%,var(--s1))}
-.btn-del-row{background:color-mix(in srgb,var(--red) 12%,var(--s1));border:1px solid var(--red);color:var(--red);border-radius:5px;padding:3px 8px;font-size:10px;font-family:var(--mono);cursor:pointer;margin-left:4px;transition:.15s}
-.btn-del-row:hover{background:color-mix(in srgb,var(--red) 22%,var(--s1))}
-.edit-search{display:flex;gap:8px;align-items:center;margin-bottom:10px}
-.edit-search input{width:260px}
-.row-num{font-family:var(--mono);font-size:9px;color:var(--tx3);text-align:right;padding-right:4px}
 
 /* ══ MODAL EDIT/ADD ══ */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:5000;display:flex;align-items:center;justify-content:center;padding:20px}
@@ -233,7 +225,7 @@ input[type=text]{width:200px}
 .confirm-box{background:var(--s1);border:1.5px solid var(--red);border-radius:var(--r3);padding:28px 32px;width:100%;max-width:440px;box-shadow:var(--shadow-lg);position:relative}
 .confirm-box::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--red)}
 .confirm-title{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--red);margin-bottom:12px}
-.confirm-msg{font-size:13px;color:var(--tx2);margin-bottom:16px;line-height:1.6;padding:10px 14px;background:color-mix(in srgb,var(--red) 8%,var(--s1));border-radius:var(--r);border-left:3px solid var(--red)}
+.confirm-msg{font-size:13px;color:var(--tx2);margin-bottom:16px;line-height:1.6;padding:10px 14px;background:color-mix(in srgb,var(--red) 8%,var(--s1));border-radius:var(--r);border-left:3px solid var(--red);white-space:pre-line}
 .confirm-field label{display:block;font-family:var(--mono);font-size:10px;color:var(--tx3);margin-bottom:6px}
 .confirm-field label strong{color:var(--red)}
 .confirm-field input{width:100%;background:var(--s2);border:1.5px solid var(--bd);border-radius:var(--r);padding:10px 14px;font-family:var(--mono);font-size:14px;color:var(--tx);outline:none;transition:.15s;letter-spacing:.12em;text-align:center}
@@ -242,18 +234,6 @@ input[type=text]{width:200px}
 .confirm-btn-ok{background:var(--red);color:#fff;border:none;border-radius:var(--r);padding:8px 20px;font-family:var(--mono);font-size:12px;font-weight:700;cursor:pointer;transition:.15s}
 .confirm-btn-ok:disabled{opacity:.35;cursor:not-allowed}
 .confirm-btn-ok:not(:disabled):hover{filter:brightness(1.08)}
-
-/* ══ API CONFIG PANEL ══ */
-.api-config-box{background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r2);padding:20px;margin-bottom:20px;box-shadow:var(--shadow-sm)}
-.api-config-box h3{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--tx);margin-bottom:14px;display:flex;align-items:center;gap:6px}
-.api-field{margin-bottom:10px}
-.api-field label{display:block;font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);margin-bottom:4px}
-.api-field input{width:100%;background:var(--s2);border:1.5px solid var(--bd);border-radius:var(--r);padding:7px 12px;font-family:var(--mono);font-size:11px;color:var(--tx);outline:none;transition:.15s}
-.api-field input:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(26,54,93,.12)}
-.api-status{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;padding:3px 8px;border-radius:5px}
-.api-status.ok{background:color-mix(in srgb,var(--acc3) 14%,var(--s1));color:var(--acc3);border:1px solid var(--acc3)}
-.api-status.err{background:color-mix(in srgb,var(--red) 14%,var(--s1));color:var(--red);border:1px solid var(--red)}
-.api-status.nd{background:var(--s3);color:var(--tx3);border:1px solid var(--bd)}
 
 /* ══ TOAST ══ */
 .toast{position:fixed;bottom:24px;right:24px;background:var(--acc3);color:#04342c;padding:10px 18px;border-radius:var(--r);font-family:var(--mono);font-size:12px;font-weight:600;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none;z-index:9998;box-shadow:var(--shadow)}
@@ -492,69 +472,10 @@ input[type=text]{width:200px}
   </div>
 </div>
 
-<!-- MODIFIER (ADMIN UNIQUEMENT) -->
-<div class="panel" id="panel-modifier">
-  <div class="sec-title">✏ Modifier les données</div>
-
-  <!-- Configuration API -->
-  <div class="api-config-box" id="apiConfigBox">
-    <h3>⚙ Configuration Apps Script</h3>
-    <p style="font-size:12px;color:var(--tx3);margin-bottom:14px">Collez ici les URLs de déploiement Google Apps Script pour chaque zone. Ces URLs permettent l'écriture sécurisée dans Google Sheets.</p>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px">
-      <div class="api-field">
-        <label>URL Apps Script CEBS <span id="apiStatus_CEBS" class="api-status nd">Non configuré</span></label>
-        <input type="text" id="apiUrl_CEBS" placeholder="https://script.google.com/macros/s/..." oninput="saveApiConfig()">
-      </div>
-      <div class="api-field">
-        <label>URL Apps Script CEJ <span id="apiStatus_CEJ" class="api-status nd">Non configuré</span></label>
-        <input type="text" id="apiUrl_CEJ" placeholder="https://script.google.com/macros/s/..." oninput="saveApiConfig()">
-      </div>
-      <div class="api-field">
-        <label>URL Apps Script AEBB <span id="apiStatus_AEBB" class="api-status nd">Non configuré</span></label>
-        <input type="text" id="apiUrl_AEBB" placeholder="https://script.google.com/macros/s/..." oninput="saveApiConfig()">
-      </div>
-    </div>
-    <div class="api-field" style="max-width:400px">
-      <label>Token secret API (doit correspondre au script)</label>
-      <input type="password" id="apiTokenInput" placeholder="Votre token secret" oninput="saveApiConfig()">
-    </div>
-    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn btn-out btn-sm" onclick="testApiConnection()">🔌 Tester la connexion</button>
-      <button class="btn btn-out btn-sm" onclick="toggleApiConfig()">▲ Réduire</button>
-    </div>
-  </div>
-
-  <!-- Barre d'outils édition -->
-  <div class="edit-toolbar">
-    <select id="modZoneSel" onchange="loadEditZone()" style="width:140px">
-      <option value="CEBS">CEBS</option>
-      <option value="CEJ">CEJ</option>
-      <option value="AEBB">AEBB</option>
-    </select>
-    <button class="btn btn-grn" onclick="openAddModal()">+ Ajouter une ligne</button>
-    <button class="btn btn-out" onclick="loadEditZone()">↺ Rafraîchir</button>
-    <span id="modStatus" style="font-family:var(--mono);font-size:11px;color:var(--tx3);margin-left:4px"></span>
-  </div>
-
-  <!-- Recherche dans l'éditeur -->
-  <div class="edit-search">
-    <input type="text" id="editSrch" placeholder="🔍 Filtrer les lignes..." oninput="renderEditTable()" style="width:260px">
-    <span id="editCount" style="font-family:var(--mono);font-size:10px;color:var(--tx3)"></span>
-  </div>
-
-  <!-- Tableau éditable -->
-  <div class="edit-table-wrap" id="editTableWrap">
-    <table>
-      <thead><tr id="editHead"></tr></thead>
-      <tbody id="editBody"></tbody>
-    </table>
-  </div>
-</div>
-
 </main>
 </div><!-- /appShell -->
 
-<!-- MODAL EDIT/ADD -->
+<!-- MODAL EDIT/ADD (utilisé depuis le tableau inline) -->
 <div class="modal-overlay" id="modalOverlay" style="display:none" onclick="if(event.target===this)closeModal()">
   <div class="modal-box">
     <div class="modal-title" id="modalTitle">Modifier la ligne</div>
@@ -587,15 +508,25 @@ input[type=text]{width:200px}
 <script>
 // ═══════════ CONFIG ═══════════
 const ZONE_CONFIG = {
-  CEBS:{pwdHash:'eac8a3fd67a18fc94babbc4d47928a98889ea3f1418283b54dd9342b7275a9b4',id:'1H1BKz-DMz5dKVY1G1fQ_pAf_IQS99EBq',color:'#1a4fa8',color2:'rgba(26,79,168,0.65)',dlHref:'https://docs.google.com/spreadsheets/d/1H1BKz-DMz5dKVY1G1fQ_pAf_IQS99EBq/export?format=xlsx',icon:'📘',badgeClass:'src-cebs',zcolor:'#1a4fa8'},
+  CEBS:{pwdHash:'eac8a3fd67a18fc94babbc4d47928a98889ea3f1418283b54dd9342b7275a9b4',id:'1hGZL1ZLk37rIB6C2u15WxqTloAuO6WaCpLICQIKdiUY',color:'#1a4fa8',color2:'rgba(26,79,168,0.65)',dlHref:'https://docs.google.com/spreadsheets/d/1hGZL1ZLk37rIB6C2u15WxqTloAuO6WaCpLICQIKdiUY/export?format=xlsx',icon:'📘',badgeClass:'src-cebs',zcolor:'#1a4fa8'},
   CEJ:{pwdHash:'a43cb71e0ab7f5d7e2849f38fbb4bb01e79fb27cc20688e8d45b692ebd6e3cdf',id:'1G-TJ1MVf0pA2bnQbMdppSt8HiczPlOgG',color:'#5b3dc4',color2:'rgba(91,61,196,0.65)',dlHref:'https://docs.google.com/spreadsheets/d/1G-TJ1MVf0pA2bnQbMdppSt8HiczPlOgG/export?format=xlsx',icon:'📗',badgeClass:'src-cej',zcolor:'#5b3dc4'},
   AEBB:{pwdHash:'b81ec7c1b0f0b711c77b52cf3efacdae4c8e585ce5c80b4c056ea7fbc6dfd218',id:'1ORIJXPdWMeADALzeElDvxUl_Fqy3Nfwv',color:'#1d9e75',color2:'rgba(29,158,117,0.65)',dlHref:'https://docs.google.com/spreadsheets/d/1ORIJXPdWMeADALzeElDvxUl_Fqy3Nfwv/export?format=xlsx',icon:'📙',badgeClass:'src-aebb',zcolor:'#1d9e75'},
   ADMIN:{pwdHash:'61abf6b31686359bac1755390b8c420403f3f85de7d06607dc2250b707c1cb79'}
 };
-const EXPORT_URL=id=>`https://docs.google.com/spreadsheets/d/${id}/export?format=xlsx`;
-const SESSION_KEY='drro-session-v3';
-const API_CONFIG_KEY='drro-api-config-v1';
-const SESSION_HOURS=8;
+const EXPORT_URL = id => `https://docs.google.com/spreadsheets/d/${id}/export?format=xlsx`;
+const SESSION_KEY = 'drro-session-v3';
+const SESSION_HOURS = 8;
+
+// ═══════════ API HARDCODÉE ═══════════
+const API_URL_HARDCODED = 'https://script.google.com/macros/s/AKfycbxSCiJfNICub4AW9ArtkMqzwHKWBc9veUmp0nzPp77_Q7tdWDhRKqWmKupKGIyK1ynQ7A/exec';
+const API_TOKEN_HARDCODED = '1ppRNrQPgcKOHoBeKI40g35RPFW07bkqDkyw14_6O2mm7flNYVpLOYqWQ';
+// Même URL pour les 3 zones (un seul Apps Script centralisé)
+const apiUrls = {
+  CEBS: API_URL_HARDCODED,
+  CEJ:  API_URL_HARDCODED,
+  AEBB: API_URL_HARDCODED
+};
+const apiToken = API_TOKEN_HARDCODED;
 
 // ═══════════ STATE ═══════════
 let currentZone=null,isAdmin=false,selectedLoginZone=null;
@@ -604,10 +535,9 @@ let page=1,PG=50,sortCol=null,sortDir=1;
 let charts={},lastCounts={},sourceHeaders=[];
 let updateCheckInterval=null,sessionExpiryInterval=null;
 let isLoading=false,locCol=null;
-// Modifier state
-let editData=[],editHeaders=[],editZone=null;
-let modalMode=null,modalRowIndex=null,pendingAction=null;
-let apiUrls={CEBS:'',CEJ:'',AEBB:''},apiToken='';
+// Modifier state (inline depuis tableau)
+let inlineEditHeaders=[];
+let modalMode=null,modalRowIndex=null,modalZone=null,pendingAction=null;
 
 // ═══════════ SESSION ═══════════
 function saveSession(zone){try{localStorage.setItem(SESSION_KEY,JSON.stringify({zone,expiry:Date.now()+SESSION_HOURS*3600000}));}catch(e){}}
@@ -692,7 +622,6 @@ function launchApp(){
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('appShell').style.display='block';
   setupHeader();buildNav();buildDlSection();buildExportBtns();
-  if(isAdmin)loadApiConfig();
   syncStickyHeights();
   setTimeout(syncStickyHeights,100);
   setTimeout(syncStickyHeights,400);
@@ -721,7 +650,7 @@ function doLogout(){
   if(updateCheckInterval){clearInterval(updateCheckInterval);updateCheckInterval=null;}
   currentZone=null;isAdmin=false;selectedLoginZone=null;
   zoneData=[];filteredData=[];lastCounts={};sourceHeaders=[];locCol=null;isLoading=false;
-  editData=[];editHeaders=[];editZone=null;
+  inlineEditHeaders=[];
   Object.keys(charts).forEach(k=>{try{charts[k].destroy();}catch(e){}});charts={};
   document.querySelectorAll('.zone-btn').forEach(b=>b.classList.remove('sel'));
   document.getElementById('loginPwd').value='';
@@ -732,14 +661,12 @@ function doLogout(){
   showTab('overview');
 }
 
-// ═══════════ NAV ═══════════
+// ═══════════ NAV — sans onglet Modifier ═══════════
 function buildNav(){
-  const modTab=isAdmin?`<button class="tab" onclick="showTab('modifier')">✏ Modifier</button>`:'';
   document.getElementById('mainNav').innerHTML=`
     <button class="tab on" onclick="showTab('overview')">Vue d'ensemble</button>
     <button class="tab" onclick="showTab('tableau')">Données</button>
-    <button class="tab" onclick="showTab('telechargement')">Téléchargement</button>
-    ${modTab}`;
+    <button class="tab" onclick="showTab('telechargement')">Téléchargement</button>`;
   setTimeout(syncStickyHeights,20);
 }
 
@@ -765,7 +692,7 @@ async function loadSingleZone(zone){
   try{
     const buf=await fetchBuf(EXPORT_URL(cfg.id));
     const {rows,headers}=parseXLSX(buf);
-    sourceHeaders=headers;
+    sourceHeaders=headers;inlineEditHeaders=headers;
     zoneData=rows.map(r=>({...r,Source:zone}));
     lastCounts[zone]=rows.length;
     setProgress(100,'OK');
@@ -778,7 +705,7 @@ async function loadSingleZone(zone){
 }
 async function loadAdminData(){
   const zones=['CEBS','CEJ','AEBB'];
-  let failed=[],hdrUnion=[];
+  let hdrUnion=[];
   for(let i=0;i<zones.length;i++){
     const zone=zones[i];
     setProgress(10+i*28,`Chargement ${zone}...`);
@@ -788,9 +715,9 @@ async function loadAdminData(){
       headers.forEach(h=>{if(h&&!hdrUnion.includes(h))hdrUnion.push(h);});
       zoneData=zoneData.concat(rows.map(r=>({...r,Source:zone})));
       lastCounts[zone]=rows.length;
-    }catch(e){failed.push(zone);lastCounts[zone]=null;}
+    }catch(e){lastCounts[zone]=null;}
   }
-  sourceHeaders=hdrUnion;
+  sourceHeaders=hdrUnion;inlineEditHeaders=hdrUnion;
   setProgress(100,'OK');
   document.getElementById('loadScreen').style.display='none';
   if(zoneData.length>0){updateAll();setStatus(`Admin — ${fmt(zoneData.length)} articles`,true);startUpdateWatcher();}
@@ -819,7 +746,7 @@ function handleManual(file){
   const reader=new FileReader();
   reader.onload=e=>{
     const {rows,headers}=parseXLSX(e.target.result);
-    if(!sourceHeaders.length)sourceHeaders=headers;
+    if(!sourceHeaders.length){sourceHeaders=headers;inlineEditHeaders=headers;}
     zoneData=zoneData.filter(r=>r.Source!==zone).concat(rows.map(r=>({...r,Source:zone})));
     lastCounts[zone]=rows.length;updateAll();
     setStatus((isAdmin?'Admin':'Zone '+zone)+' — '+fmt(zoneData.length)+' articles',true);
@@ -974,8 +901,10 @@ function applyFilters(){
 }
 
 // ═══════════ TABLE ═══════════
+// Colonnes data brutes (sans Source si pas admin, avec Source en 1er si admin)
 function displayCols(){return(isAdmin?['Source']:[]).concat(sourceHeaders.filter(h=>h&&h!=='Source'));}
 function colLabel(c){return c==='Source'?'ZONE':c;}
+
 function renderCell(r,c){
   if(c==='Source')return`<td><span class="src-${(r.Source||'').toLowerCase()}">${r.Source||'—'}</span></td>`;
   if(c==='Observation')return`<td>${obsBadge(r.Observation)}</td>`;
@@ -984,21 +913,45 @@ function renderCell(r,c){
   if(/^(ID|Cod|Code|Gare|Qte|PU)/i.test(c))return`<td class="short">${esc(v)||'—'}</td>`;
   return`<td class="wrap">${esc(v)||'—'}</td>`;
 }
-function buildTableHead(){document.getElementById('tblHead').innerHTML=displayCols().map(c=>`<th onclick="sortTbl('${c.replace(/'/g,"\\'")}')">${esc(colLabel(c))}</th>`).join('');}
+
+function buildTableHead(){
+  const cols=displayCols();
+  let headHtml=cols.map(c=>`<th onclick="sortTbl('${c.replace(/'/g,"\\'")}')">${esc(colLabel(c))}</th>`).join('');
+  // Colonne ACTIONS pour admin uniquement
+  if(isAdmin){
+    headHtml=`<th class="th-actions" style="width:90px;text-align:center">ACTIONS</th>`+headHtml;
+  }
+  document.getElementById('tblHead').innerHTML=headHtml;
+}
+
 function sortTbl(col){if(sortCol===col)sortDir*=-1;else{sortCol=col;sortDir=1;}filteredData.sort((a,b)=>(a[col]||'').toString().localeCompare((b[col]||'').toString(),'fr',{numeric:true})*sortDir);renderTable();}
 function obsBadge(v){const u=(v||'').toString().toUpperCase().trim();if(u==='CONFORME')return`<span class="obs-ok">CONFORME</span>`;if(u==='A VERIFIER')return`<span class="obs-av">A VÉRIFIER</span>`;if(u.startsWith('DISCORDANCE'))return`<span class="obs-disc">${esc(v)||'DISCORDANCE'}</span>`;return`<span class="obs-nd">—</span>`;}
 function fmtDate(v){if(!v)return'—';if(v instanceof Date)return v.toLocaleDateString('fr');return v.toString().split('T')[0];}
 function esc(v){return(v==null?'':v.toString()).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function changePageSize(){const v=document.getElementById('pageSize').value;PG=v==='all'?Number.MAX_SAFE_INTEGER:(+v||50);page=1;renderTable();}
+
 function renderTable(){
   buildTableHead();
   const cols=displayCols(),n=filteredData.length,pages=Math.max(1,Math.ceil(n/PG));
   if(page>pages)page=pages;
   const slice=PG>=n?filteredData:filteredData.slice((page-1)*PG,page*PG);
   document.getElementById('tblCount').textContent=`${fmt(n)} articles`;
+
   document.getElementById('tBody').innerHTML=n===0
-    ?`<tr><td colspan="${Math.max(1,cols.length)}" style="text-align:center;color:var(--tx3);padding:2rem">Aucun résultat</td></tr>`
-    :slice.map(r=>`<tr>${cols.map(c=>renderCell(r,c)).join('')}</tr>`).join('');
+    ?`<tr><td colspan="${Math.max(1,cols.length+(isAdmin?1:0))}" style="text-align:center;color:var(--tx3);padding:2rem">Aucun résultat</td></tr>`
+    :slice.map((r,sliceIdx)=>{
+      const globalIdx=zoneData.indexOf(r);
+      const dataCells=cols.map(c=>renderCell(r,c)).join('');
+      if(isAdmin){
+        // Boutons actions : edit + delete
+        const actCell=`<td class="td-actions">
+          <button class="btn-tbl-edit" onclick="openInlineEditModal(${globalIdx})" title="Modifier">✏</button><button class="btn-tbl-del" onclick="askInlineDelete(${globalIdx})" title="Supprimer">✕</button>
+        </td>`;
+        return`<tr>${actCell}${dataCells}</tr>`;
+      }
+      return`<tr>${dataCells}</tr>`;
+    }).join('');
+
   document.getElementById('pagInfo').textContent=PG>=n?`${fmt(n)} résultats (tous affichés)`:`Page ${page}/${pages} — ${fmt(n)} résultats`;
   if(PG>=n){document.getElementById('pagBtns').innerHTML='';return;}
   const rp=[...new Set([1,page-1,page,page+1,pages].filter(p=>p>=1&&p<=pages))].sort((a,b)=>a-b);
@@ -1010,188 +963,73 @@ function renderTable(){
 }
 function goPage(p){const pages=Math.max(1,Math.ceil(filteredData.length/PG));if(p<1||p>pages)return;page=p;renderTable();}
 
-// ═══════════ EXPORT ═══════════
-function exportFiltered(){exportData(filteredData,'inventaire_'+(isAdmin?'admin':'zone_'+currentZone)+'_filtre');}
-function exportAll(){exportData(zoneData,'inventaire_'+(isAdmin?'toutes_zones':currentZone)+'_complet');}
-function exportByZone(z){exportData(zoneData.filter(r=>r.Source===z),'inventaire_'+z);}
-function exportData(data,name){
-  if(!data.length){toast('Aucune donnée à exporter','err');return;}
-  const cols=displayCols();
-  const ordered=data.map(r=>{const o={};cols.forEach(c=>{o[c]=(r[c]==null?'':r[c]);});return o;});
-  const ws=XLSX.utils.json_to_sheet(ordered,{header:cols});
-  ws['!cols']=cols.map(c=>{let w=c.length;ordered.forEach(o=>{const v=(o[c]==null?'':o[c]).toString();if(v.length>w)w=v.length;});return{wch:Math.min(60,Math.max(10,w+2))};});
-  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'ARTICLES');
-  XLSX.writeFile(wb,name+'_'+new Date().toISOString().slice(0,10)+'.xlsx');
-  toast('Export téléchargé — '+fmt(data.length)+' lignes');
-}
+// ═══════════ ACTIONS INLINE TABLEAU (ADMIN) ═══════════
+// Ouvre le modal d'édition depuis le tableau directement
+function openInlineEditModal(globalIdx){
+  const row=zoneData[globalIdx];
+  if(!row)return;
+  const zone=row.Source||currentZone;
+  const headers=inlineEditHeaders.filter(h=>h&&h!=='Source');
+  modalMode='update';
+  modalRowIndex=globalIdx;
+  modalZone=zone;
 
-// ═══════════ API CONFIG ═══════════
-function loadApiConfig(){
-  try{
-    const raw=localStorage.getItem(API_CONFIG_KEY);
-    if(raw){
-      const cfg=JSON.parse(raw);
-      apiUrls=cfg.urls||{CEBS:'',CEJ:'',AEBB:''};
-      apiToken=cfg.token||'';
-      ['CEBS','CEJ','AEBB'].forEach(z=>{
-        const el=document.getElementById('apiUrl_'+z);
-        if(el)el.value=apiUrls[z]||'';
-        updateApiStatus(z);
-      });
-      const tk=document.getElementById('apiTokenInput');
-      if(tk)tk.value=apiToken;
-    }
-  }catch(e){}
-}
-function saveApiConfig(){
-  ['CEBS','CEJ','AEBB'].forEach(z=>{
-    const el=document.getElementById('apiUrl_'+z);
-    if(el){apiUrls[z]=el.value.trim();updateApiStatus(z);}
-  });
-  const tk=document.getElementById('apiTokenInput');
-  if(tk)apiToken=tk.value.trim();
-  try{localStorage.setItem(API_CONFIG_KEY,JSON.stringify({urls:apiUrls,token:apiToken}));}catch(e){}
-}
-function updateApiStatus(zone){
-  const el=document.getElementById('apiStatus_'+zone);
-  if(!el)return;
-  const url=apiUrls[zone]||'';
-  if(!url){el.textContent='Non configuré';el.className='api-status nd';}
-  else if(url.includes('script.google.com')){el.textContent='✓ Configuré';el.className='api-status ok';}
-  else{el.textContent='⚠ URL invalide';el.className='api-status err';}
-}
-function toggleApiConfig(){
-  const box=document.getElementById('apiConfigBox');
-  box.style.display=box.style.display==='none'?'block':'none';
-}
-async function testApiConnection(){
-  saveApiConfig();
-  const zone=document.getElementById('modZoneSel').value;
-  const url=apiUrls[zone];
-  if(!url||!url.includes('script.google.com')){toast('URL non configurée pour '+zone,'err');return;}
-  toast('Test de connexion...');
-  try{
-    const res=await fetch(url,{method:'GET'});
-    const data=await res.json();
-    if(data.success)toast('✓ Connexion OK — '+zone);
-    else toast('⚠ Réponse inattendue','err');
-  }catch(e){toast('✕ Connexion échouée — vérifiez l\'URL','err');}
-}
-
-// ═══════════ MODIFIER — LOAD ═══════════
-async function loadEditZone(){
-  editZone=document.getElementById('modZoneSel').value;
-  document.getElementById('modStatus').textContent='Chargement...';
-  try{
-    const buf=await fetchBuf(EXPORT_URL(ZONE_CONFIG[editZone].id));
-    const {rows,headers}=parseXLSX(buf);
-    editData=rows;editHeaders=headers;
-    renderEditTable();
-    document.getElementById('modStatus').textContent=`${fmt(rows.length)} lignes chargées`;
-  }catch(e){
-    document.getElementById('modStatus').textContent='Erreur de chargement';
-    toast('Impossible de charger les données de '+editZone,'err');
-  }
-}
-
-// ═══════════ MODIFIER — RENDER TABLE ═══════════
-function renderEditTable(){
-  const srch=(document.getElementById('editSrch')?.value||'').toLowerCase().trim();
-  const cols=editHeaders.slice(0,7);
-  document.getElementById('editHead').innerHTML=
-    `<th style="width:30px;font-family:var(--mono);font-size:9px">#</th>`+
-    `<th style="width:110px">Actions</th>`+
-    cols.map(c=>`<th>${esc(c)}</th>`).join('');
-
-  const filtered=srch
-    ?editData.filter(r=>Object.values(r).some(v=>(v||'').toString().toLowerCase().includes(srch)))
-    :editData;
-
-  document.getElementById('editCount').textContent=
-    srch?`${filtered.length} / ${editData.length} lignes`:`${editData.length} lignes`;
-
-  document.getElementById('editBody').innerHTML=filtered.length===0
-    ?`<tr><td colspan="${cols.length+2}" style="text-align:center;padding:2rem;color:var(--tx3)">Aucun résultat</td></tr>`
-    :filtered.map((r,i)=>{
-      const realIdx=editData.indexOf(r);
-      return `<tr>
-        <td class="row-num">${realIdx+1}</td>
-        <td class="act">
-          <button class="btn-edit-row" onclick="openEditModal(${realIdx})">✏</button>
-          <button class="btn-del-row" onclick="askDelete(${realIdx})">✕</button>
-        </td>
-        ${cols.map(c=>`<td title="${esc(r[c])||''}">${esc((r[c]||'').toString().slice(0,40))||'—'}</td>`).join('')}
-      </tr>`;
-    }).join('');
-}
-
-// ═══════════ MODIFIER — MODAL ═══════════
-function openEditModal(i){
-  modalMode='update';modalRowIndex=i;
-  document.getElementById('modalTitle').textContent=`✏ Modifier la ligne ${i+1} — ${editZone}`;
-  document.getElementById('modalFields').innerHTML=editHeaders.map(h=>{
+  document.getElementById('modalTitle').textContent=`✏ Modifier — Ligne ${globalIdx+1} · ${zone}`;
+  document.getElementById('modalFields').innerHTML=headers.map(h=>{
     const isObs=h==='Observation';
+    const val=(row[h]||'').toString();
     return `<div class="modal-field${isObs?' full':''}">
       <label>${esc(h)}</label>
       ${isObs
         ?`<select id="mf_${h.replace(/\W/g,'_')}">
             <option value="">— Non renseigné —</option>
-            <option value="CONFORME"${(editData[i][h]||'').toUpperCase()==='CONFORME'?' selected':''}>CONFORME</option>
-            <option value="A VERIFIER"${(editData[i][h]||'').toUpperCase()==='A VERIFIER'?' selected':''}>A VERIFIER</option>
-            <option value="DISCORDANCE"${(editData[i][h]||'').toUpperCase().startsWith('DISCORDANCE')?' selected':''}>DISCORDANCE</option>
+            <option value="CONFORME"${val.toUpperCase()==='CONFORME'?' selected':''}>CONFORME</option>
+            <option value="A VERIFIER"${val.toUpperCase()==='A VERIFIER'?' selected':''}>A VERIFIER</option>
+            <option value="DISCORDANCE"${val.toUpperCase().startsWith('DISCORDANCE')?' selected':''}>DISCORDANCE</option>
           </select>`
-        :`<input type="text" id="mf_${h.replace(/\W/g,'_')}" value="${esc(editData[i][h]||'')}">`
+        :`<input type="text" id="mf_${h.replace(/\W/g,'_')}" value="${esc(val)}">`
       }
     </div>`;
   }).join('');
   document.getElementById('modalOverlay').style.display='flex';
 }
 
-function openAddModal(){
-  modalMode='add';modalRowIndex=null;
-  document.getElementById('modalTitle').textContent=`+ Ajouter une ligne — ${editZone}`;
-  document.getElementById('modalFields').innerHTML=editHeaders.map(h=>{
-    const isObs=h==='Observation';
-    return `<div class="modal-field${isObs?' full':''}">
-      <label>${esc(h)}</label>
-      ${isObs
-        ?`<select id="mf_${h.replace(/\W/g,'_')}">
-            <option value="">— Non renseigné —</option>
-            <option value="CONFORME">CONFORME</option>
-            <option value="A VERIFIER">A VERIFIER</option>
-            <option value="DISCORDANCE">DISCORDANCE</option>
-          </select>`
-        :`<input type="text" id="mf_${h.replace(/\W/g,'_')}" value="">`
-      }
-    </div>`;
-  }).join('');
-  document.getElementById('modalOverlay').style.display='flex';
+// Demande confirmation suppression depuis tableau
+function askInlineDelete(globalIdx){
+  const row=zoneData[globalIdx];
+  if(!row)return;
+  const zone=row.Source||currentZone;
+  // rowIndex dans le sheet = globalIdx dans zoneData de cette zone + 2 (header + 1-based)
+  const zoneRows=zoneData.filter(r=>r.Source===zone);
+  const idxInZone=zoneRows.indexOf(row);
+  const sheetRowIndex=idxInZone+2; // 1 header + 1-based
+
+  pendingAction={type:'delete',rowIndex:sheetRowIndex,data:{},zone};
+  const headers=inlineEditHeaders.filter(h=>h&&h!=='Source').slice(0,3);
+  const preview=headers.map(h=>`${h}: ${row[h]||'—'}`).join(' | ');
+  openConfirm(`Supprimer définitivement la ligne ${idxInZone+1} de ${zone} ?\n\n${preview}`);
 }
+
 function closeModal(){document.getElementById('modalOverlay').style.display='none';}
 
 function submitModal(){
+  const row=zoneData[modalRowIndex];
+  const zone=modalZone||(row&&row.Source)||currentZone;
+  const headers=inlineEditHeaders.filter(h=>h&&h!=='Source');
   const data={};
-  editHeaders.forEach(h=>{
+  headers.forEach(h=>{
     const el=document.getElementById('mf_'+h.replace(/\W/g,'_'));
     if(el)data[h]=el.value;
   });
-  const msg=modalMode==='add'
-    ?`Ajouter une nouvelle ligne dans ${editZone} ?`
-    :`Modifier la ligne ${modalRowIndex+1} dans ${editZone} ?`;
-  pendingAction={
-    type:modalMode,
-    rowIndex:modalMode==='update'?(modalRowIndex+2):null,
-    data,zone:editZone
-  };
-  closeModal();
-  openConfirm(msg);
-}
 
-// ═══════════ MODIFIER — DELETE ═══════════
-function askDelete(i){
-  pendingAction={type:'delete',rowIndex:i+2,data:{},zone:editZone};
-  const preview=editHeaders.slice(0,3).map(h=>`${h}: ${editData[i][h]||'—'}`).join(' | ');
-  openConfirm(`Supprimer définitivement la ligne ${i+1} de ${editZone} ?\n\n${preview}`);
+  // Calculer le rowIndex dans le sheet de la zone
+  const zoneRows=zoneData.filter(r=>r.Source===zone);
+  const idxInZone=zoneRows.indexOf(row);
+  const sheetRowIndex=idxInZone+2;
+
+  pendingAction={type:'update',rowIndex:sheetRowIndex,data,zone};
+  closeModal();
+  openConfirm(`Modifier la ligne ${idxInZone+1} dans ${zone} ?`);
 }
 
 // ═══════════ CONFIRM DOUBLE VALIDATION ═══════════
@@ -1216,17 +1054,13 @@ async function executeConfirmed(){
   if(!pendingAction)return;
   const action=pendingAction;
   closeConfirm();
+
   const zone=action.zone;
   const url=apiUrls[zone];
-  if(!url||!url.includes('script.google.com')){
-    toast('⚠ URL Apps Script non configurée pour '+zone+'. Allez dans l\'onglet Modifier → Configuration.','err');
-    return;
-  }
-  if(!apiToken){
-    toast('⚠ Token API manquant. Configurez-le dans la section Configuration.','err');
-    return;
-  }
-  document.getElementById('modStatus').textContent='Enregistrement en cours...';
+  if(!url){toast('URL Apps Script non disponible pour '+zone,'err');return;}
+  if(!apiToken){toast('Token API manquant','err');return;}
+
+  toast('Enregistrement en cours...');
   try{
     const res=await fetch(url,{
       method:'POST',
@@ -1242,16 +1076,28 @@ async function executeConfirmed(){
     const result=await res.json();
     if(result.success){
       toast('✓ '+result.message);
-      await loadEditZone();
       await reloadData();
     }else{
       toast('Erreur : '+(result.error||'Inconnue'),'err');
-      document.getElementById('modStatus').textContent='Erreur';
     }
   }catch(e){
-    toast('Erreur réseau — vérifiez la connexion et l\'URL Apps Script','err');
-    document.getElementById('modStatus').textContent='Erreur réseau';
+    toast('Erreur réseau — vérifiez la connexion Apps Script','err');
   }
+}
+
+// ═══════════ EXPORT ═══════════
+function exportFiltered(){exportData(filteredData,'inventaire_'+(isAdmin?'admin':'zone_'+currentZone)+'_filtre');}
+function exportAll(){exportData(zoneData,'inventaire_'+(isAdmin?'toutes_zones':currentZone)+'_complet');}
+function exportByZone(z){exportData(zoneData.filter(r=>r.Source===z),'inventaire_'+z);}
+function exportData(data,name){
+  if(!data.length){toast('Aucune donnée à exporter','err');return;}
+  const cols=displayCols();
+  const ordered=data.map(r=>{const o={};cols.forEach(c=>{o[c]=(r[c]==null?'':r[c]);});return o;});
+  const ws=XLSX.utils.json_to_sheet(ordered,{header:cols});
+  ws['!cols']=cols.map(c=>{let w=c.length;ordered.forEach(o=>{const v=(o[c]==null?'':o[c]).toString();if(v.length>w)w=v.length;});return{wch:Math.min(60,Math.max(10,w+2))};});
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'ARTICLES');
+  XLSX.writeFile(wb,name+'_'+new Date().toISOString().slice(0,10)+'.xlsx');
+  toast('Export téléchargé — '+fmt(data.length)+' lignes');
 }
 
 // ═══════════ TABS ═══════════
@@ -1260,11 +1106,9 @@ function showTab(id){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
   const panel=document.getElementById('panel-'+id);
   if(panel)panel.classList.add('on');
-  const tabMap={'overview':0,'tableau':1,'telechargement':2,'modifier':3};
+  const tabMap={'overview':0,'tableau':1,'telechargement':2};
   const tabs=document.querySelectorAll('.tab');
   if(tabs[tabMap[id]])tabs[tabMap[id]].classList.add('on');
-  // Charger les données de l'onglet modifier au premier accès
-  if(id==='modifier'&&editData.length===0&&isAdmin)loadEditZone();
   setTimeout(syncStickyHeights,50);
 }
 
