@@ -901,7 +901,7 @@ async function refreshUsersList(){
     :usersList.map(u=>`<tr>
       <td><strong>${esc(u.nomUtilisateur)}</strong></td>
       <td>${esc(u.nomComplet)}</td>
-      <td><span class="src-${(u.zoneAcces||'').toLowerCase()}">${esc(u.zoneAcces)}</span></td>
+      <td><span class="src-${(u.zoneAcces || 'CEBS').toLowerCase()}">${esc(u.zoneAcces || 'CEBS')}</span></td>
       <td><span class="role-badge ${u.role}">${esc(u.role.toUpperCase())}</span></td>
       <td style="font-family:var(--mono);font-size:10px;color:var(--tx3)">${esc(u.dateCreation||'—')}</td>
       <td>
@@ -982,36 +982,53 @@ function closeUserModal(){
 }
 
 async function saveUser(){
-  if(!USERS_API_URL||USERS_API_URL.startsWith('COLLER')){ 
+  if(!USERS_API_URL || USERS_API_URL.startsWith('COLLER')){ 
     toast('API Utilisateurs non configurée','err'); 
     return; 
   }
-  const nom=document.getElementById('uNom').value.trim().toUpperCase();
-  const nomComplet=document.getElementById('uNomComplet').value.trim().toUpperCase();
-  const zone=document.getElementById('uZone').value;
-  const role=document.getElementById('uRole').value;
-  const pwd=document.getElementById('uPwd').value;
-  if(!nom||!nomComplet){ 
+  
+  const nom = document.getElementById('uNom').value.trim().toUpperCase();
+  const nomComplet = document.getElementById('uNomComplet').value.trim().toUpperCase();
+  const zone = document.getElementById('uZone').value;
+  const role = document.getElementById('uRole').value;
+  const pwd = document.getElementById('uPwd').value;
+  
+  if(!nom || !nomComplet){ 
     toast('Remplissez tous les champs','err'); 
     return; 
   }
+  
   let result;
-  if(userModalAction==='add'){
+  if(userModalAction === 'add'){
     if(!pwd){ 
       toast('Mot de passe requis','err'); 
       return; 
     }
-    const hash=await sha256Hex(pwd);
-    result=await callUsersAPI('ajouter',{nomUtilisateur:nom,nomComplet,zoneAcces:zone,role,passwordHash:hash});
-  }else{
-    result=await callUsersAPI('modifier',{nomUtilisateur:nom,nomComplet,zoneAcces:zone,role});
+    const hash = await sha256Hex(pwd);
+    result = await callUsersAPI('ajouter', {
+      nomUtilisateur: nom,
+      nomComplet: nomComplet,
+      zoneAcces: zone,
+      role: role,
+      passwordHash: hash,
+      requester: currentUser.nomUtilisateur
+    });
+  } else {
+    result = await callUsersAPI('modifier', {
+      nomUtilisateur: nom,
+      nomComplet: nomComplet,
+      zoneAcces: zone,
+      role: role,
+      requester: currentUser.nomUtilisateur
+    });
   }
+  
   if(result.success){ 
     toast(result.message); 
     closeUserModal(); 
     refreshUsersList(); 
   } else {
-    toast(result.error,'err');
+    toast(result.error, 'err');
   }
 }
 
