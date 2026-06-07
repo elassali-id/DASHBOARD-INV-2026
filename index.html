@@ -1326,10 +1326,14 @@ input[type=text] {
   opacity: 0.8;
 }
 
-.modal-field label:has(+ input[readonly])::after {
+.modal-field:has(input[readonly]:disabled) label::after {
   content: " 🔒";
   font-size: 10px;
   opacity: 0.6;
+}
+  
+.modal-field:has(input[placeholder*="automatiquement"]) label::after {
+  content: "";
 }
   
 .modal-sep {
@@ -2958,13 +2962,10 @@ function openEditModal(gi) {
       let val = row[h] != null ? row[h] : '';
       const isObs = h === 'Observation';
       const isDate = /date/i.test(h);
-      // ⚠️ IMPORTANT: Détection correcte des champs protégés
-      const isProtected = h === 'Date inventaire' || h === 'Date_Inventaire' || 
-                          h === "Date d'inventaire" || h === 'Inventoriste' || 
-                          h === 'INVENTORISTE';
+      // ⚠️ Détection des champs protégés - UNIQUEMENT ces noms exacts
+      const isProtected = h === 'Date inventaire' || h === 'Inventoriste';
       const isDateModification = h === 'Date modification' || h === 'Date_Modification' || 
-                                  h === 'Date de modification' || h === 'Date_modification' ||
-                                  (h && h.toLowerCase().includes('date') && h.toLowerCase().includes('modif'));
+                                  h === 'Date de modification';
       let fld;
       
       if (isObs) {
@@ -2981,8 +2982,8 @@ function openEditModal(gi) {
         <input type="text" id="mf_obs_disc" placeholder="Préciser..." value="${esc(dt)}"
           style="width:100%;background:var(--s2);border:1.5px solid var(--bd);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--tx);outline:none;display:${sv === 'DISCORDANCE' ? 'block' : 'none'}">`;
       } 
-      // Champs protégés (Date inventaire et Inventoriste) - lecture seule avec style grisé
       else if (isProtected) {
+        // Champ protégé - lecture seule, grisé, SANS ajouter de cadenas (le style CSS le fera)
         fld = `<input type="text" value="${esc(val)}" 
           style="width:100%;background:var(--s3);border:1.5px solid var(--bd);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--tx3);outline:none;cursor:not-allowed;font-style:italic"
           readonly disabled>`;
@@ -3002,9 +3003,7 @@ function openEditModal(gi) {
         fld = `<input type="text" id="mf_${h.replace(/\W/g, '_')}" value="${esc(val.toString())}">`;
       }
       
-      // Ajouter une icône 🔒 pour les champs protégés
-      const protectedIcon = isProtected ? ' 🔒' : '';
-      return `<div class="modal-field${isObs ? ' full' : ''}"><label>${esc(h)}${protectedIcon}</label>${fld}</div>`;
+      return `<div class="modal-field${isObs ? ' full' : ''}"><label>${esc(h)}</label>${fld}</div>`;
     }).join('');
   }
   
