@@ -684,11 +684,15 @@ async function doLogin(){
     err.style.display = 'none';
     currentUser = result.user;
     
-    console.log('Rôle récupéré de l\'API:', currentUser.role);
+    // DEBUG
+    console.log('Rôle récupéré:', currentUser.role);
+    
+    // Forcer le rôle pour ELASSALI.IDRISS si nécessaire
     if(currentUser.nomUtilisateur === 'ELASSALI.IDRISS'){
       currentUser.role = 'administrateur';
       console.log('Rôle forcé à administrateur');
-      
+    }
+    
     // Déterminer la zone selon le rôle
     if(currentUser.role === 'administrateur'){
       currentZone = 'DRRO';
@@ -699,7 +703,6 @@ async function doLogin(){
       isAdmin = false;
       canEdit = true;
     } else {
-      // lecteur
       currentZone = currentUser.zoneAcces || 'CEBS';
       isAdmin = false;
       canEdit = false;
@@ -716,6 +719,7 @@ async function doLogin(){
     console.error('Erreur doLogin:', e);
   }
 }
+  
 // ═══ LOGIN LEGACY PAR ZONE ═══
 function selectZone(z){
   selectedLoginZone=z;
