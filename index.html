@@ -1316,6 +1316,16 @@ input[type=text] {
   box-shadow: 0 0 0 3px rgba(26,54,93,.12);
 }
   
+.modal-field.full input {
+  font-size: 13px;
+  padding: 10px 12px;
+}
+
+.modal-grid {
+  row-gap: 14px;
+  column-gap: 16px;
+}
+  
 .modal-field input[readonly], 
 .modal-field input:disabled {
   background: var(--s3) !important;
@@ -2959,15 +2969,49 @@ function openEditModal(gi) {
   const deleteBtn = document.getElementById('modalDeleteBtn');
   if (deleteBtn) deleteBtn.style.display = '';
   
+  // Ordre personnalisé des champs
+  const order = [
+    'ID_Imobilisation', 'ID_Immobilisation', 'ID Immobilisation',
+    'Lib_Article', 'LIB_ARTICLE', 'Libellé article',
+    'Observation',
+    'Gare', 'GARE',
+    'Localisation', 'LOCALISATION',
+    'Marque', 'LIB_MARQUE', 'MARQUE',
+    'Modèle', 'LIB_MODELE', 'MODELE',
+    'N° Marché', 'N_MARCHE', 'NUMERO_MARCHE',
+    'PU', 'Prix unitaire',
+    'Numérie', 'NUMERIE', 'COM-ALU',
+    'Code article', 'COD_ARTICLE', 'Cod_Article',
+    'Inventoriste', 'INVENTORISTE',
+    'Date inventaire', 'Date_Inventaire', "Date d'inventaire",
+    'Date modification', 'Date_Modification', 'Date de modification'
+  ];
+  
+  // Trier les headers selon l'ordre défini
+  const sortedHeaders = [...headers].sort((a, b) => {
+    const indexA = order.findIndex(o => a && a.toLowerCase().includes(o.toLowerCase()));
+    const indexB = order.findIndex(o => b && b.toLowerCase().includes(o.toLowerCase()));
+    if (indexA === -1 && indexB === -1) return 0;
+    if (indexA === -1) return 1;
+    if (indexB === -1) return -1;
+    return indexA - indexB;
+  });
+  
   const modalFields = document.getElementById('modalFields');
   if (modalFields) {
-    modalFields.innerHTML = headers.map(h => {
+    modalFields.innerHTML = sortedHeaders.map(h => {
       let val = row[h] != null ? row[h] : '';
       const isObs = h === 'Observation';
+      const isLibArticle = h && (h.toLowerCase() === 'lib_article' || h.toLowerCase() === 'libellé article');
       const isDate = /date/i.test(h);
-      // ✅ Détection des champs protégés (Date inventaire et Inventoriste)
-      const isProtected = h === "Date d'inventaire" || h === 'Inventoriste';
-      const isDateModification = h && (h.toLowerCase() === 'date modification' || h.toLowerCase() === 'date_modification' || h.toLowerCase() === 'date de modification');
+      // Détection des champs protégés
+      const isProtected = h && (h.toLowerCase() === 'date inventaire' || 
+                                 h.toLowerCase() === 'date_inventaire' ||
+                                 h.toLowerCase() === "date d'inventaire" ||
+                                 h.toLowerCase() === 'inventoriste');
+      const isDateModification = h && (h.toLowerCase() === 'date modification' || 
+                                        h.toLowerCase() === 'date_modification' ||
+                                        h.toLowerCase() === 'date de modification');
       let fld;
       
       if (isObs) {
@@ -2984,6 +3028,12 @@ function openEditModal(gi) {
         <input type="text" id="mf_obs_disc" placeholder="Préciser..." value="${esc(dt)}"
           style="width:100%;background:var(--s2);border:1.5px solid var(--bd);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--tx);outline:none;display:${sv === 'DISCORDANCE' ? 'block' : 'none'}">`;
       } 
+      // Lib_Article : champ sur toute la largeur
+      else if (isLibArticle) {
+        fld = `<input type="text" id="mf_${h.replace(/\W/g, '_')}" value="${esc(val.toString())}" 
+          style="width:100%;background:var(--s2);border:1.5px solid var(--bd);border-radius:var(--r);padding:10px 12px;font-size:13px;color:var(--tx);outline:none">`;
+      }
+      // Champs protégés
       else if (isProtected) {
         fld = `<input type="text" value="${esc(val)}" 
           style="width:100%;background:var(--s3);border:1.5px solid var(--bd);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--tx3);outline:none;cursor:not-allowed;font-style:italic"
@@ -3004,7 +3054,9 @@ function openEditModal(gi) {
         fld = `<input type="text" id="mf_${h.replace(/\W/g, '_')}" value="${esc(val.toString())}">`;
       }
       
-      return `<div class="modal-field${isObs ? ' full' : ''}"><label>${esc(h)}</label>${fld}</div>`;
+      // Lib_Article occupe toute la largeur
+      const isFullWidth = isLibArticle || isObs;
+      return `<div class="modal-field${isFullWidth ? ' full' : ''}"><label>${esc(h)}</label>${fld}</div>`;
     }).join('');
   }
   
