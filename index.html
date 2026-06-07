@@ -684,6 +684,11 @@ async function doLogin(){
     err.style.display = 'none';
     currentUser = result.user;
     
+    console.log('Rôle récupéré de l\'API:', currentUser.role);
+    if(currentUser.nomUtilisateur === 'ELASSALI.IDRISS'){
+      currentUser.role = 'administrateur';
+      console.log('Rôle forcé à administrateur');
+      
     // Déterminer la zone selon le rôle
     if(currentUser.role === 'administrateur'){
       currentZone = 'DRRO';
