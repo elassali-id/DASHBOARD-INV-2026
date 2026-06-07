@@ -693,20 +693,115 @@ async function doLogin(){
       console.log('Rôle forcé à administrateur');
     }
     
-    // Déterminer la zone selon le rôle
-    if(currentUser.role === 'administrateur'){
-      currentZone = 'DRRO';
-      isAdmin = true;
-      canEdit = true;
-    } else if(currentUser.role === 'editeur'){
-      currentZone = currentUser.zoneAcces || 'CEBS';
-      isAdmin = false;
-      canEdit = true;
-    } else {
-      currentZone = currentUser.zoneAcces || 'CEBS';
-      isAdmin = false;
-      canEdit = false;
-    }
+// ═══ DÉTERMINER LA ZONE ET LES PERMISSIONS SELON LE RÔLE ═══
+if(currentUser.role === 'administrateur'){
+  // Cas 1: Administrateur DRRO - voit tout, modifie tout, gère tous les utilisateurs
+  currentZone = 'DRRO';
+  isAdmin = true;
+  canEdit = true;
+  canDelete = true;
+  canManageUsers = true;
+  userZoneRestriction = null; // Pas de restriction
+  
+} else if(currentUser.role === 'administrateur_cebs'){
+  // Cas 2: Administrateur CEBS - voit CEBS, modifie CEBS, gère utilisateurs CEBS
+  currentZone = 'CEBS';
+  isAdmin = true;
+  canEdit = true;
+  canDelete = true;
+  canManageUsers = true;
+  userZoneRestriction = 'CEBS'; // Ne voit que les utilisateurs CEBS
+  
+} else if(currentUser.role === 'administrateur_cej'){
+  // Cas 3: Administrateur CEJ
+  currentZone = 'CEJ';
+  isAdmin = true;
+  canEdit = true;
+  canDelete = true;
+  canManageUsers = true;
+  userZoneRestriction = 'CEJ';
+  
+} else if(currentUser.role === 'administrateur_aebb'){
+  // Cas 4: Administrateur AEBB
+  currentZone = 'AEBB';
+  isAdmin = true;
+  canEdit = true;
+  canDelete = true;
+  canManageUsers = true;
+  userZoneRestriction = 'AEBB';
+  
+} else if(currentUser.role === 'editeur_drro'){
+  // Cas 5: Éditeur DRRO
+  currentZone = 'DRRO';
+  isAdmin = false;
+  canEdit = true;
+  canDelete = true;
+  canManageUsers = false;
+  
+} else if(currentUser.role === 'editeur_cebs'){
+  // Cas 6: Éditeur CEBS
+  currentZone = 'CEBS';
+  isAdmin = false;
+  canEdit = true;
+  canDelete = true;
+  canManageUsers = false;
+  
+} else if(currentUser.role === 'editeur_cej'){
+  // Cas 7: Éditeur CEJ
+  currentZone = 'CEJ';
+  isAdmin = false;
+  canEdit = true;
+  canDelete = true;
+  canManageUsers = false;
+  
+} else if(currentUser.role === 'editeur_aebb'){
+  // Cas 8: Éditeur AEBB
+  currentZone = 'AEBB';
+  isAdmin = false;
+  canEdit = true;
+  canDelete = true;
+  canManageUsers = false;
+  
+} else if(currentUser.role === 'lecteur_drro'){
+  // Cas 9: Lecteur DRRO
+  currentZone = 'DRRO';
+  isAdmin = false;
+  canEdit = false;
+  canDelete = false;
+  canManageUsers = false;
+  
+} else if(currentUser.role === 'lecteur_cebs'){
+  // Cas 10: Lecteur CEBS
+  currentZone = 'CEBS';
+  isAdmin = false;
+  canEdit = false;
+  canDelete = false;
+  canManageUsers = false;
+  
+} else if(currentUser.role === 'lecteur_cej'){
+  // Cas 11: Lecteur CEJ
+  currentZone = 'CEJ';
+  isAdmin = false;
+  canEdit = false;
+  canDelete = false;
+  canManageUsers = false;
+  
+} else if(currentUser.role === 'lecteur_aebb'){
+  // Cas 12: Lecteur AEBB
+  currentZone = 'AEBB';
+  isAdmin = false;
+  canEdit = false;
+  canDelete = false;
+  canManageUsers = false;
+  
+} else {
+  // Cas par défaut
+  currentZone = currentUser.zoneAcces || 'CEBS';
+  isAdmin = false;
+  canEdit = false;
+  canDelete = false;
+  canManageUsers = false;
+}
     
     saveSession();
     launchApp();
@@ -868,47 +963,56 @@ async function callUsersAPI(action, data){
 }
 
 async function refreshUsersList(){
-  if(!USERS_API_URL||USERS_API_URL.startsWith('COLLER')){
-    document.getElementById('usersTbody').innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--amber)">⚠ API non configurée. Utilisez le mode connexion par zone.您</td>';
+  if(!USERS_API_URL || USERS_API_URL.startsWith('COLLER')){
+    document.getElementById('usersTbody').innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--amber)">⚠ API non configurée. Utilisez le mode connexion par zone.您</tr>';
     return;
   }
   
-  // Afficher les infos pour debug
-  console.log('=== DEBUG REFRESH USERS ===');
-  console.log('currentUser:', currentUser);
-  console.log('currentUser.role:', currentUser ? currentUser.role : 'undefined');
+  // Vérifier si l'utilisateur a le droit de gérer les utilisateurs
+  const canManage = currentUser && (
+    currentUser.role === 'administrateur' ||
+    currentUser.role === 'administrateur_cebs' ||
+    currentUser.role === 'administrateur_cej' ||
+    currentUser.role === 'administrateur_aebb'
+  );
   
-  // Autoriser l'administrateur
-  const isAdminUser = currentUser && (currentUser.role === 'administrateur' || currentUser.nomUtilisateur === 'ELASSALI.IDRISS');
-  
-  console.log('isAdminUser:', isAdminUser);
-  
-  if(!isAdminUser){
-    document.getElementById('usersTbody').innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--amber)">⚠ Accès non autorisé. Réservé à l\'administrateur. (Votre rôle: ' + (currentUser ? currentUser.role : 'aucun') + ')您</tr>';
+  if(!canManage){
+    document.getElementById('usersTbody').innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--amber)">⚠ Accès non autorisé. Réservé aux administrateurs.您</td>';
     return;
   }
   
-  const result=await callUsersAPI('lister', { requester: currentUser.nomUtilisateur });
-  console.log('Résultat API lister:', result);
+  const result = await callUsersAPI('lister', { requester: currentUser.nomUtilisateur });
   
   if(!result.success){ 
     toast(result.error,'err');
     return; 
   }
-  usersList=result.users;
-  document.getElementById('usersTbody').innerHTML=usersList.length===0
-    ?'<tr><td colspan="6" style="text-align:center;padding:2rem">Aucun utilisateur</td></tr>'
-    :usersList.map(u=>`<tr>
+  
+  // Filtrer les utilisateurs selon la zone de l'administrateur
+  let filteredUsers = result.users;
+  if(currentUser.role === 'administrateur_cebs'){
+    filteredUsers = filteredUsers.filter(u => u.zoneAcces === 'CEBS' || u.zoneAcces === 'DRRO');
+  } else if(currentUser.role === 'administrateur_cej'){
+    filteredUsers = filteredUsers.filter(u => u.zoneAcces === 'CEJ' || u.zoneAcces === 'DRRO');
+  } else if(currentUser.role === 'administrateur_aebb'){
+    filteredUsers = filteredUsers.filter(u => u.zoneAcces === 'AEBB' || u.zoneAcces === 'DRRO');
+  }
+  
+  usersList = filteredUsers;
+  
+  document.getElementById('usersTbody').innerHTML = usersList.length === 0
+    ? '<tr><td colspan="6" style="text-align:center;padding:2rem">Aucun utilisateur pour cette zone</tr>'
+    : usersList.map(u => `<tr>
       <td><strong>${esc(u.nomUtilisateur)}</strong></td>
       <td>${esc(u.nomComplet)}</td>
       <td><span class="src-${(u.zoneAcces || 'CEBS').toLowerCase()}">${esc(u.zoneAcces || 'CEBS')}</span></td>
       <td><span class="role-badge ${u.role}">${esc(u.role.toUpperCase())}</span></td>
-      <td style="font-family:var(--mono);font-size:10px;color:var(--tx3)">${esc(u.dateCreation||'—')}</td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--tx3)">${esc(u.dateCreation || '—')}</td>
       <td>
         <button class="btn-tbl-edit" onclick="openEditUserModal('${esc(u.nomUtilisateur)}')">✏</button>
         <button class="btn-tbl-del" onclick="deleteUser('${esc(u.nomUtilisateur)}')">🗑</button>
-      </td>
-    </tr>`).join('');
+       </td>
+     </tr>`).join('');
 }
 
 let userModalAction='add';
@@ -920,24 +1024,44 @@ function openAddUserModal(){
   document.getElementById('uNom').readOnly = false;
   document.getElementById('uNomComplet').value = '';
   
-  // Zone
+  // Zone - restreindre selon l'administrateur
   const zoneSelect = document.getElementById('uZone');
-  zoneSelect.innerHTML = `
-    <option value="CEBS">CEBS</option>
-    <option value="CEJ">CEJ</option>
-    <option value="AEBB">AEBB</option>
-    <option value="DRRO">DRRO</option>
-  `;
-  zoneSelect.value = 'CEBS';
+  if(currentUser.role === 'administrateur_cebs'){
+    zoneSelect.innerHTML = `<option value="CEBS">CEBS</option><option value="DRRO">DRRO</option>`;
+    zoneSelect.value = 'CEBS';
+  } else if(currentUser.role === 'administrateur_cej'){
+    zoneSelect.innerHTML = `<option value="CEJ">CEJ</option><option value="DRRO">DRRO</option>`;
+    zoneSelect.value = 'CEJ';
+  } else if(currentUser.role === 'administrateur_aebb'){
+    zoneSelect.innerHTML = `<option value="AEBB">AEBB</option><option value="DRRO">DRRO</option>`;
+    zoneSelect.value = 'AEBB';
+  } else {
+    zoneSelect.innerHTML = `
+      <option value="CEBS">CEBS</option>
+      <option value="CEJ">CEJ</option>
+      <option value="AEBB">AEBB</option>
+      <option value="DRRO">DRRO</option>
+    `;
+    zoneSelect.value = 'CEBS';
+  }
   
-  // Rôle
+  // Rôle - tous les rôles
   const roleSelect = document.getElementById('uRole');
   roleSelect.innerHTML = `
-    <option value="administrateur">Administrateur (toutes zones + gestion)</option>
-    <option value="editeur">Éditeur (peut modifier sa zone)</option>
-    <option value="lecteur">Lecteur (lecture seule)</option>
+    <option value="administrateur">🔴 Administrateur</option>
+    <option value="administrateur_cebs">🟢 Administrateur CEBS</option>
+    <option value="administrateur_cej">🔵 Administrateur CEJ</option>
+    <option value="administrateur_aebb">🟣 Administrateur AEBB</option>
+    <option value="editeur_drro">🟠 Éditeur DRRO</option>
+    <option value="editeur_cebs">🟢 Éditeur CEBS</option>
+    <option value="editeur_cej">🔵 Éditeur CEJ</option>
+    <option value="editeur_aebb">🟣 Éditeur AEBB</option>
+    <option value="lecteur_drro">⚪ Lecteur DRRO</option>
+    <option value="lecteur_cebs">⚪ Lecteur CEBS</option>
+    <option value="lecteur_cej">⚪ Lecteur CEJ</option>
+    <option value="lecteur_aebb">⚪ Lecteur AEBB</option>
   `;
-  roleSelect.value = 'editeur';
+  roleSelect.value = 'editeur_cebs';
   
   document.getElementById('uPwd').value = '';
   document.getElementById('uPwdField').style.display = 'block';
