@@ -2948,11 +2948,18 @@ function submitModal() {
   const headers = sourceHeaders.filter(h => h && h !== 'Source');
   const data = {};
   
+  // Ajouter automatiquement la date de modification actuelle
+  const now = new Date();
+  const formattedDate = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+  
   headers.forEach(h => {
     if (h === 'Observation') {
       const sel = document.getElementById('mf_obs_sel');
       const disc = document.getElementById('mf_obs_disc');
       if (sel) data[h] = sel.value === 'DISCORDANCE' && disc && disc.value.trim() ? 'DISCORDANCE ' + disc.value.trim() : sel.value;
+    } else if (h === 'Date modification' || h === 'Date_Modification' || h === 'Date de modification' || h.toLowerCase().includes('date modif')) {
+      // Mettre à jour la date de modification automatiquement
+      data[h] = formattedDate;
     } else {
       const el = document.getElementById('mf_' + h.replace(/\W/g, '_'));
       if (el) data[h] = el.value;
