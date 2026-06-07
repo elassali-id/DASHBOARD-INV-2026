@@ -637,7 +637,6 @@ function switchLoginMode(mode){
 }
 
 // ═══ LOGIN PAR COMPTE UTILISATEUR ═══
-// ═══ LOGIN PAR COMPTE UTILISATEUR (CORRIGÉ) ═══
 async function doLogin(){
   const err = document.getElementById('loginErr');
   const btn = document.getElementById('loginBtn');
@@ -686,21 +685,16 @@ async function doLogin(){
     currentUser = result.user;
     
     // Déterminer la zone selon le rôle
-    if(currentUser.role === 'administrateur_drro'){
+    if(currentUser.role === 'administrateur'){
       currentZone = 'DRRO';
       isAdmin = true;
       canEdit = true;
-    } else if(currentUser.role.startsWith('editeur_')){
-      const zone = currentUser.role.split('_')[1].toUpperCase();
-      currentZone = zone;
+    } else if(currentUser.role === 'editeur'){
+      currentZone = currentUser.zoneAcces || 'CEBS';
       isAdmin = false;
       canEdit = true;
-    } else if(currentUser.role.startsWith('lecteur_')){
-      const zone = currentUser.role.split('_')[1].toUpperCase();
-      currentZone = zone;
-      isAdmin = false;
-      canEdit = false;
     } else {
+      // lecteur
       currentZone = currentUser.zoneAcces || 'CEBS';
       isAdmin = false;
       canEdit = false;
@@ -812,8 +806,7 @@ function setupHeader(){
 }
 
 function buildNav(){
-  const isAdminDrro = currentUser && currentUser.role === 'administrateur_drro';
-  const adminView = isAdminDrro || isAdmin || (!currentUser && currentZone === 'ADMIN');
+  const isAdminUser = currentUser && currentUser.role === 'administrateur';
   
   let html = `
     <button class="tab on" onclick="showTab('overview')">Vue d'ensemble</button>
@@ -821,7 +814,7 @@ function buildNav(){
     <button class="tab" onclick="showTab('telechargement')">Téléchargement</button>`;
   
   if(currentUser) html+=`<button class="tab" onclick="showTab('account')">Mon compte</button>`;
-  if(isAdminDrro) html+=`<button class="tab" onclick="showTab('users')">👥 Utilisateurs</button>`;
+  if(isAdminUser) html+=`<button class="tab" onclick="showTab('users')">👥 Utilisateurs</button>`;
   
   document.getElementById('mainNav').innerHTML=html;
 }
@@ -864,18 +857,30 @@ async function callUsersAPI(action, data){
 
 async function refreshUsersList(){
   if(!USERS_API_URL||USERS_API_URL.startsWith('COLLER')){
-    document.getElementById('usersTbody').innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--amber)">⚠ USERS_API_URL non configurée. Déployez DRRO_UsersScript.gs et collez l\'URL.</td></tr>';
+    document.getElementById('usersTbody').innerHTML='</table><td colspan="6" style="text-align:center;padding:2rem;color:var(--amber)">⚠ API non configurée. Utilisez le mode connexion par zone.您</td>';
     return;
   }
-  const result=await callUsersAPI('lister',{});
-  if(!result.success){ toast(result.error,'err'); return; }
+  
+  // Seul l'administrateur peut gérer les utilisateurs
+  const isAdminUser = currentUser && currentUser.role === 'administrateur';
+  
+  if(!isAdminUser){
+    document.getElementById('usersTbody').innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--amber)">⚠ Accès non autorisé. Réservé à l\'administrateur.您</td>';
+    return;
+  }
+  
+  const result=await callUsersAPI('lister', { requester: currentUser.nomUtilisateur });
+  if(!result.success){ 
+    toast(result.error,'err');
+    return; 
+  }
   usersList=result.users;
   document.getElementById('usersTbody').innerHTML=usersList.length===0
     ?'<tr><td colspan="6" style="text-align:center;padding:2rem">Aucun utilisateur</td></tr>'
     :usersList.map(u=>`<tr>
       <td><strong>${esc(u.nomUtilisateur)}</strong></td>
       <td>${esc(u.nomComplet)}</td>
-      <td><span class="src-${(u.zone||'').toLowerCase()}">${esc(u.zone)}</span></td>
+      <td><span class="src-${(u.zoneAcces||'').toLowerCase()}">${esc(u.zoneAcces)}</span></td>
       <td><span class="role-badge ${u.role}">${esc(u.role.toUpperCase())}</span></td>
       <td style="font-family:var(--mono);font-size:10px;color:var(--tx3)">${esc(u.dateCreation||'—')}</td>
       <td>
@@ -884,15 +889,22 @@ async function refreshUsersList(){
       </td>
     </tr>`).join('');
 }
-
 let userModalAction='add';
 function openAddUserModal(){
   userModalAction='add';
   document.getElementById('userModalTitle').textContent='➕ Nouvel utilisateur';
-  document.getElementById('uNom').value=''; document.getElementById('uNom').readOnly=false;
+  document.getElementById('uNom').value=''; 
+  document.getElementById('uNom').readOnly=false;
   document.getElementById('uNomComplet').value='';
   document.getElementById('uZone').value='CEBS';
-  document.getElementById('uRole').value='editeur';
+  
+  // Options des rôles simplifiés
+  document.getElementById('uRole').innerHTML = `
+    <option value="administrateur">Administrateur (toutes zones + gestion utilisateurs)</option>
+    <option value="editeur">Éditeur (peut modifier sa zone)</option>
+    <option value="lecteur">Lecteur (lecture seule)</option>
+  `;
+  
   document.getElementById('uPwd').value='';
   document.getElementById('uPwdField').style.display='block';
   document.getElementById('userModalOverlay').style.display='flex';
