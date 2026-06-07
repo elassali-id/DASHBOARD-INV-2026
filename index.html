@@ -2963,7 +2963,7 @@ function openEditModal(gi) {
       const isObs = h === 'Observation';
       const isDate = /date/i.test(h);
       // ⚠️ Détection des champs protégés - UNIQUEMENT ces noms exacts
-      const isProtected = h === 'Date inventaire' || h === 'Inventoriste';
+      const isProtected = h === "Date d'inventaire" || h === 'Inventoriste';
       const isDateModification = h === 'Date modification' || h === 'Date_Modification' || 
                                   h === 'Date de modification';
       let fld;
