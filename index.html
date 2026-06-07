@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DRRO — INVENTAIRE 2026 - Gestion des utilisateurs</title>
+<title>DRRO — INVENTAIRE 2026</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
@@ -77,40 +77,7 @@ body {
   transition: background .3s, color .3s;
 }
 
-/* ==================== STYLES UTILISATEURS ==================== */
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 5px 12px;
-  background: var(--s2);
-  border-radius: 20px;
-  border: 1px solid var(--bd);
-  font-size: 11px;
-  font-family: var(--mono);
-}
-
-.user-role {
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 9px;
-  font-weight: 600;
-}
-
-.user-role.administrateur { background: var(--gold); color: #1a365d; }
-.user-role.superviseur { background: var(--blue); color: white; }
-.user-role.editeur { background: var(--acc3); color: white; }
-.user-role.utilisateur { background: var(--amber); color: white; }
-
-.protected-field {
-  background: var(--s3) !important;
-  color: var(--tx3) !important;
-  border: 1px solid var(--bd) !important;
-  cursor: not-allowed !important;
-  font-style: italic !important;
-}
-
-/* ==================== STYLES PRINCIPAUX ==================== */
+/* ==================== STYLES ==================== */
 #loadScreen {
   position: fixed;
   inset: 0;
@@ -226,6 +193,7 @@ body {
   display: none;
 }
 
+/* Onglets et navigation */
 header {
   background: var(--s1);
   border-bottom: 1.5px solid var(--bd);
@@ -244,6 +212,30 @@ header {
   align-items: center;
   gap: 8px;
 }
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 12px;
+  background: var(--s2);
+  border-radius: 20px;
+  border: 1px solid var(--bd);
+  font-size: 11px;
+  font-family: var(--mono);
+}
+
+.user-role {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.user-role.administrateur { background: var(--gold); color: #1a365d; }
+.user-role.superviseur { background: var(--blue); color: white; }
+.user-role.editeur { background: var(--acc3); color: white; }
+.user-role.utilisateur { background: var(--amber); color: white; }
 
 .status-dot {
   width: 7px;
@@ -270,31 +262,6 @@ header {
   background: color-mix(in srgb, var(--gold) 18%, var(--s1));
   color: var(--gold);
   border: 1px solid var(--gold);
-}
-
-.src-cebs, .src-cej, .src-aebb {
-  display: inline-block;
-  white-space: nowrap;
-  background: color-mix(in srgb, var(--blue) 16%, var(--s1));
-  color: var(--blue);
-  border: 1px solid var(--blue);
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 5px;
-}
-
-.src-cej {
-  background: color-mix(in srgb, var(--acc) 16%, var(--s1));
-  color: var(--acc);
-  border-color: var(--acc);
-}
-
-.src-aebb {
-  background: color-mix(in srgb, var(--acc3) 16%, var(--s1));
-  color: var(--acc3);
-  border-color: var(--acc3);
 }
 
 .btn-logout, .refresh-btn {
@@ -375,6 +342,7 @@ nav {
   background: var(--bd);
 }
 
+/* KPI Cards */
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -419,52 +387,7 @@ nav {
   line-height: 1;
 }
 
-.kpi-sub {
-  font-size: 11px;
-  color: var(--tx3);
-  margin-top: 6px;
-}
-
-.kpi-zone-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 20px;
-}
-
-.kpi-zone-card {
-  background: var(--s1);
-  border: 1.5px solid var(--bd);
-  border-radius: var(--r2);
-  padding: 20px;
-  position: relative;
-}
-
-.kpi-zone-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: var(--zcolor, var(--acc));
-}
-
-.charts-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 20px;
-}
-
-.wide { grid-column: 1/-1; }
-.card {
-  background: var(--s1);
-  border: 1.5px solid var(--bd);
-  border-radius: var(--r3);
-  padding: 20px;
-}
-
+/* Tableau */
 #panel-tableau {
   display: none;
   flex-direction: column;
@@ -555,42 +478,6 @@ td {
   gap: 8px;
 }
 
-input[type=text], select {
-  background: var(--s2);
-  border: 1.5px solid var(--bd);
-  border-radius: var(--r);
-  padding: 7px 10px;
-  font-size: 12px;
-  color: var(--tx);
-  outline: none;
-}
-
-.pb {
-  background: var(--s2);
-  border: 1.5px solid var(--bd);
-  border-radius: 5px;
-  padding: 4px 9px;
-  font-size: 10px;
-  font-family: var(--mono);
-  cursor: pointer;
-}
-
-.pb.on {
-  background: var(--acc);
-  color: #fff;
-}
-
-.btn-tbl-edit {
-  background: color-mix(in srgb, var(--blue) 12%, var(--s1));
-  border: 1px solid var(--blue);
-  color: var(--blue);
-  border-radius: 5px;
-  padding: 4px 10px;
-  font-size: 10px;
-  font-family: var(--mono);
-  cursor: pointer;
-}
-
 .btn {
   display: inline-flex;
   align-items: center;
@@ -607,7 +494,24 @@ input[type=text], select {
 .btn-acc { background: var(--grad); color: #fff; }
 .btn-out { background: transparent; border: 1.5px solid var(--bd); color: var(--tx2); }
 .btn-red { background: color-mix(in srgb, var(--red) 14%, var(--s1)); border: 1.5px solid var(--red); color: var(--red); }
+.btn-grn { background: var(--acc3); color: white; }
 
+.pb {
+  background: var(--s2);
+  border: 1.5px solid var(--bd);
+  border-radius: 5px;
+  padding: 4px 9px;
+  font-size: 10px;
+  font-family: var(--mono);
+  cursor: pointer;
+}
+
+.pb.on {
+  background: var(--acc);
+  color: #fff;
+}
+
+/* Modales */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -625,8 +529,8 @@ input[type=text], select {
   border-radius: var(--r3);
   padding: 28px 32px;
   width: 100%;
-  max-width: 640px;
-  max-height: 92vh;
+  max-width: 600px;
+  max-height: 90vh;
   overflow-y: auto;
 }
 
@@ -688,23 +592,7 @@ input[type=text], select {
   border-radius: var(--r3);
   padding: 28px 32px;
   width: 100%;
-  max-width: 520px;
-}
-
-.confirm-details {
-  background: var(--s3);
-  border-radius: var(--r);
-  padding: 14px;
-  margin-top: 10px;
-  text-align: left;
-}
-
-.confirm-details .label {
-  font-weight: 700;
-  color: var(--tx);
-  margin-right: 10px;
-  min-width: 130px;
-  display: inline-block;
+  max-width: 480px;
 }
 
 .confirm-btns {
@@ -736,22 +624,48 @@ input[type=text], select {
 .toast.show { opacity: 1; transform: translateY(0); }
 .toast.err { background: var(--red); color: #fff; }
 
-.dl-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 14px;
-  margin-top: 14px;
+/* Tableau de bord admin utilisateurs */
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
 }
 
-.dl-card {
-  background: var(--s1);
-  border: 1.5px solid var(--bd);
-  border-radius: var(--r2);
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
+.users-table th, .users-table td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--bd);
 }
+
+.users-table th {
+  background: var(--thead);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.btn-icon:hover { background: var(--s3); }
+
+.src-cebs, .src-cej, .src-aebb {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.src-cebs { background: color-mix(in srgb, var(--blue) 16%, var(--s1)); color: var(--blue); border: 1px solid var(--blue); }
+.src-cej { background: color-mix(in srgb, var(--acc) 16%, var(--s1)); color: var(--acc); border: 1px solid var(--acc); }
+.src-aebb { background: color-mix(in srgb, var(--acc3) 16%, var(--s1)); color: var(--acc3); border: 1px solid var(--acc3); }
 </style>
 </head>
 <body>
@@ -761,6 +675,7 @@ input[type=text], select {
   <div style="width:420px;max-width:90vw;text-align:center">
     <div style="font-family:var(--mono);font-size:22px;font-weight:700;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">Autoroutes Du Maroc</div>
     <div style="font-family:var(--mono);font-size:18px;font-weight:600;letter-spacing:.32em;color:var(--tx);margin-top:8px">INVENTAIRE 2026</div>
+    <div style="font-family:var(--mono);font-size:9px;color:var(--tx3);margin-top:4px">ELASSALI IDRISS</div>
     <div class="spinner"></div>
     <div class="load-bar"><div class="load-fill" id="loadFill"></div></div>
     <div class="load-status" id="loadStatus">Initialisation...</div>
@@ -773,23 +688,22 @@ input[type=text], select {
     <div style="margin-bottom:22px;text-align:center">
       <div style="font-family:var(--mono);font-size:15px;font-weight:700;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">Autoroutes Du Maroc</div>
       <div style="font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.32em;color:var(--tx);margin-top:4px">INVENTAIRE 2026</div>
-      <div style="font-family:var(--mono);font-size:9px;color:var(--tx3);margin-top:4px">ELASSALI IDRISS</div>
-    </div>
-    <div style="font-size:12px;color:var(--tx3);margin-bottom:20px;text-align:center">Connectez-vous avec votre email</div>
-    
-    <div class="login-field">
-      <label>📧 EMAIL</label>
-      <input type="email" id="loginEmail" placeholder="exemple@drro.ma" autocomplete="email">
     </div>
     
     <div class="login-field">
-      <label>🔑 CODE D'ACCÈS</label>
-      <input type="password" id="loginPwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+      <label>👤 NOM D'UTILISATEUR</label>
+      <input type="text" id="loginUsername" placeholder="Ex: ELASSALI.IDRISS" autocomplete="username">
+    </div>
+    
+    <div class="login-field">
+      <label>🔑 MOT DE PASSE</label>
+      <input type="password" id="loginPassword" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
     
     <div id="loginErr" class="login-err"></div>
     <button class="login-btn" id="loginBtn" onclick="doLogin()">SE CONNECTER →</button>
-    <div class="login-footer" style="margin-top:16px;text-align:center;font-family:var(--mono);font-size:9px;color:var(--tx3)">
+    
+    <div style="margin-top:16px;text-align:center;font-family:var(--mono);font-size:9px;color:var(--tx3)">
       <span id="loginFooterDate">—</span> — ELASSALI IDRISS
     </div>
   </div>
@@ -806,6 +720,7 @@ input[type=text], select {
     </div>
   </div>
   <div class="hdr-right">
+    <div id="userInfoDisplay" class="user-info"></div>
     <span id="hdrZoneBadge" class="zone-badge-hdr"></span>
     <div class="status-dot" id="statusDot" style="background:var(--tx3)"></div>
     <span class="status-txt" id="statusTxt">Chargement...</span>
@@ -813,121 +728,166 @@ input[type=text], select {
     <button class="btn-logout" onclick="doLogout()">⎋</button>
   </div>
 </header>
+
 <nav id="mainNav"></nav>
+
 <main>
+  <!-- Vue d'ensemble -->
+  <div class="panel on" id="panel-overview">
+    <div id="errorBanner" style="display:none"></div>
+    <div id="alertZone"></div>
+    <div class="sec-title">INDICATEURS — <span id="ovZoneLabel">—</span></div>
+    <div class="kpi-grid">
+      <div class="kpi" style="--kpi-color:var(--acc)"><div class="kpi-label">Total articles</div><div class="kpi-val" id="kTotal">—</div><div class="kpi-sub">zone courante</div></div>
+      <div class="kpi" style="--kpi-color:var(--acc3)"><div class="kpi-label">Conformes</div><div class="kpi-val" id="kOk">—</div><div class="kpi-sub" id="kOkP">—</div></div>
+      <div class="kpi" style="--kpi-color:var(--amber)"><div class="kpi-label">À vérifier</div><div class="kpi-val" id="kAv">—</div><div class="kpi-sub" id="kAvP">—</div></div>
+      <div class="kpi" style="--kpi-color:var(--red)"><div class="kpi-label">Discordances</div><div class="kpi-val" id="kDisc">—</div><div class="kpi-sub" id="kDiscP">—</div></div>
+      <div class="kpi" style="--kpi-color:var(--tx3)"><div class="kpi-label">Non renseigné</div><div class="kpi-val" id="kNd">—</div><div class="kpi-sub" id="kNdP">—</div></div>
+      <div class="kpi" style="--kpi-color:var(--blue)"><div class="kpi-label">Gares couvertes</div><div class="kpi-val" id="kGares">—</div><div class="kpi-sub">gares distinctes</div></div>
+    </div>
+    <div id="adminZoneCards" style="display:none">
+      <div class="sec-title">RÉCAPITULATIF PAR ZONE</div>
+      <div class="kpi-zone-grid" id="zoneCardsGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px"></div>
+    </div>
+    <div class="sec-title">OBSERVATIONS</div>
+    <div class="charts-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="card"><div class="card-title">Répartition des observations</div><div style="height:260px"><canvas id="cObs"></canvas></div></div>
+    </div>
+  </div>
 
-<div class="panel on" id="panel-overview">
-  <div id="errorBanner" style="display:none" class="error-banner"></div>
-  <div id="alertZone"></div>
-  <div id="updateAlertZone"></div>
-  <div class="sec-title">INDICATEURS — <span id="ovZoneLabel">—</span></div>
-  <div class="kpi-grid">
-    <div class="kpi" style="--kpi-color:var(--acc)"><div class="kpi-label">Total articles</div><div class="kpi-val" id="kTotal">—</div><div class="kpi-sub">zone courante</div></div>
-    <div class="kpi" style="--kpi-color:var(--acc3)"><div class="kpi-label">Conformes</div><div class="kpi-val" id="kOk">—</div><div class="kpi-sub" id="kOkP">—</div></div>
-    <div class="kpi" style="--kpi-color:var(--amber)"><div class="kpi-label">À vérifier</div><div class="kpi-val" id="kAv">—</div><div class="kpi-sub" id="kAvP">—</div></div>
-    <div class="kpi" style="--kpi-color:var(--red)"><div class="kpi-label">Discordances</div><div class="kpi-val" id="kDisc">—</div><div class="kpi-sub" id="kDiscP">—</div></div>
-    <div class="kpi" style="--kpi-color:var(--tx3)"><div class="kpi-label">Non renseigné</div><div class="kpi-val" id="kNd">—</div><div class="kpi-sub" id="kNdP">—</div></div>
-    <div class="kpi" style="--kpi-color:var(--blue)"><div class="kpi-label">Gares couvertes</div><div class="kpi-val" id="kGares">—</div><div class="kpi-sub">gares distinctes</div></div>
-  </div>
-  <div id="adminZoneCards" style="display:none">
-    <div class="sec-title">RÉCAPITULATIF PAR ZONE</div>
-    <div class="kpi-zone-grid" id="zoneCardsGrid"></div>
-  </div>
-  <div class="sec-title">OBSERVATIONS</div>
-  <div class="charts-grid">
-    <div class="card"><div class="card-title">Répartition des observations</div><div style="position:relative;height:260px"><canvas id="cObs"></canvas></div></div>
-    <div class="card"><div class="card-title">Articles par inventoriste</div><div style="position:relative;height:260px"><canvas id="cInv"></canvas></div></div>
-  </div>
-  <div class="sec-title">RÉPARTITION PAR GARE</div>
-  <div class="charts-grid">
-    <div class="card"><div class="card-title">Articles par gare — TOP 15</div><div style="position:relative;height:300px"><canvas id="cGare"></canvas></div></div>
-    <div class="card"><div class="card-title">Observations par gare — TOP 10</div><div style="position:relative;height:300px"><canvas id="cGareObs"></canvas></div></div>
-  </div>
-  <div id="adminChartSection" style="display:none">
-    <div class="sec-title">COMPARAISON INTER-ZONES</div>
-    <div class="charts-grid">
-      <div class="card"><div class="card-title">Observations par zone</div><div style="position:relative;height:260px"><canvas id="cZoneObs"></canvas></div></div>
-      <div class="card"><div class="card-title">Taux de conformité par zone</div><div style="position:relative;height:260px"><canvas id="cZoneConf"></canvas></div></div>
-    </div>
-  </div>
-</div>
-
-<div class="panel" id="panel-tableau">
-  <div class="tbl-hdr">
-    <span id="tblCount">—</span>
-    <div class="tbl-controls">
-      <input type="text" id="srch" placeholder="🔍 Recherche..." oninput="applyFilters()">
-      <select id="fSrc" onchange="applyFilters()" style="display:none">
-        <option value="">Toutes zones</option>
-        <option value="CEBS">CEBS</option><option value="CEJ">CEJ</option><option value="AEBB">AEBB</option>
-      </select>
-      <select id="fObs" onchange="applyFilters()">
-        <option value="">Toutes observations</option>
-        <option value="CONFORME">CONFORME</option><option value="A VERIFIER">A VERIFIER</option>
-        <option value="DISCORDANCE">DISCORDANCE</option><option value="vide">Non renseigné</option>
-      </select>
-      <select id="fGare" onchange="applyFilters()"><option value="">Toutes gares</option></select>
-      <select id="fInv" onchange="applyFilters()"><option value="">Tous inventoristes</option></select>
-      <button class="btn btn-out" onclick="exportFiltered()">↓ Export Excel</button>
-    </div>
-  </div>
-  <div class="tbl-body-wrap">
-    <div class="tbl-wrap">
-      <table>
-        <thead><tr id="tblHead"></tr></thead>
-        <tbody id="tBody"></tbody>
-      </table>
-    </div>
-  </div>
-  <div class="pag">
-    <span class="pag-info" id="pagInfo">—</span>
-    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-      <div class="pagesize">Lignes / page :
-        <select id="pageSize" onchange="changePageSize()">
-          <option value="50">50</option><option value="100">100</option>
-          <option value="200">200</option><option value="500">500</option><option value="all">Toutes</option>
+  <!-- Données -->
+  <div class="panel" id="panel-tableau">
+    <div class="tbl-hdr">
+      <span id="tblCount">—</span>
+      <div class="tbl-controls">
+        <input type="text" id="srch" placeholder="🔍 Recherche..." oninput="applyFilters()">
+        <select id="fSrc" onchange="applyFilters()" style="display:none">
+          <option value="">Toutes zones</option>
+          <option value="CEBS">CEBS</option><option value="CEJ">CEJ</option><option value="AEBB">AEBB</option>
         </select>
+        <select id="fObs" onchange="applyFilters()">
+          <option value="">Toutes observations</option>
+          <option value="CONFORME">CONFORME</option>
+          <option value="A VERIFIER">A VERIFIER</option>
+          <option value="DISCORDANCE">DISCORDANCE</option>
+          <option value="vide">Non renseigné</option>
+        </select>
+        <select id="fGare" onchange="applyFilters()"><option value="">Toutes gares</option></select>
+        <select id="fInv" onchange="applyFilters()"><option value="">Tous inventoristes</option></select>
+        <button class="btn btn-out" onclick="exportFiltered()">↓ Export Excel</button>
       </div>
+    </div>
+    <div class="tbl-body-wrap">
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr id="tblHead"></tr></thead>
+          <tbody id="tBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="pag">
+      <span class="pag-info" id="pagInfo">—</span>
+      <div class="pagesize">Lignes/page : <select id="pageSize" onchange="changePageSize()"><option value="50">50</option><option value="100">100</option><option value="200">200</option><option value="500">500</option><option value="all">Toutes</option></select></div>
       <div class="pag-btns" id="pagBtns"></div>
     </div>
   </div>
-</div>
 
-<div class="panel" id="panel-telechargement">
-  <div class="sec-title">FICHIERS SOURCE — INVENTAIRES ZONES</div>
-  <div class="dl-grid" id="dlGrid"></div>
-  <div class="sec-title" style="margin-top:24px">EXPORTER LES DONNÉES FILTRÉES</div>
-  <div class="card">
-    <div class="card-title">Export depuis le tableau de données filtrées</div>
-    <p style="font-size:12px;color:var(--tx3);margin-bottom:14px">Les exports respectent les filtres actifs dans l'onglet Données.</p>
-    <div id="exportBtns"></div>
+  <!-- Gestion des utilisateurs (admin uniquement) -->
+  <div class="panel" id="panel-users">
+    <div class="sec-title">GESTION DES UTILISATEURS</div>
+    <div style="margin-bottom:20px">
+      <button class="btn btn-acc" onclick="openAddUserModal()">➕ NOUVEL UTILISATEUR</button>
+      <button class="btn btn-out" onclick="refreshUsersList()">🔄 RAFRAÎCHIR</button>
+    </div>
+    <div id="usersListContainer"></div>
   </div>
-</div>
 
+  <!-- Mon compte (changer mot de passe) -->
+  <div class="panel" id="panel-account">
+    <div class="sec-title">MON COMPTE</div>
+    <div class="card" style="max-width:500px">
+      <div class="card-title">Changer mon mot de passe</div>
+      <div class="login-field">
+        <label>👤 NOM D'UTILISATEUR</label>
+        <input type="text" id="accountUsername" readonly style="background:var(--s3)">
+      </div>
+      <div class="login-field">
+        <label>🔑 MOT DE PASSE ACTUEL</label>
+        <input type="password" id="currentPassword" placeholder="••••••••">
+      </div>
+      <div class="login-field">
+        <label>🆕 NOUVEAU MOT DE PASSE</label>
+        <input type="password" id="newPassword" placeholder="••••••••">
+      </div>
+      <div class="login-field">
+        <label>✓ CONFIRMER LE NOUVEAU MOT DE PASSE</label>
+        <input type="password" id="confirmPassword" placeholder="••••••••">
+      </div>
+      <button class="btn btn-acc" onclick="changePassword()">Mettre à jour</button>
+    </div>
+  </div>
+
+  <!-- Téléchargement -->
+  <div class="panel" id="panel-telechargement">
+    <div class="sec-title">FICHIERS SOURCE</div>
+    <div class="dl-grid" id="dlGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px"></div>
+    <div class="sec-title" style="margin-top:24px">EXPORTER LES DONNÉES</div>
+    <div class="card">
+      <div id="exportBtns"></div>
+    </div>
+  </div>
 </main>
 </div>
 
-<!-- MODALES -->
-<div class="modal-overlay" id="modalOverlay" style="display:none" onclick="if(event.target===this)closeModal()">
+<!-- MODALE AJOUT/MODIFICATION UTILISATEUR -->
+<div class="modal-overlay" id="userModal" style="display:none" onclick="if(event.target===this)closeUserModal()">
   <div class="modal-box">
-    <div class="modal-title" style="font-family:var(--mono);font-size:13px;font-weight:700;margin-bottom:20px;display:flex;justify-content:space-between">
-      <span id="modalTitle">Modifier</span>
-      <span id="modalZoneBadge"></span>
+    <div class="modal-title" style="font-family:var(--mono);font-size:13px;font-weight:700;margin-bottom:20px">
+      <span id="userModalTitle">Ajouter un utilisateur</span>
     </div>
-    <div class="modal-grid" id="modalFields"></div>
-    <div class="modal-btns">
-      <button class="btn btn-red" id="modalDeleteBtn" onclick="askDeleteFromModal()" style="display:none">🗑 Supprimer</button>
-      <div class="modal-btns-right" style="display:flex;gap:8px">
-        <button class="btn btn-out" onclick="closeModal()">✕ Annuler</button>
-        <button class="btn btn-acc" onclick="submitModal()">✓ Enregistrer</button>
+    <div class="modal-grid">
+      <div class="modal-field full">
+        <label>👤 NOM D'UTILISATEUR</label>
+        <input type="text" id="userNomUtilisateur" placeholder="Ex: DUPONT.JEAN">
       </div>
+      <div class="modal-field full">
+        <label>📛 NOM COMPLET</label>
+        <input type="text" id="userNomComplet" placeholder="Ex: DUPONT JEAN">
+      </div>
+      <div class="modal-field">
+        <label>📍 ZONE</label>
+        <select id="userZone">
+          <option value="CEBS">CEBS</option>
+          <option value="CEJ">CEJ</option>
+          <option value="AEBB">AEBB</option>
+          <option value="ADMIN">ADMIN (Superviseur)</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label>⭐ RÔLE</label>
+        <select id="userRole">
+          <option value="utilisateur">Utilisateur (lecture seule)</option>
+          <option value="editeur">Éditeur (peut modifier)</option>
+          <option value="superviseur">Superviseur (toutes zones)</option>
+          <option value="administrateur">Administrateur (gestion utilisateurs)</option>
+        </select>
+      </div>
+      <div class="modal-field full" id="passwordField">
+        <label>🔑 MOT DE PASSE</label>
+        <input type="password" id="userPassword" placeholder="••••••••">
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-out" onclick="closeUserModal()">Annuler</button>
+      <button class="btn btn-acc" id="userModalBtn" onclick="saveUser()">Enregistrer</button>
     </div>
   </div>
 </div>
 
+<!-- MODALE CHANGEMENT MOT DE PASSE -->
 <div class="confirm-overlay" id="confirmOverlay" style="display:none">
   <div class="confirm-box">
-    <div class="confirm-icon" id="confirmIcon" style="font-size:48px;text-align:center">⚠️</div>
+    <div class="confirm-icon" style="font-size:48px;text-align:center" id="confirmIcon">⚠️</div>
     <div class="confirm-title" id="confirmTitle" style="font-family:var(--mono);font-size:16px;font-weight:700;text-align:center">Confirmer</div>
     <div class="confirm-msg" id="confirmMsg" style="font-size:13px;text-align:center;padding:16px;background:var(--s2);border-radius:var(--r2);margin:10px 0"></div>
     <div class="confirm-btns">
@@ -945,71 +905,31 @@ input[type=text], select {
 // ═══════════════════════════════════════════════════════════════════
 
 const SECRET_TOKEN = '1ppRNrQPgcKOHoBeKI40g35RPFW07bkqDkyw14_6O2mm7flNYVpLOYqWQ';
+const USERS_API_URL = 'URL_DU_SCRIPT_GESTION_UTILISATEURS'; // À remplacer par l'URL déployée
 
-// Configuration des zones avec leurs URLs
 const ZONE_CONFIG = {
   CEBS: {
-    pwdHash: 'eac8a3fd67a18fc94babbc4d47928a98889ea3f1418283b54dd9342b7275a9b4',
     sheetId: '1W5V8YkeGYvJaaSoAcGV1lRT2-BzgzWBOupRuEeqgRIA',
     apiUrl: 'https://script.google.com/macros/s/AKfycbxK2vwVWBGXCWSNq_tkvzMkbo7eYhVEHsCdDNdQk_6XkGD7bSUuDZa6v2jJaofQumTgcQ/exec',
-    color: '#1a4fa8', color2: 'rgba(26,79,168,0.65)',
-    dlHref: 'https://docs.google.com/spreadsheets/d/1W5V8YkeGYvJaaSoAcGV1lRT2-BzgzWBOupRuEeqgRIA/export?format=xlsx',
+    color: '#1a4fa8', dlHref: 'https://docs.google.com/spreadsheets/d/1W5V8YkeGYvJaaSoAcGV1lRT2-BzgzWBOupRuEeqgRIA/export?format=xlsx',
     icon: '📘', badgeClass: 'src-cebs', zcolor: '#1a4fa8'
   },
   CEJ: {
-    pwdHash: 'a43cb71e0ab7f5d7e2849f38fbb4bb01e79fb27cc20688e8d45b692ebd6e3cdf',
     sheetId: '1Y6gNYoJGL13gXj4SdmCKUXa-tbSbyWP6WyDgbjMXG3I',
     apiUrl: 'https://script.google.com/macros/s/AKfycbyQvuGk-4Ee9_pMrcNfitgpgFI3SWLiYAkk-EeAscfHuHvCM9IguaMI3bFbOAtK_xD1/exec',
-    color: '#5b3dc4', color2: 'rgba(91,61,196,0.65)',
-    dlHref: 'https://docs.google.com/spreadsheets/d/1Y6gNYoJGL13gXj4SdmCKUXa-tbSbyWP6WyDgbjMXG3I/export?format=xlsx',
+    color: '#5b3dc4', dlHref: 'https://docs.google.com/spreadsheets/d/1Y6gNYoJGL13gXj4SdmCKUXa-tbSbyWP6WyDgbjMXG3I/export?format=xlsx',
     icon: '📗', badgeClass: 'src-cej', zcolor: '#5b3dc4'
   },
   AEBB: {
-    pwdHash: 'b81ec7c1b0f0b711c77b52cf3efacdae4c8e585ce5c80b4c056ea7fbc6dfd218',
     sheetId: '1krHCtAzSB53cAMKZJ6YXb9K881d__KOKo2yC_hfMxeA',
     apiUrl: 'https://script.google.com/macros/s/AKfycbzgxkzvnqwCUyTuFM6dvE87iGXdHk3hV3vHdPRfiILKL2cFGKoxZFH_YZ87ele7dldM/exec',
-    color: '#1d9e75', color2: 'rgba(29,158,117,0.65)',
-    dlHref: 'https://docs.google.com/spreadsheets/d/1krHCtAzSB53cAMKZJ6YXb9K881d__KOKo2yC_hfMxeA/export?format=xlsx',
+    color: '#1d9e75', dlHref: 'https://docs.google.com/spreadsheets/d/1krHCtAzSB53cAMKZJ6YXb9K881d__KOKo2yC_hfMxeA/export?format=xlsx',
     icon: '📙', badgeClass: 'src-aebb', zcolor: '#1d9e75'
   }
 };
 
-// Configuration des utilisateurs (à synchroniser avec Google Sheet)
-const UTILISATEURS = {
-  'admin@drro.ma': {
-    nom: 'Administrateur',
-    zone: 'ADMIN',
-    role: 'administrateur',
-    pwdHash: '61abf6b31686359bac1755390b8c420403f3f85de7d06607dc2250b707c1cb79'
-  },
-  'superviseur@drro.ma': {
-    nom: 'Superviseur',
-    zone: 'ADMIN',
-    role: 'superviseur',
-    pwdHash: 'a43cb71e0ab7f5d7e2849f38fbb4bb01e79fb27cc20688e8d45b692ebd6e3cdf'
-  },
-  'cebs@drro.ma': {
-    nom: 'Agent CEBS',
-    zone: 'CEBS',
-    role: 'editeur',
-    pwdHash: 'eac8a3fd67a18fc94babbc4d47928a98889ea3f1418283b54dd9342b7275a9b4'
-  },
-  'cej@drro.ma': {
-    nom: 'Agent CEJ',
-    zone: 'CEJ',
-    role: 'editeur',
-    pwdHash: 'a43cb71e0ab7f5d7e2849f38fbb4bb01e79fb27cc20688e8d45b692ebd6e3cdf'
-  },
-  'aebb@drro.ma': {
-    nom: 'Agent AEBB',
-    zone: 'AEBB',
-    role: 'editeur',
-    pwdHash: 'b81ec7c1b0f0b711c77b52cf3efacdae4c8e585ce5c80b4c056ea7fbc6dfd218'
-  }
-};
-
 const EXPORT_URL = id => `https://docs.google.com/spreadsheets/d/${id}/export?format=xlsx`;
-const SESSION_KEY = 'drro-session-v5';
+const SESSION_KEY = 'drro-session-v6';
 
 // ═══ STATE ═══
 let currentUser = null;
@@ -1022,6 +942,7 @@ let charts = {}, lastCounts = {}, sourceHeaders = [];
 let isLoading = false;
 let modalRowIndex = null, modalZone = null, pendingAction = null;
 let savedFilters = null, savedPage = 1;
+let usersList = [];
 
 // ═══ FONCTIONS UTILITAIRES ═══
 function esc(v) {
@@ -1051,57 +972,59 @@ function formatDateToFrench(date) {
   if (!date) return '—';
   const d = date instanceof Date ? date : new Date(date);
   if (isNaN(d.getTime())) return '—';
-  const jour = d.getDate().toString().padStart(2, '0');
-  const mois = (d.getMonth() + 1).toString().padStart(2, '0');
-  const annee = d.getFullYear();
-  const heures = d.getHours().toString().padStart(2, '0');
-  const minutes = d.getMinutes().toString().padStart(2, '0');
-  const secondes = d.getSeconds().toString().padStart(2, '0');
-  return `${jour}/${mois}/${annee} ${heures}:${minutes}:${secondes}`;
+  return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth()+1).toString().padStart(2, '0')}/${d.getFullYear()} ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}:${d.getSeconds().toString().padStart(2, '0')}`;
+}
+
+// ═══ API APPEL GESTION UTILISATEURS ═══
+async function callUsersAPI(action, data) {
+  try {
+    const res = await fetch(USERS_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ token: SECRET_TOKEN, action, ...data })
+    });
+    return await res.json();
+  } catch(e) {
+    return { success: false, error: e.message };
+  }
 }
 
 // ═══ LOGIN ═══
 async function doLogin() {
   const err = document.getElementById('loginErr');
   const btn = document.getElementById('loginBtn');
-  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
-  const pwd = document.getElementById('loginPwd').value.trim();
+  const username = document.getElementById('loginUsername').value.trim().toUpperCase();
+  const password = document.getElementById('loginPassword').value.trim();
   
-  if (!email || !pwd) {
-    if (err) { err.textContent = 'Veuillez saisir votre email et mot de passe.'; err.style.display = 'block'; }
+  if (!username || !password) {
+    if (err) { err.textContent = 'Veuillez saisir votre nom d\'utilisateur et mot de passe.'; err.style.display = 'block'; }
     return;
   }
   
   if (btn) btn.disabled = true;
   if (btn) btn.textContent = 'Connexion...';
   
-  const hash = await sha256Hex(pwd);
+  const hash = await sha256Hex(password);
+  const result = await callUsersAPI('login', { nomUtilisateur: username, passwordHash: hash });
   
-  const user = UTILISATEURS[email];
-  if (!user || user.pwdHash !== hash) {
-    if (err) { err.textContent = 'Email ou mot de passe incorrect.'; err.style.display = 'block'; }
-    if (btn) { btn.disabled = false; btn.textContent = 'SE CONNECTER →'; }
+  if (btn) { btn.disabled = false; btn.textContent = 'SE CONNECTER →'; }
+  
+  if (!result.success) {
+    if (err) { err.textContent = result.error; err.style.display = 'block'; }
     return;
   }
   
   if (err) err.style.display = 'none';
   
-  currentUser = {
-    email: email,
-    nom: user.nom,
-    zone: user.zone,
-    role: user.role
-  };
-  
-  currentZone = user.zone;
-  isAdmin = (user.role === 'administrateur');
-  isSuperviseur = (user.role === 'superviseur');
+  currentUser = result.user;
+  currentZone = currentUser.zone;
+  isAdmin = (currentUser.role === 'administrateur');
+  isSuperviseur = (currentUser.role === 'superviseur');
   
   if (isAdmin || isSuperviseur) {
     currentZone = 'ADMIN';
   }
   
-  // Sauvegarder la session
   try {
     localStorage.setItem(SESSION_KEY, JSON.stringify({
       user: currentUser,
@@ -1120,23 +1043,16 @@ function launchApp() {
   buildNav();
   buildDlSection();
   buildExportBtns();
+  if (isAdmin) refreshUsersList();
   reloadData();
 }
 
 function setupHeader() {
+  const userInfoDiv = document.getElementById('userInfoDisplay');
+  userInfoDiv.innerHTML = `<span>👤 ${currentUser.nomUtilisateur}</span><span class="user-role ${currentUser.role}">${currentUser.role.toUpperCase()}</span>`;
+  
   const badge = document.getElementById('hdrZoneBadge');
   const ovLabel = document.getElementById('ovZoneLabel');
-  
-  // Afficher les infos utilisateur
-  const hdrRight = document.querySelector('.hdr-right');
-  let userInfoDiv = document.getElementById('userInfoDisplay');
-  if (!userInfoDiv) {
-    userInfoDiv = document.createElement('div');
-    userInfoDiv.id = 'userInfoDisplay';
-    userInfoDiv.className = 'user-info';
-    hdrRight.insertBefore(userInfoDiv, hdrRight.firstChild);
-  }
-  userInfoDiv.innerHTML = `<span>👤 ${currentUser.nom}</span><span class="user-role ${currentUser.role}">${currentUser.role.toUpperCase()}</span>`;
   
   if (isAdmin || isSuperviseur) {
     if (badge) { badge.textContent = 'ADMIN'; badge.className = 'zone-badge-hdr admin-badge'; }
@@ -1152,9 +1068,39 @@ function setupHeader() {
   
   const adminCards = document.getElementById('adminZoneCards');
   if (adminCards) adminCards.style.display = (isAdmin || isSuperviseur) ? 'block' : 'none';
+}
+
+function buildNav() {
+  let tabs = `
+    <button class="tab on" onclick="showTab('overview')">Vue d'ensemble</button>
+    <button class="tab" onclick="showTab('tableau')">Données</button>
+    <button class="tab" onclick="showTab('telechargement')">Téléchargement</button>
+    <button class="tab" onclick="showTab('account')">Mon compte</button>
+  `;
+  if (isAdmin) {
+    tabs += `<button class="tab" onclick="showTab('users')">👥 Utilisateurs</button>`;
+  }
+  document.getElementById('mainNav').innerHTML = tabs;
+}
+
+function showTab(id) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  const panel = document.getElementById('panel-' + id);
+  if (panel) panel.classList.add('on');
   
-  const adminChart = document.getElementById('adminChartSection');
-  if (adminChart) adminChart.style.display = (isAdmin || isSuperviseur) ? 'block' : 'none';
+  // Activer le bon onglet
+  const tabs = document.querySelectorAll('.tab');
+  const tabMap = { overview: 0, tableau: 1, telechargement: 2, account: 3, users: 4 };
+  const idx = tabMap[id];
+  if (idx !== undefined && tabs[idx]) tabs[idx].classList.add('on');
+  
+  if (id === 'account') {
+    document.getElementById('accountUsername').value = currentUser.nomUtilisateur;
+  }
+  if (id === 'users' && isAdmin) {
+    refreshUsersList();
+  }
 }
 
 function doLogout() {
@@ -1169,32 +1115,167 @@ function doLogout() {
   charts = {};
   document.getElementById('appShell').style.display = 'none';
   document.getElementById('loginScreen').style.display = 'flex';
-  document.getElementById('loginEmail').value = '';
-  document.getElementById('loginPwd').value = '';
+  document.getElementById('loginUsername').value = '';
+  document.getElementById('loginPassword').value = '';
   showTab('overview');
 }
 
-function buildNav() {
-  const nav = document.getElementById('mainNav');
-  if (nav) {
-    nav.innerHTML = `
-      <button class="tab on" onclick="showTab('overview')">Vue d'ensemble</button>
-      <button class="tab" onclick="showTab('tableau')">Données</button>
-      <button class="tab" onclick="showTab('telechargement')">Téléchargement</button>`;
+// ═══ GESTION DES UTILISATEURS (ADMIN) ═══
+async function refreshUsersList() {
+  const result = await callUsersAPI('lister', {});
+  if (result.success) {
+    usersList = result.users;
+    displayUsersList();
+  } else {
+    toast('Erreur chargement utilisateurs', 'err');
   }
 }
 
-function showTab(id) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
-  const panel = document.getElementById('panel-' + id);
-  if (panel) panel.classList.add('on');
-  const tabs = document.querySelectorAll('.tab');
-  const idx = { 'overview': 0, 'tableau': 1, 'telechargement': 2 }[id];
-  if (idx != null && tabs[idx]) tabs[idx].classList.add('on');
+function displayUsersList() {
+  const container = document.getElementById('usersListContainer');
+  if (!container) return;
+  
+  if (usersList.length === 0) {
+    container.innerHTML = '<p>Aucun utilisateur trouvé.</p>';
+    return;
+  }
+  
+  let html = `<table class="users-table">
+    <thead>
+      <tr><th>Nom d'utilisateur</th><th>Nom complet</th><th>Zone</th><th>Rôle</th><th>Date création</th><th>Actions</th></tr>
+    </thead>
+    <tbody>`;
+  
+  for (const user of usersList) {
+    html += `<tr>
+      <td>${esc(user.nomUtilisateur)}</td>
+      <td>${esc(user.nomComplet)}</td>
+      <td>${esc(user.zone)}</td>
+      <td>${esc(user.role)}</td>
+      <td>${esc(user.dateCreation || '—')}</td>
+      <td>
+        <button class="btn-icon" onclick="openEditUserModal('${esc(user.nomUtilisateur)}')" title="Modifier">✏️</button>
+        <button class="btn-icon" onclick="deleteUser('${esc(user.nomUtilisateur)}')" title="Supprimer">🗑️</button>
+      </td>
+    </tr>`;
+  }
+  html += `</tbody></table>`;
+  container.innerHTML = html;
 }
 
-// ═══ CHARGEMENT DES DONNÉES ═══
+function openAddUserModal() {
+  document.getElementById('userModalTitle').textContent = 'Ajouter un utilisateur';
+  document.getElementById('userNomUtilisateur').value = '';
+  document.getElementById('userNomComplet').value = '';
+  document.getElementById('userZone').value = 'CEBS';
+  document.getElementById('userRole').value = 'editeur';
+  document.getElementById('userPassword').value = '';
+  document.getElementById('passwordField').style.display = 'block';
+  document.getElementById('userModalBtn').onclick = () => saveUser('add');
+  document.getElementById('userModal').style.display = 'flex';
+}
+
+function openEditUserModal(username) {
+  const user = usersList.find(u => u.nomUtilisateur === username);
+  if (!user) return;
+  
+  document.getElementById('userModalTitle').textContent = `Modifier ${username}`;
+  document.getElementById('userNomUtilisateur').value = user.nomUtilisateur;
+  document.getElementById('userNomUtilisateur').readOnly = true;
+  document.getElementById('userNomComplet').value = user.nomComplet;
+  document.getElementById('userZone').value = user.zone;
+  document.getElementById('userRole').value = user.role;
+  document.getElementById('passwordField').style.display = 'none';
+  document.getElementById('userModalBtn').onclick = () => saveUser('edit');
+  document.getElementById('userModal').style.display = 'flex';
+}
+
+function closeUserModal() {
+  document.getElementById('userModal').style.display = 'none';
+  document.getElementById('userNomUtilisateur').readOnly = false;
+}
+
+async function saveUser(action) {
+  const nomUtilisateur = document.getElementById('userNomUtilisateur').value.trim().toUpperCase();
+  const nomComplet = document.getElementById('userNomComplet').value.trim().toUpperCase();
+  const zone = document.getElementById('userZone').value;
+  const role = document.getElementById('userRole').value;
+  const password = document.getElementById('userPassword').value;
+  
+  if (!nomUtilisateur || !nomComplet) {
+    toast('Veuillez remplir tous les champs', 'err');
+    return;
+  }
+  
+  if (action === 'add' && !password) {
+    toast('Veuillez saisir un mot de passe', 'err');
+    return;
+  }
+  
+  let result;
+  if (action === 'add') {
+    const hash = await sha256Hex(password);
+    result = await callUsersAPI('ajouter', { nomUtilisateur, nomComplet, zone, role, passwordHash: hash });
+  } else {
+    result = await callUsersAPI('modifier', { nomUtilisateur, nomComplet, zone, role });
+  }
+  
+  if (result.success) {
+    toast(result.message);
+    closeUserModal();
+    refreshUsersList();
+  } else {
+    toast(result.error, 'err');
+  }
+}
+
+async function deleteUser(username) {
+  if (!confirm(`Supprimer définitivement ${username} ?`)) return;
+  const result = await callUsersAPI('supprimer', { nomUtilisateur: username });
+  if (result.success) {
+    toast(result.message);
+    refreshUsersList();
+  } else {
+    toast(result.error, 'err');
+  }
+}
+
+// ═══ CHANGER MOT DE PASSE ═══
+async function changePassword() {
+  const currentPwd = document.getElementById('currentPassword').value;
+  const newPwd = document.getElementById('newPassword').value;
+  const confirmPwd = document.getElementById('confirmPassword').value;
+  
+  if (!currentPwd || !newPwd) {
+    toast('Veuillez remplir tous les champs', 'err');
+    return;
+  }
+  
+  if (newPwd !== confirmPwd) {
+    toast('Les nouveaux mots de passe ne correspondent pas', 'err');
+    return;
+  }
+  
+  const ancienHash = await sha256Hex(currentPwd);
+  const nouveauHash = await sha256Hex(newPwd);
+  
+  const result = await callUsersAPI('changerMotDePasse', {
+    nomUtilisateur: currentUser.nomUtilisateur,
+    ancienHash: ancienHash,
+    nouveauHash: nouveauHash
+  });
+  
+  if (result.success) {
+    toast(result.message);
+    document.getElementById('currentPassword').value = '';
+    document.getElementById('newPassword').value = '';
+    document.getElementById('confirmPassword').value = '';
+  } else {
+    toast(result.error, 'err');
+  }
+}
+
+// ═══ CHARGEMENT DES DONNÉES (inventaire) ═══
 async function reloadData() {
   if (!currentUser) return;
   isLoading = true;
@@ -1332,29 +1413,23 @@ function buildAdminZoneCards() {
     const cfg = ZONE_CONFIG[zone];
     const d = zoneData.filter(r => r.Source === zone);
     const n = d.length;
-    return `<div class="kpi-zone-card" style="--zcolor:${cfg.zcolor}">
+    return `<div class="kpi-zone-card" style="--zcolor:${cfg.zcolor};background:var(--s1);border:1.5px solid var(--bd);border-radius:12px;padding:20px">
       <div class="kpi-zone-title"><span class="${cfg.badgeClass}">${zone}</span></div>
-      <div class="kpi-zone-main">${fmt(n)}</div>
-      <div class="kpi-zone-row">Conformes: ${fmt(d.filter(isOk).length)} (${pct(d.filter(isOk).length, n)})</div>
-      <div class="kpi-zone-row">À vérifier: ${fmt(d.filter(isAv).length)} (${pct(d.filter(isAv).length, n)})</div>
-      <div class="kpi-zone-row">Discordances: ${fmt(d.filter(isDisc).length)} (${pct(d.filter(isDisc).length, n)})</div>
+      <div class="kpi-zone-main" style="font-size:32px;font-weight:700">${fmt(n)}</div>
+      <div>Conformes: ${fmt(d.filter(isOk).length)} (${pct(d.filter(isOk).length, n)})</div>
+      <div>À vérifier: ${fmt(d.filter(isAv).length)} (${pct(d.filter(isAv).length, n)})</div>
+      <div>Discordances: ${fmt(d.filter(isDisc).length)} (${pct(d.filter(isDisc).length, n)})</div>
     </div>`;
   }).join('');
 }
 
-// ═══ CHARTES ═══
 function buildCharts() {
   if (typeof Chart === 'undefined' || !zoneData.length) return;
   const d = zoneData;
-  const s = cssVar('--s1') || '#FFF';
-  const g = cssVar('--bd') || '#E2E8F0';
+  const s = getComputedStyle(document.documentElement).getPropertyValue('--s1').trim() || '#FFF';
   
-  // Nettoyer les chartes existantes
-  ['cObs', 'cInv', 'cGare', 'cGareObs'].forEach(id => {
-    if (charts[id]) { try { charts[id].destroy(); } catch(e) {} }
-  });
+  if (charts['cObs']) { try { charts['cObs'].destroy(); } catch(e) {} }
   
-  // Graphique observations
   const cObs = document.getElementById('cObs');
   if (cObs) {
     charts['cObs'] = new Chart(cObs, {
@@ -1368,10 +1443,6 @@ function buildCharts() {
   }
 }
 
-function cssVar(n) {
-  return getComputedStyle(document.documentElement).getPropertyValue(n).trim();
-}
-
 // ═══ FILTRES ET TABLEAU ═══
 function displayCols() {
   return (isAdmin || isSuperviseur ? ['Source'] : []).concat(sourceHeaders.filter(h => h && h !== 'Source'));
@@ -1379,9 +1450,9 @@ function displayCols() {
 
 function obsBadge(v) {
   const u = (v || '').toString().toUpperCase().trim();
-  if (u === 'CONFORME') return `<span class="obs-ok" style="background:color-mix(in srgb, var(--acc3) 16%, var(--s1));color:var(--acc3);border:1px solid var(--acc3);padding:2px 8px;border-radius:5px;font-size:10px">CONFORME</span>`;
-  if (u === 'A VERIFIER') return `<span class="obs-av" style="background:color-mix(in srgb, var(--amber) 16%, var(--s1));color:var(--amber);border:1px solid var(--amber);padding:2px 8px;border-radius:5px;font-size:10px">A VÉRIFIER</span>`;
-  if (u.startsWith('DISCORDANCE')) return `<span class="obs-disc" style="background:color-mix(in srgb, var(--red) 16%, var(--s1));color:var(--red);border:1px solid var(--red);padding:2px 8px;border-radius:5px;font-size:10px">${esc(v)}</span>`;
+  if (u === 'CONFORME') return `<span style="background:color-mix(in srgb, var(--acc3) 16%, var(--s1));color:var(--acc3);border:1px solid var(--acc3);padding:2px 8px;border-radius:5px;font-size:10px">CONFORME</span>`;
+  if (u === 'A VERIFIER') return `<span style="background:color-mix(in srgb, var(--amber) 16%, var(--s1));color:var(--amber);border:1px solid var(--amber);padding:2px 8px;border-radius:5px;font-size:10px">A VÉRIFIER</span>`;
+  if (u.startsWith('DISCORDANCE')) return `<span style="background:color-mix(in srgb, var(--red) 16%, var(--s1));color:var(--red);border:1px solid var(--red);padding:2px 8px;border-radius:5px;font-size:10px">${esc(v)}</span>`;
   return `<span style="background:var(--s3);color:var(--tx3);border:1px solid var(--bd);padding:2px 8px;border-radius:5px;font-size:10px">—</span>`;
 }
 
@@ -1461,8 +1532,8 @@ function renderTable() {
     : slice.map(r => {
         const gi = zoneData.indexOf(r);
         const cells = cols.map(c => renderCell(r, c)).join('');
-        if (!(isAdmin || isSuperviseur)) return `<tr>${cells}</tr>`;
-        return `<tr><td class="td-act"><button class="btn-tbl-edit" onclick="openEditModal(${gi})" title="Modifier">✏</button></td>${cells}</tr>`;
+        if (!(isAdmin || isSuperviseur)) return `<tr>${cells}</td>`;
+        return `<tr><td class="td-act"><button class="btn-tbl-edit" onclick="openEditModal(${gi})" style="background:color-mix(in srgb, var(--blue) 12%, var(--s1));border:1px solid var(--blue);border-radius:5px;padding:4px 10px;cursor:pointer">✏</button></td>${cells}</tr>`;
       }).join('');
   
   document.getElementById('pagInfo').textContent = PG >= n ? `${fmt(n)} résultats` : `Page ${page}/${pages} — ${fmt(n)} résultats`;
@@ -1495,7 +1566,7 @@ function changePageSize() {
   renderTable();
 }
 
-// ═══ MODALE D'ÉDITION ═══
+// ═══ MODIFICATION INVENTAIRE ═══
 function openEditModal(gi) {
   const row = zoneData[gi];
   if (!row) return;
@@ -1535,7 +1606,7 @@ function openEditModal(gi) {
       
       if (isProtected || isDateModif) {
         return `<div class="modal-field"><label>${esc(h)} 🔒</label>
-          <input type="text" value="${esc(val)}" class="protected-field" readonly disabled></div>`;
+          <input type="text" value="${esc(val)}" style="background:var(--s3);border:1px solid var(--bd);border-radius:8px;padding:8px;width:100%;color:var(--tx3);font-style:italic" readonly disabled></div>`;
       }
       
       return `<div class="modal-field"><label>${esc(h)}</label>
@@ -1583,11 +1654,11 @@ function submitModal() {
     return;
   }
   
-  let msg = `<strong>${zone}</strong><div class="confirm-details">`;
+  let msg = `<strong>${zone}</strong><div style="background:var(--s3);border-radius:8px;padding:14px;margin-top:10px;text-align:left">`;
   const idImmo = row.ID_Imobilisation || row.ID_Immobilisation || '';
-  if (idImmo) msg += `<p><span class="label">🏷️ ID Immobilisation:</span> ${esc(idImmo)}</p>`;
-  if (row.Lib_Article) msg += `<p><span class="label">📦 Libellé:</span> ${esc(row.Lib_Article)}</p>`;
-  msg += `<p><span class="label">✏️ Champs modifiés:</span> ${changes.join(', ')}</p></div>`;
+  if (idImmo) msg += `<p><span style="font-weight:700">🏷️ ID Immobilisation:</span> ${esc(idImmo)}</p>`;
+  if (row.Lib_Article) msg += `<p><span style="font-weight:700">📦 Libellé:</span> ${esc(row.Lib_Article)}</p>`;
+  msg += `<p><span style="font-weight:700">✏️ Champs modifiés:</span> ${changes.join(', ')}</p></div>`;
   
   pendingAction = { type: 'update', rowIndex: sheetRow, data, zone, globalIdx: modalRowIndex };
   closeModal();
@@ -1601,10 +1672,10 @@ function askDeleteFromModal() {
   const idxInZone = zoneRows.indexOf(row);
   const sheetRow = idxInZone + 2;
   
-  let msg = `<strong>${zone}</strong><div class="confirm-details">`;
+  let msg = `<strong>${zone}</strong><div style="background:var(--s3);border-radius:8px;padding:14px;margin-top:10px;text-align:left">`;
   const idImmo = row.ID_Imobilisation || row.ID_Immobilisation || '';
-  if (idImmo) msg += `<p><span class="label">🏷️ ID Immobilisation:</span> ${esc(idImmo)}</p>`;
-  if (row.Lib_Article) msg += `<p><span class="label">📦 Libellé:</span> ${esc(row.Lib_Article)}</p>`;
+  if (idImmo) msg += `<p><span style="font-weight:700">🏷️ ID Immobilisation:</span> ${esc(idImmo)}</p>`;
+  if (row.Lib_Article) msg += `<p><span style="font-weight:700">📦 Libellé:</span> ${esc(row.Lib_Article)}</p>`;
   msg += `<p style="color:var(--red);margin-top:8px;">⚠️ Suppression définitive !</p></div>`;
   
   pendingAction = { type: 'delete', rowIndex: sheetRow, data: {}, zone, globalIdx: modalRowIndex };
@@ -1644,7 +1715,7 @@ async function executeConfirmed() {
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({
         token: SECRET_TOKEN,
-        email: currentUser.email,
+        email: currentUser.nomUtilisateur,
         zone: action.zone,
         action: action.type,
         rowIndex: action.rowIndex,
@@ -1658,7 +1729,6 @@ async function executeConfirmed() {
       toast('✓ ' + result.message);
       if (action.type === 'update') {
         patchZoneDataRow(action.zone, action.rowIndex, action.data);
-        // Mettre à jour la date de modification si retournée
         if (result.dateModification) {
           const row = zoneData[action.globalIdx];
           for (const key in row) {
@@ -1735,17 +1805,17 @@ function removeZoneDataRow(zone, sheetRowIndex) {
   return true;
 }
 
-// ═══ DOWNLOAD ═══
+// ═══ TÉLÉCHARGEMENT ═══
 function buildDlSection() {
   const zones = (isAdmin || isSuperviseur) ? ['CEBS', 'CEJ', 'AEBB'] : [currentZone];
   const dlGrid = document.getElementById('dlGrid');
   if (dlGrid) {
     dlGrid.innerHTML = zones.map(zone => {
       const cfg = ZONE_CONFIG[zone];
-      return `<div class="dl-card">
-        <div class="dl-icon">${cfg.icon}</div>
-        <div class="dl-info"><div class="dl-name">INVENTAIRE-${zone}.xlsx</div></div>
-        <div class="dl-btns"><a class="btn btn-out" href="${cfg.dlHref}" target="_blank">↓ Télécharger</a></div>
+      return `<div class="dl-card" style="background:var(--s1);border:1.5px solid var(--bd);border-radius:12px;padding:16px;display:flex;align-items:center;gap:14px">
+        <div style="font-size:22px">${cfg.icon}</div>
+        <div style="flex:1"><div style="font-weight:700">INVENTAIRE-${zone}.xlsx</div></div>
+        <a class="btn btn-out" href="${cfg.dlHref}" target="_blank">↓ Télécharger</a>
       </div>`;
     }).join('');
   }
@@ -1789,7 +1859,6 @@ function initTheme() {
 initTheme();
 document.getElementById('loginFooterDate').textContent = new Date().toLocaleDateString('fr');
 
-// Vérifier la session au chargement
 window.addEventListener('load', () => {
   setTimeout(() => {
     document.getElementById('loadScreen').style.display = 'none';
