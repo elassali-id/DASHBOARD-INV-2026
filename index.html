@@ -637,15 +637,57 @@ function switchLoginMode(mode){
 }
 
 // ═══ LOGIN PAR COMPTE UTILISATEUR ═══
+// ═══ LOGIN PAR COMPTE UTILISATEUR (CORRIGÉ) ═══
 async function doLogin(){
-  // ... début identique ...
+  const err = document.getElementById('loginErr');
+  const btn = document.getElementById('loginBtn');
+  const username = document.getElementById('loginUsername').value.trim().toUpperCase();
+  const password = document.getElementById('loginPassword').value.trim();
+
+  if(!username || !password){ 
+    err.textContent = 'Veuillez saisir votre identifiant et mot de passe.'; 
+    err.style.display = 'block'; 
+    return; 
+  }
+
+  if(!USERS_API_URL || USERS_API_URL.startsWith('COLLER')){
+    err.textContent = "API Utilisateurs non configurée. Utilisez le mode connexion par zone."; 
+    err.style.display = 'block'; 
+    return;
+  }
+
+  btn.disabled = true; 
+  btn.textContent = 'Connexion...';
   
-  if(result.success){
-    currentUser=result.user;
+  try {
+    const hash = await sha256Hex(password);
+    const response = await fetch(USERS_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        token: API_TOKEN,
+        action: 'login',
+        nomUtilisateur: username,
+        passwordHash: hash
+      })
+    });
+    
+    const result = await response.json();
+    
+    if(!result.success){ 
+      err.textContent = result.error; 
+      err.style.display = 'block'; 
+      btn.disabled = false; 
+      btn.textContent = 'Se connecter →';
+      return; 
+    }
+    
+    err.style.display = 'none';
+    currentUser = result.user;
     
     // Déterminer la zone selon le rôle
     if(currentUser.role === 'administrateur_drro'){
-      currentZone = 'DRRO';  // Vue consolidée (3 zones)
+      currentZone = 'DRRO';
       isAdmin = true;
       canEdit = true;
     } else if(currentUser.role.startsWith('editeur_')){
@@ -666,9 +708,15 @@ async function doLogin(){
     
     saveSession();
     launchApp();
+    
+  } catch(e){
+    btn.disabled = false;
+    btn.textContent = 'Se connecter →';
+    err.textContent = 'Erreur réseau. Vérifiez votre connexion.'; 
+    err.style.display = 'block';
+    console.error('Erreur doLogin:', e);
   }
 }
-
 // ═══ LOGIN LEGACY PAR ZONE ═══
 function selectZone(z){
   selectedLoginZone=z;
