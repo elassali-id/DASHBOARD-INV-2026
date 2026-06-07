@@ -914,38 +914,67 @@ async function refreshUsersList(){
 let userModalAction='add';
 
 function openAddUserModal(){
-  userModalAction='add';
-  document.getElementById('userModalTitle').textContent='➕ Nouvel utilisateur';
-  document.getElementById('uNom').value=''; 
-  document.getElementById('uNom').readOnly=false;
-  document.getElementById('uNomComplet').value='';
-  document.getElementById('uZone').value='CEBS';
+  userModalAction = 'add';
+  document.getElementById('userModalTitle').textContent = '➕ Nouvel utilisateur';
+  document.getElementById('uNom').value = ''; 
+  document.getElementById('uNom').readOnly = false;
+  document.getElementById('uNomComplet').value = '';
   
-  // Options des rôles simplifiés
-  document.getElementById('uRole').innerHTML = `
-    <option value="administrateur">Administrateur (toutes zones + gestion utilisateurs)</option>
+  // Zone
+  const zoneSelect = document.getElementById('uZone');
+  zoneSelect.innerHTML = `
+    <option value="CEBS">CEBS</option>
+    <option value="CEJ">CEJ</option>
+    <option value="AEBB">AEBB</option>
+    <option value="DRRO">DRRO</option>
+  `;
+  zoneSelect.value = 'CEBS';
+  
+  // Rôle
+  const roleSelect = document.getElementById('uRole');
+  roleSelect.innerHTML = `
+    <option value="administrateur">Administrateur (toutes zones + gestion)</option>
     <option value="editeur">Éditeur (peut modifier sa zone)</option>
     <option value="lecteur">Lecteur (lecture seule)</option>
   `;
+  roleSelect.value = 'editeur';
   
-  document.getElementById('uPwd').value='';
-  document.getElementById('uPwdField').style.display='block';
-  document.getElementById('userModalOverlay').style.display='flex';
-  setTimeout(()=>document.getElementById('uNom').focus(),80);
+  document.getElementById('uPwd').value = '';
+  document.getElementById('uPwdField').style.display = 'block';
+  document.getElementById('userModalOverlay').style.display = 'flex';
+  setTimeout(() => document.getElementById('uNom').focus(), 80);
 }
 
 function openEditUserModal(username){
-  const u=usersList.find(x=>x.nomUtilisateur===username);
-  if(!u)return;
-  userModalAction='edit';
-  document.getElementById('userModalTitle').textContent=`✏ Modifier — ${username}`;
-  document.getElementById('uNom').value=u.nomUtilisateur; 
-  document.getElementById('uNom').readOnly=true;
-  document.getElementById('uNomComplet').value=u.nomComplet;
-  document.getElementById('uZone').value=u.zoneAcces;
-  document.getElementById('uRole').value=u.role;
-  document.getElementById('uPwdField').style.display='none';
-  document.getElementById('userModalOverlay').style.display='flex';
+  const u = usersList.find(x => x.nomUtilisateur === username);
+  if(!u) return;
+  userModalAction = 'edit';
+  document.getElementById('userModalTitle').textContent = `✏ Modifier — ${username}`;
+  document.getElementById('uNom').value = u.nomUtilisateur; 
+  document.getElementById('uNom').readOnly = true;
+  document.getElementById('uNomComplet').value = u.nomComplet;
+  
+  // Zone : s'assurer que la valeur correspond
+  const zoneSelect = document.getElementById('uZone');
+  zoneSelect.innerHTML = `
+    <option value="CEBS">CEBS</option>
+    <option value="CEJ">CEJ</option>
+    <option value="AEBB">AEBB</option>
+    <option value="DRRO">DRRO</option>
+  `;
+  zoneSelect.value = u.zoneAcces || 'CEBS';
+  
+  // Rôle : les bonnes options
+  const roleSelect = document.getElementById('uRole');
+  roleSelect.innerHTML = `
+    <option value="administrateur">Administrateur (toutes zones + gestion)</option>
+    <option value="editeur">Éditeur (peut modifier sa zone)</option>
+    <option value="lecteur">Lecteur (lecture seule)</option>
+  `;
+  roleSelect.value = u.role;
+  
+  document.getElementById('uPwdField').style.display = 'none';
+  document.getElementById('userModalOverlay').style.display = 'flex';
 }
 
 function closeUserModal(){ 
