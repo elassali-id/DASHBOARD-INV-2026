@@ -869,19 +869,28 @@ async function callUsersAPI(action, data){
 
 async function refreshUsersList(){
   if(!USERS_API_URL||USERS_API_URL.startsWith('COLLER')){
-    document.getElementById('usersTbody').innerHTML='</table><td colspan="6" style="text-align:center;padding:2rem;color:var(--amber)">⚠ API non configurée. Utilisez le mode connexion par zone.您</td>';
+    document.getElementById('usersTbody').innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--amber)">⚠ API non configurée. Utilisez le mode connexion par zone.您</td>';
     return;
   }
   
-  // Seul l'administrateur peut gérer les utilisateurs
-  const isAdminUser = currentUser && currentUser.role === 'administrateur';
+  // Afficher les infos pour debug
+  console.log('=== DEBUG REFRESH USERS ===');
+  console.log('currentUser:', currentUser);
+  console.log('currentUser.role:', currentUser ? currentUser.role : 'undefined');
+  
+  // Autoriser l'administrateur
+  const isAdminUser = currentUser && (currentUser.role === 'administrateur' || currentUser.nomUtilisateur === 'ELASSALI.IDRISS');
+  
+  console.log('isAdminUser:', isAdminUser);
   
   if(!isAdminUser){
-    document.getElementById('usersTbody').innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--amber)">⚠ Accès non autorisé. Réservé à l\'administrateur.您</td>';
+    document.getElementById('usersTbody').innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--amber)">⚠ Accès non autorisé. Réservé à l\'administrateur. (Votre rôle: ' + (currentUser ? currentUser.role : 'aucun') + ')您</tr>';
     return;
   }
   
   const result=await callUsersAPI('lister', { requester: currentUser.nomUtilisateur });
+  console.log('Résultat API lister:', result);
+  
   if(!result.success){ 
     toast(result.error,'err');
     return; 
@@ -901,7 +910,9 @@ async function refreshUsersList(){
       </td>
     </tr>`).join('');
 }
+
 let userModalAction='add';
+
 function openAddUserModal(){
   userModalAction='add';
   document.getElementById('userModalTitle').textContent='➕ Nouvel utilisateur';
@@ -922,46 +933,72 @@ function openAddUserModal(){
   document.getElementById('userModalOverlay').style.display='flex';
   setTimeout(()=>document.getElementById('uNom').focus(),80);
 }
+
 function openEditUserModal(username){
   const u=usersList.find(x=>x.nomUtilisateur===username);
   if(!u)return;
   userModalAction='edit';
   document.getElementById('userModalTitle').textContent=`✏ Modifier — ${username}`;
-  document.getElementById('uNom').value=u.nomUtilisateur; document.getElementById('uNom').readOnly=true;
+  document.getElementById('uNom').value=u.nomUtilisateur; 
+  document.getElementById('uNom').readOnly=true;
   document.getElementById('uNomComplet').value=u.nomComplet;
-  document.getElementById('uZone').value=u.zone;
+  document.getElementById('uZone').value=u.zoneAcces;
   document.getElementById('uRole').value=u.role;
   document.getElementById('uPwdField').style.display='none';
   document.getElementById('userModalOverlay').style.display='flex';
 }
-function closeUserModal(){ document.getElementById('userModalOverlay').style.display='none'; }
+
+function closeUserModal(){ 
+  document.getElementById('userModalOverlay').style.display='none'; 
+}
 
 async function saveUser(){
-  if(!USERS_API_URL||USERS_API_URL.startsWith('COLLER')){ toast('API Utilisateurs non configurée','err'); return; }
+  if(!USERS_API_URL||USERS_API_URL.startsWith('COLLER')){ 
+    toast('API Utilisateurs non configurée','err'); 
+    return; 
+  }
   const nom=document.getElementById('uNom').value.trim().toUpperCase();
   const nomComplet=document.getElementById('uNomComplet').value.trim().toUpperCase();
   const zone=document.getElementById('uZone').value;
   const role=document.getElementById('uRole').value;
   const pwd=document.getElementById('uPwd').value;
-  if(!nom||!nomComplet){ toast('Remplissez tous les champs','err'); return; }
+  if(!nom||!nomComplet){ 
+    toast('Remplissez tous les champs','err'); 
+    return; 
+  }
   let result;
   if(userModalAction==='add'){
-    if(!pwd){ toast('Mot de passe requis','err'); return; }
+    if(!pwd){ 
+      toast('Mot de passe requis','err'); 
+      return; 
+    }
     const hash=await sha256Hex(pwd);
-    result=await callUsersAPI('ajouter',{nomUtilisateur:nom,nomComplet,zone,role,passwordHash:hash});
+    result=await callUsersAPI('ajouter',{nomUtilisateur:nom,nomComplet,zoneAcces:zone,role,passwordHash:hash});
   }else{
-    result=await callUsersAPI('modifier',{nomUtilisateur:nom,nomComplet,zone,role});
+    result=await callUsersAPI('modifier',{nomUtilisateur:nom,nomComplet,zoneAcces:zone,role});
   }
-  if(result.success){ toast(result.message); closeUserModal(); refreshUsersList(); }
-  else toast(result.error,'err');
+  if(result.success){ 
+    toast(result.message); 
+    closeUserModal(); 
+    refreshUsersList(); 
+  } else {
+    toast(result.error,'err');
+  }
 }
 
 async function deleteUser(username){
   if(!confirm(`Supprimer définitivement ${username} ?`))return;
-  if(!USERS_API_URL||USERS_API_URL.startsWith('COLLER')){ toast('API non configurée','err'); return; }
+  if(!USERS_API_URL||USERS_API_URL.startsWith('COLLER')){ 
+    toast('API non configurée','err'); 
+    return; 
+  }
   const result=await callUsersAPI('supprimer',{nomUtilisateur:username});
-  if(result.success){ toast(result.message); refreshUsersList(); }
-  else toast(result.error,'err');
+  if(result.success){ 
+    toast(result.message); 
+    refreshUsersList(); 
+  } else {
+    toast(result.error,'err');
+  }
 }
 
 // ═══ CHANGER MOT DE PASSE ═══
