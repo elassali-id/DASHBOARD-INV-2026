@@ -129,8 +129,8 @@ main{padding:0!important;width:100%;max-width:100%!important}
 .tbl-hdr{background:var(--s1);border-bottom:1px solid var(--bd);padding:10px 24px;display:flex;align-items:center;justify-content:space-between;gap:15px;width:100%;box-shadow:var(--shadow-sm);flex-shrink:0;flex-wrap:wrap}
 .tbl-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex:1}
 .tbl-body-wrap{flex:1;min-height:0;overflow:auto;background:var(--s1);width:100%}
-.tbl-wrap{width:100%;min-width:800px;overflow-x:auto}
-table{width:100%;border-collapse:collapse;table-layout:fixed}
+.tbl-wrap{width:100%;overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:800px}
 thead th{background:var(--thead);padding:12px 15px;text-align:left;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;border-bottom:1.5px solid var(--bd);white-space:nowrap;cursor:pointer;user-select:none;position:sticky;top:0;z-index:150;box-shadow:0 2px 0 var(--bd)}
 thead th.th-act{cursor:default;width:50px;text-align:center}
 thead th:not(.th-act):hover{background:var(--s3)}
@@ -179,17 +179,16 @@ input[type=text]{width:200px}
 .modal-btns{display:flex;gap:8px;justify-content:space-between;margin-top:20px;flex-wrap:wrap;border-top:1px solid var(--bd);padding-top:16px}
 .modal-btns-right{display:flex;gap:8px;flex-wrap:wrap}
 .confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:6000;display:flex;align-items:center;justify-content:center;padding:20px}
-.confirm-box{background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r3);padding:28px 32px;width:100%;max-width:480px;box-shadow:var(--shadow-lg);position:relative}
+.confirm-box{background:var(--s1);border:1.5px solid var(--bd);border-radius:var(--r3);padding:28px 32px;width:100%;max-width:520px;box-shadow:var(--shadow-lg);position:relative}
 .confirm-box::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--grad)}
 .confirm-box.danger::before{background:var(--red)}
 .confirm-box.danger{border-color:var(--red)}
 .confirm-icon{font-size:48px;text-align:center;margin-bottom:12px}
 .confirm-title{font-family:var(--mono);font-size:16px;font-weight:700;color:var(--tx);margin-bottom:12px;text-align:center}
-.confirm-msg{font-size:13px;color:var(--tx2);margin-bottom:20px;line-height:1.6;text-align:center;padding:16px;background:var(--s2);border-radius:var(--r2);white-space:pre-line;max-height:300px;overflow-y:auto}
-.confirm-msg strong{color:var(--tx);font-family:var(--mono);display:block;margin-bottom:8px}
-.confirm-details{background:var(--s3);border-radius:var(--r);padding:12px;margin-top:8px;font-size:12px;text-align:left}
-.confirm-details p{margin:4px 0}
-.confirm-details .label{font-weight:700;color:var(--tx);margin-right:8px}
+.confirm-msg{font-size:13px;color:var(--tx2);margin-bottom:20px;line-height:1.5;text-align:center;padding:16px;background:var(--s2);border-radius:var(--r2);white-space:normal;word-wrap:break-word;overflow-wrap:break-word;max-height:350px;overflow-y:auto}
+.confirm-details{background:var(--s3);border-radius:var(--r);padding:14px;margin-top:10px;text-align:left;word-break:break-word}
+.confirm-details p{margin:6px 0;line-height:1.4}
+.confirm-details .label{font-weight:700;color:var(--tx);margin-right:10px;min-width:120px;display:inline-block}
 .confirm-btns{display:flex;gap:12px;justify-content:center;margin-top:16px}
 .confirm-btns .btn{min-width:120px;justify-content:center;padding:10px 20px}
 .toast{position:fixed;bottom:24px;right:24px;background:var(--acc3);color:#04342c;padding:10px 18px;border-radius:var(--r);font-family:var(--mono);font-size:12px;font-weight:600;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none;z-index:9999;box-shadow:var(--shadow);max-width:360px}
@@ -223,6 +222,8 @@ input[type=text]{width:200px}
   .modal-grid{grid-template-columns:1fr}
   .modal-box{padding:20px 16px}
   .login-box{padding:24px 18px;max-width:95vw}
+  .confirm-box{padding:20px 16px;max-width:95vw}
+  .confirm-details .label{min-width:100px}
 }
 </style>
 </head>
@@ -977,13 +978,21 @@ function submitModal(){
   const changes=headers.filter(h=>(data[h]!=null?data[h]:'').toString()!==(row[h]!=null?row[h]:'').toString());
   if(changes.length===0){toast('Aucune modification détectée','info');return;}
   
-  // Construction du message de confirmation avec détails
-  let msg = `<strong>${zone} — Ligne ${idxInZone+1}</strong>`;
+  // Construction du message de confirmation avec ID Immobilisation
+  let msg = `<strong>${zone}</strong>`;
   msg += `<div class="confirm-details">`;
-  if(row.ID_Imobilisation) msg += `<p><span class="label">ID Immobilisation:</span> ${esc(row.ID_Imobilisation)}</p>`;
-  if(row.Lib_Article) msg += `<p><span class="label">Libellé article:</span> ${esc(row.Lib_Article)}</p>`;
-  if(row.Cod_Article) msg += `<p><span class="label">Code article:</span> ${esc(row.Cod_Article)}</p>`;
-  msg += `<p style="margin-top:8px"><span class="label">Champs modifiés:</span> ${changes.join(', ')}</p>`;
+  
+  // Afficher l'ID Immobilisation en premier
+  const idImmo = row.ID_Imobilisation || row.ID_Immobilisation || row['ID Immobilisation'] || '';
+  if(idImmo){
+    msg += `<p><span class="label">🏷️ ID Immobilisation:</span> <strong style="color:var(--acc)">${esc(idImmo)}</strong></p>`;
+  } else {
+    msg += `<p><span class="label">🏷️ ID Immobilisation:</span> <em>non renseigné</em></p>`;
+  }
+  
+  if(row.Lib_Article) msg += `<p><span class="label">📦 Libellé article:</span> ${esc(row.Lib_Article)}</p>`;
+  if(row.Cod_Article) msg += `<p><span class="label">🔢 Code article:</span> ${esc(row.Cod_Article)}</p>`;
+  msg += `<p style="margin-top:8px;border-top:1px solid var(--bd);padding-top:8px"><span class="label">✏️ Champs modifiés:</span> ${changes.join(', ')}</p>`;
   msg += `</div>`;
   
   pendingAction={type:'update',rowIndex:sheetRow,data,zone,globalIdx:modalRowIndex};
@@ -998,13 +1007,20 @@ function askDeleteFromModal(){
   const idxInZone=zoneRows.indexOf(row);
   const sheetRow=idxInZone+2;
   
-  // Construction du message de confirmation de suppression avec détails
-  let msg = `<strong>${zone} — Ligne ${idxInZone+1}</strong>`;
+  // Construction du message de confirmation avec ID Immobilisation
+  let msg = `<strong>${zone}</strong>`;
   msg += `<div class="confirm-details">`;
-  if(row.ID_Imobilisation) msg += `<p><span class="label">ID Immobilisation:</span> ${esc(row.ID_Imobilisation)}</p>`;
-  if(row.Lib_Article) msg += `<p><span class="label">Libellé article:</span> ${esc(row.Lib_Article)}</p>`;
-  if(row.Cod_Article) msg += `<p><span class="label">Code article:</span> ${esc(row.Cod_Article)}</p>`;
-  msg += `<p><span class="label">Observation:</span> ${obsBadge(row.Observation)}</p>`;
+  
+  const idImmo = row.ID_Imobilisation || row.ID_Immobilisation || row['ID Immobilisation'] || '';
+  if(idImmo){
+    msg += `<p><span class="label">🏷️ ID Immobilisation:</span> <strong style="color:var(--red)">${esc(idImmo)}</strong></p>`;
+  } else {
+    msg += `<p><span class="label">🏷️ ID Immobilisation:</span> <em>non renseigné</em></p>`;
+  }
+  
+  if(row.Lib_Article) msg += `<p><span class="label">📦 Libellé article:</span> ${esc(row.Lib_Article)}</p>`;
+  if(row.Cod_Article) msg += `<p><span class="label">🔢 Code article:</span> ${esc(row.Cod_Article)}</p>`;
+  msg += `<p><span class="label">📋 Observation:</span> ${obsBadge(row.Observation)}</p>`;
   msg += `</div>`;
   msg += `<p style="color:var(--red);margin-top:8px;font-weight:700">⚠️ Cette action est irréversible !</p>`;
   
