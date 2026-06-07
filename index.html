@@ -1897,6 +1897,67 @@ const EXPORT_URL = id => `https://docs.google.com/spreadsheets/d/${id}/export?fo
 const SESSION_KEY = 'drro-session-v3';
 const SESSION_HOURS = 8;
 
+// ═══════════════════════════════════════════════════════
+//  FONCTIONS DE GESTION DES DATES - À AJOUTER
+// ═══════════════════════════════════════════════════════
+
+// Convertit une date du format français (DD/MM/YYYY HH:MM:SS) vers un objet Date
+function parseFrenchDate(dateStr) {
+  if (!dateStr || dateStr === '—') return null;
+  try {
+    const parts = dateStr.split(' ');
+    const dateParts = parts[0].split('/');
+    const timeParts = parts[1] ? parts[1].split(':') : [0, 0, 0];
+    return new Date(
+      parseInt(dateParts[2]),
+      parseInt(dateParts[1]) - 1,
+      parseInt(dateParts[0]),
+      parseInt(timeParts[0]),
+      parseInt(timeParts[1]),
+      parseInt(timeParts[2])
+    );
+  } catch(e) {
+    return null;
+  }
+}
+
+// Convertit une date du format ISO (YYYY-MM-DD) vers le format français
+function isoToFrenchDate(isoDate) {
+  if (!isoDate) return '';
+  try {
+    const d = new Date(isoDate);
+    if (isNaN(d.getTime())) return isoDate;
+    const jour = d.getDate().toString().padStart(2, '0');
+    const mois = (d.getMonth() + 1).toString().padStart(2, '0');
+    const annee = d.getFullYear();
+    return `${jour}/${mois}/${annee}`;
+  } catch(e) {
+    return isoDate;
+  }
+}
+
+// Vérifie si une chaîne est une date au format français avec heure
+function isFrenchDateTime(str) {
+  if (!str) return false;
+  const regex = /^(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2})$/;
+  return regex.test(str);
+}
+
+// Nettoie une valeur de date pour l'affichage dans le champ de formulaire
+function cleanDateForInput(value) {
+  if (!value || value === '—') return '';
+  const str = value.toString();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
+    return isoToFrenchDate(str);
+  }
+  if (isFrenchDateTime(str)) {
+    return str.split(' ')[0];
+  }
+  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(str)) {
+    return isoToFrenchDate(str);
+  }
+  return str;
+}
 // ═══ STATE ═══
 let currentZone = null, isAdmin = false, selectedLoginZone = null;
 let zoneData = [], filteredData = [];
@@ -2775,8 +2836,15 @@ function obsBadge(v) {
 
 function fmtDate(v) {
   if (!v) return '—';
-  if (v instanceof Date) return v.toLocaleDateString('fr');
-  return v.toString().split('T')[0];
+  if (v instanceof Date) {
+    return `${v.getDate().toString().padStart(2, '0')}/${(v.getMonth() + 1).toString().padStart(2, '0')}/${v.getFullYear()} ${v.getHours().toString().padStart(2, '0')}:${v.getMinutes().toString().padStart(2, '0')}:${v.getSeconds().toString().padStart(2, '0')}`;
+  }
+  const str = v.toString();
+  if (isFrenchDateTime(str)) return str;
+  if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
+    return isoToFrenchDate(str);
+  }
+  return str;
 }
 
 function renderCell(r, c) {
@@ -2876,7 +2944,7 @@ function openEditModal(gi) {
   const cfg = ZONE_CONFIG[zone] || {};
   
   const modalTitle = document.getElementById('modalTitle');
-  if (modalTitle) modalTitle.textContent = `✏ Modifier la ligne`;
+  if (modalTitle) modalTitle.textContent = `✏ Modifier la ligne - ${zone}`;
   
   const badge = document.getElementById('modalZoneBadge');
   if (badge) {
@@ -2892,9 +2960,12 @@ function openEditModal(gi) {
   const modalFields = document.getElementById('modalFields');
   if (modalFields) {
     modalFields.innerHTML = headers.map(h => {
-      const val = row[h] != null ? row[h] : '';
+      let val = row[h] != null ? row[h] : '';
       const isObs = h === 'Observation';
       const isDate = /date/i.test(h);
+      const isDateModification = h === 'Date modification' || h === 'Date_Modification' || 
+                                  h === 'Date de modification' || h === 'Date_modification' ||
+                                  (h && h.toLowerCase().includes('date') && h.toLowerCase().includes('modif'));
       let fld;
       
       if (isObs) {
@@ -2910,27 +2981,30 @@ function openEditModal(gi) {
         </select>
         <input type="text" id="mf_obs_disc" placeholder="Préciser..." value="${esc(dt)}"
           style="width:100%;background:var(--s2);border:1.5px solid var(--bd);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--tx);outline:none;display:${sv === 'DISCORDANCE' ? 'block' : 'none'}">`;
-      } else if (isDate) {
-        const fmtIso = v => {
-          if (!v) return '';
-          let d = v instanceof Date ? v : new Date(v);
-          if (isNaN(d)) return v.toString();
-          const p = n => String(n).padStart(2, '0');
-          return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
-        };
-        fld = `<input type="text" id="mf_${h.replace(/\W/g, '_')}" value="${esc(fmtIso(val) || val.toString())}" placeholder="YYYY-MM-DD">`;
-      } else {
+      } 
+      else if (isDateModification) {
+        const displayValue = isFrenchDateTime(val) ? val : (val && val !== '—' ? val : '');
+        fld = `<input type="text" id="mf_${h.replace(/\W/g, '_')}" value="${esc(displayValue)}" 
+          style="width:100%;background:var(--s3);border:1.5px solid var(--bd);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--tx3);outline:none;font-style:italic"
+          readonly disabled
+          placeholder="Sera mis à jour automatiquement">`;
+      }
+      else if (isDate) {
+        const displayValue = cleanDateForInput(val);
+        fld = `<input type="text" id="mf_${h.replace(/\W/g, '_')}" value="${esc(displayValue)}" placeholder="DD/MM/YYYY">`;
+      } 
+      else {
         fld = `<input type="text" id="mf_${h.replace(/\W/g, '_')}" value="${esc(val.toString())}">`;
       }
+      
       return `<div class="modal-field${isObs ? ' full' : ''}"><label>${esc(h)}</label>${fld}</div>`;
     }).join('');
   }
   
   const overlay = document.getElementById('modalOverlay');
   if (overlay) overlay.style.display = 'flex';
-  setTimeout(() => { const f = document.querySelector('#modalFields input'); if (f) f.focus(); }, 80);
+  setTimeout(() => { const f = document.querySelector('#modalFields input:not([readonly])'); if (f) f.focus(); }, 80);
 }
-
 function toggleDiscText() {
   const sel = document.getElementById('mf_obs_sel');
   const disc = document.getElementById('mf_obs_disc');
@@ -2948,19 +3022,20 @@ function submitModal() {
   const headers = sourceHeaders.filter(h => h && h !== 'Source');
   const data = {};
   
-  // Ajouter automatiquement la date de modification actuelle
-  const now = new Date();
-  const formattedDate = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
-  
   headers.forEach(h => {
+    const isDateModification = h === 'Date modification' || h === 'Date_Modification' || 
+                                h === 'Date de modification' || h === 'Date_modification' ||
+                                (h && h.toLowerCase().includes('date') && h.toLowerCase().includes('modif'));
+    
     if (h === 'Observation') {
       const sel = document.getElementById('mf_obs_sel');
       const disc = document.getElementById('mf_obs_disc');
       if (sel) data[h] = sel.value === 'DISCORDANCE' && disc && disc.value.trim() ? 'DISCORDANCE ' + disc.value.trim() : sel.value;
-    } else if (h === 'Date modification' || h === 'Date_Modification' || h === 'Date de modification' || h.toLowerCase().includes('date modif')) {
-      // Mettre à jour la date de modification automatiquement
-      data[h] = formattedDate;
-    } else {
+    } 
+    else if (isDateModification) {
+      // Ne pas inclure - la date sera générée par le serveur
+    }
+    else {
       const el = document.getElementById('mf_' + h.replace(/\W/g, '_'));
       if (el) data[h] = el.value;
     }
@@ -2969,14 +3044,20 @@ function submitModal() {
   const zoneRows = zoneData.filter(r => r.Source === zone);
   const idxInZone = zoneRows.indexOf(row);
   const sheetRow = idxInZone + 2;
-  const changes = headers.filter(h => (data[h] != null ? data[h] : '').toString() !== (row[h] != null ? row[h] : '').toString());
+  
+  const changes = headers.filter(h => {
+    const isDateModif = h === 'Date modification' || h === 'Date_Modification' || 
+                        h === 'Date de modification' || h === 'Date_modification' ||
+                        (h && h.toLowerCase().includes('date') && h.toLowerCase().includes('modif'));
+    if (isDateModif) return false;
+    return (data[h] != null ? data[h] : '').toString() !== (row[h] != null ? row[h] : '').toString();
+  });
   
   if (changes.length === 0) {
     toast('Aucune modification détectée', 'info');
     return;
   }
   
-  // Construction du message de confirmation avec ID Immobilisation
   let msg = `<strong>${zone}</strong>`;
   msg += `<div class="confirm-details">`;
   
@@ -2990,13 +3071,14 @@ function submitModal() {
   if (row.Lib_Article) msg += `<p><span class="label">📦 Libellé article:</span> ${esc(row.Lib_Article)}</p>`;
   if (row.Cod_Article) msg += `<p><span class="label">🔢 Code article:</span> ${esc(row.Cod_Article)}</p>`;
   msg += `<p style="margin-top:8px;border-top:1px solid var(--bd);padding-top:8px"><span class="label">✏️ Champs modifiés:</span> ${changes.join(', ')}</p>`;
+  msg += `<p><span class="label">🕐 Date modification:</span> sera mise à jour automatiquement</p>`;
   msg += `</div>`;
   
   pendingAction = { type: 'update', rowIndex: sheetRow, data, zone, globalIdx: modalRowIndex };
   closeModal();
   openConfirm(msg, '✏️', 'Confirmer la modification', 'var(--grad)', '✓ Enregistrer');
 }
-
+  
 function askDeleteFromModal() {
   const row = zoneData[modalRowIndex];
   if (!row) return;
