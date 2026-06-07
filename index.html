@@ -2942,8 +2942,11 @@ function openEditModal(gi) {
   modalZone = zone;
   const cfg = ZONE_CONFIG[zone] || {};
   
+  // Récupérer l'ID Immobilisation pour le titre
+  const idImmo = row.ID_Imobilisation || row.ID_Immobilisation || row['ID Immobilisation'] || 'Sans ID';
+  
   const modalTitle = document.getElementById('modalTitle');
-  if (modalTitle) modalTitle.textContent = `✏ Modifier la ligne - ${zone}`;
+  if (modalTitle) modalTitle.textContent = `✏ Modifier l'article - ${idImmo}`;
   
   const badge = document.getElementById('modalZoneBadge');
   if (badge) {
@@ -2962,10 +2965,9 @@ function openEditModal(gi) {
       let val = row[h] != null ? row[h] : '';
       const isObs = h === 'Observation';
       const isDate = /date/i.test(h);
-      // ⚠️ Détection des champs protégés - UNIQUEMENT ces noms exacts
+      // ✅ Détection des champs protégés (Date inventaire et Inventoriste)
       const isProtected = h === "Date d'inventaire" || h === 'Inventoriste';
-      const isDateModification = h === 'Date modification' || h === 'Date_Modification' || 
-                                  h === 'Date de modification';
+      const isDateModification = h && (h.toLowerCase() === 'date modification' || h.toLowerCase() === 'date_modification' || h.toLowerCase() === 'date de modification');
       let fld;
       
       if (isObs) {
@@ -2983,7 +2985,6 @@ function openEditModal(gi) {
           style="width:100%;background:var(--s2);border:1.5px solid var(--bd);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--tx);outline:none;display:${sv === 'DISCORDANCE' ? 'block' : 'none'}">`;
       } 
       else if (isProtected) {
-        // Champ protégé - lecture seule, grisé, SANS ajouter de cadenas (le style CSS le fera)
         fld = `<input type="text" value="${esc(val)}" 
           style="width:100%;background:var(--s3);border:1.5px solid var(--bd);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--tx3);outline:none;cursor:not-allowed;font-style:italic"
           readonly disabled>`;
@@ -3040,7 +3041,6 @@ function submitModal() {
       if (sel) data[h] = sel.value === 'DISCORDANCE' && disc && disc.value.trim() ? 'DISCORDANCE ' + disc.value.trim() : sel.value;
     } 
     else if (isDateModification) {
-      // Ne pas inclure - la date sera générée par le serveur
     }
     else {
       const el = document.getElementById('mf_' + h.replace(/\W/g, '_'));
