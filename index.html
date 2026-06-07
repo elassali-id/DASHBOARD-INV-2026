@@ -77,7 +77,6 @@ body {
   transition: background .3s, color .3s;
 }
 
-/* ==================== STYLES ==================== */
 #loadScreen {
   position: fixed;
   inset: 0;
@@ -193,7 +192,6 @@ body {
   display: none;
 }
 
-/* Onglets et navigation */
 header {
   background: var(--s1);
   border-bottom: 1.5px solid var(--bd);
@@ -286,6 +284,7 @@ nav {
   position: sticky;
   top: var(--header-h);
   z-index: 190;
+  overflow-x: auto;
 }
 
 .tab {
@@ -300,6 +299,7 @@ nav {
   border: none;
   background: none;
   border-radius: var(--r);
+  white-space: nowrap;
 }
 
 .tab.on {
@@ -342,7 +342,6 @@ nav {
   background: var(--bd);
 }
 
-/* KPI Cards */
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -387,7 +386,51 @@ nav {
   line-height: 1;
 }
 
-/* Tableau */
+.kpi-sub {
+  font-size: 11px;
+  color: var(--tx3);
+  margin-top: 6px;
+}
+
+.kpi-zone-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.kpi-zone-card {
+  background: var(--s1);
+  border: 1.5px solid var(--bd);
+  border-radius: var(--r2);
+  padding: 20px;
+  position: relative;
+}
+
+.kpi-zone-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--zcolor, var(--acc));
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.card {
+  background: var(--s1);
+  border: 1.5px solid var(--bd);
+  border-radius: var(--r3);
+  padding: 20px;
+}
+
 #panel-tableau {
   display: none;
   flex-direction: column;
@@ -478,23 +521,11 @@ td {
   gap: 8px;
 }
 
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  border-radius: var(--r);
-  font-size: 12px;
+.pag-info {
   font-family: var(--mono);
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
+  font-size: 10px;
+  color: var(--tx3);
 }
-
-.btn-acc { background: var(--grad); color: #fff; }
-.btn-out { background: transparent; border: 1.5px solid var(--bd); color: var(--tx2); }
-.btn-red { background: color-mix(in srgb, var(--red) 14%, var(--s1)); border: 1.5px solid var(--red); color: var(--red); }
-.btn-grn { background: var(--acc3); color: white; }
 
 .pb {
   background: var(--s2);
@@ -511,7 +542,33 @@ td {
   color: #fff;
 }
 
-/* Modales */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--r);
+  font-size: 12px;
+  font-family: var(--mono);
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-acc { background: var(--grad); color: #fff; }
+.btn-out { background: transparent; border: 1.5px solid var(--bd); color: var(--tx2); }
+.btn-red { background: color-mix(in srgb, var(--red) 14%, var(--s1)); border: 1.5px solid var(--red); color: var(--red); }
+
+.btn-tbl-edit {
+  background: color-mix(in srgb, var(--blue) 12%, var(--s1));
+  border: 1px solid var(--blue);
+  color: var(--blue);
+  border-radius: 5px;
+  padding: 4px 10px;
+  font-size: 10px;
+  cursor: pointer;
+}
+
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -529,8 +586,8 @@ td {
   border-radius: var(--r3);
   padding: 28px 32px;
   width: 100%;
-  max-width: 600px;
-  max-height: 90vh;
+  max-width: 640px;
+  max-height: 92vh;
   overflow-y: auto;
 }
 
@@ -541,8 +598,13 @@ td {
   margin-bottom: 4px;
 }
 
-.modal-field { margin-bottom: 0; }
-.modal-field.full { grid-column: 1/-1; }
+.modal-field {
+  margin-bottom: 0;
+}
+
+.modal-field.full {
+  grid-column: 1/-1;
+}
 
 .modal-field label {
   display: block;
@@ -592,7 +654,23 @@ td {
   border-radius: var(--r3);
   padding: 28px 32px;
   width: 100%;
-  max-width: 480px;
+  max-width: 520px;
+}
+
+.confirm-details {
+  background: var(--s3);
+  border-radius: var(--r);
+  padding: 14px;
+  margin-top: 10px;
+  text-align: left;
+}
+
+.confirm-details .label {
+  font-weight: 700;
+  color: var(--tx);
+  margin-right: 10px;
+  min-width: 130px;
+  display: inline-block;
 }
 
 .confirm-btns {
@@ -624,7 +702,18 @@ td {
 .toast.show { opacity: 1; transform: translateY(0); }
 .toast.err { background: var(--red); color: #fff; }
 
-/* Tableau de bord admin utilisateurs */
+.src-cebs, .src-cej, .src-aebb {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.src-cebs { background: color-mix(in srgb, var(--blue) 16%, var(--s1)); color: var(--blue); border: 1px solid var(--blue); }
+.src-cej { background: color-mix(in srgb, var(--acc) 16%, var(--s1)); color: var(--acc); border: 1px solid var(--acc); }
+.src-aebb { background: color-mix(in srgb, var(--acc3) 16%, var(--s1)); color: var(--acc3); border: 1px solid var(--acc3); }
+
 .users-table {
   width: 100%;
   border-collapse: collapse;
@@ -655,17 +744,22 @@ td {
 
 .btn-icon:hover { background: var(--s3); }
 
-.src-cebs, .src-cej, .src-aebb {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 5px;
-  font-size: 10px;
-  font-weight: 600;
+.dl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+  margin-top: 14px;
 }
 
-.src-cebs { background: color-mix(in srgb, var(--blue) 16%, var(--s1)); color: var(--blue); border: 1px solid var(--blue); }
-.src-cej { background: color-mix(in srgb, var(--acc) 16%, var(--s1)); color: var(--acc); border: 1px solid var(--acc); }
-.src-aebb { background: color-mix(in srgb, var(--acc3) 16%, var(--s1)); color: var(--acc3); border: 1px solid var(--acc3); }
+.dl-card {
+  background: var(--s1);
+  border: 1.5px solid var(--bd);
+  border-radius: var(--r2);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
 </style>
 </head>
 <body>
@@ -692,7 +786,7 @@ td {
     
     <div class="login-field">
       <label>👤 NOM D'UTILISATEUR</label>
-      <input type="text" id="loginUsername" placeholder="Ex: ELASSALI.IDRISS" autocomplete="username">
+      <input type="text" id="loginUsername" placeholder="Ex: ADMIN" autocomplete="username">
     </div>
     
     <div class="login-field">
@@ -747,10 +841,10 @@ td {
     </div>
     <div id="adminZoneCards" style="display:none">
       <div class="sec-title">RÉCAPITULATIF PAR ZONE</div>
-      <div class="kpi-zone-grid" id="zoneCardsGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px"></div>
+      <div class="kpi-zone-grid" id="zoneCardsGrid"></div>
     </div>
     <div class="sec-title">OBSERVATIONS</div>
-    <div class="charts-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div class="charts-grid">
       <div class="card"><div class="card-title">Répartition des observations</div><div style="height:260px"><canvas id="cObs"></canvas></div></div>
     </div>
   </div>
@@ -780,7 +874,7 @@ td {
     <div class="tbl-body-wrap">
       <div class="tbl-wrap">
         <table>
-          <thead><tr id="tblHead"></tr></thead>
+          <thead><tr id="tblHead"><tr></thead>
           <tbody id="tBody"></tbody>
         </table>
       </div>
@@ -802,7 +896,7 @@ td {
     <div id="usersListContainer"></div>
   </div>
 
-  <!-- Mon compte (changer mot de passe) -->
+  <!-- Mon compte -->
   <div class="panel" id="panel-account">
     <div class="sec-title">MON COMPTE</div>
     <div class="card" style="max-width:500px">
@@ -830,7 +924,7 @@ td {
   <!-- Téléchargement -->
   <div class="panel" id="panel-telechargement">
     <div class="sec-title">FICHIERS SOURCE</div>
-    <div class="dl-grid" id="dlGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px"></div>
+    <div class="dl-grid" id="dlGrid"></div>
     <div class="sec-title" style="margin-top:24px">EXPORTER LES DONNÉES</div>
     <div class="card">
       <div id="exportBtns"></div>
@@ -880,19 +974,6 @@ td {
     <div class="modal-btns">
       <button class="btn btn-out" onclick="closeUserModal()">Annuler</button>
       <button class="btn btn-acc" id="userModalBtn" onclick="saveUser()">Enregistrer</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODALE CHANGEMENT MOT DE PASSE -->
-<div class="confirm-overlay" id="confirmOverlay" style="display:none">
-  <div class="confirm-box">
-    <div class="confirm-icon" style="font-size:48px;text-align:center" id="confirmIcon">⚠️</div>
-    <div class="confirm-title" id="confirmTitle" style="font-family:var(--mono);font-size:16px;font-weight:700;text-align:center">Confirmer</div>
-    <div class="confirm-msg" id="confirmMsg" style="font-size:13px;text-align:center;padding:16px;background:var(--s2);border-radius:var(--r2);margin:10px 0"></div>
-    <div class="confirm-btns">
-      <button class="btn btn-out" onclick="closeConfirm()">Annuler</button>
-      <button class="btn btn-acc" id="confirmOkBtn" onclick="executeConfirmed()">Confirmer</button>
     </div>
   </div>
 </div>
@@ -975,7 +1056,7 @@ function formatDateToFrench(date) {
   return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth()+1).toString().padStart(2, '0')}/${d.getFullYear()} ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}:${d.getSeconds().toString().padStart(2, '0')}`;
 }
 
-// ═══ API APPEL GESTION UTILISATEURS ═══
+// ═══ API GESTION UTILISATEURS ═══
 async function callUsersAPI(action, data) {
   try {
     const res = await fetch(USERS_API_URL, {
@@ -1089,7 +1170,6 @@ function showTab(id) {
   const panel = document.getElementById('panel-' + id);
   if (panel) panel.classList.add('on');
   
-  // Activer le bon onglet
   const tabs = document.querySelectorAll('.tab');
   const tabMap = { overview: 0, tableau: 1, telechargement: 2, account: 3, users: 4 };
   const idx = tabMap[id];
@@ -1120,7 +1200,7 @@ function doLogout() {
   showTab('overview');
 }
 
-// ═══ GESTION DES UTILISATEURS (ADMIN) ═══
+// ═══ GESTION DES UTILISATEURS ═══
 async function refreshUsersList() {
   const result = await callUsersAPI('lister', {});
   if (result.success) {
@@ -1141,9 +1221,7 @@ function displayUsersList() {
   }
   
   let html = `<table class="users-table">
-    <thead>
-      <tr><th>Nom d'utilisateur</th><th>Nom complet</th><th>Zone</th><th>Rôle</th><th>Date création</th><th>Actions</th></tr>
-    </thead>
+    <thead><tr><th>Nom d'utilisateur</th><th>Nom complet</th><th>Zone</th><th>Rôle</th><th>Date création</th><th>Actions</th></tr></thead>
     <tbody>`;
   
   for (const user of usersList) {
@@ -1166,6 +1244,7 @@ function displayUsersList() {
 function openAddUserModal() {
   document.getElementById('userModalTitle').textContent = 'Ajouter un utilisateur';
   document.getElementById('userNomUtilisateur').value = '';
+  document.getElementById('userNomUtilisateur').readOnly = false;
   document.getElementById('userNomComplet').value = '';
   document.getElementById('userZone').value = 'CEBS';
   document.getElementById('userRole').value = 'editeur';
@@ -1207,13 +1286,12 @@ async function saveUser(action) {
     return;
   }
   
-  if (action === 'add' && !password) {
-    toast('Veuillez saisir un mot de passe', 'err');
-    return;
-  }
-  
   let result;
   if (action === 'add') {
+    if (!password) {
+      toast('Veuillez saisir un mot de passe', 'err');
+      return;
+    }
     const hash = await sha256Hex(password);
     result = await callUsersAPI('ajouter', { nomUtilisateur, nomComplet, zone, role, passwordHash: hash });
   } else {
@@ -1275,7 +1353,7 @@ async function changePassword() {
   }
 }
 
-// ═══ CHARGEMENT DES DONNÉES (inventaire) ═══
+// ═══ CHARGEMENT DES DONNÉES D'INVENTAIRE ═══
 async function reloadData() {
   if (!currentUser) return;
   isLoading = true;
@@ -1413,7 +1491,7 @@ function buildAdminZoneCards() {
     const cfg = ZONE_CONFIG[zone];
     const d = zoneData.filter(r => r.Source === zone);
     const n = d.length;
-    return `<div class="kpi-zone-card" style="--zcolor:${cfg.zcolor};background:var(--s1);border:1.5px solid var(--bd);border-radius:12px;padding:20px">
+    return `<div class="kpi-zone-card" style="--zcolor:${cfg.zcolor}">
       <div class="kpi-zone-title"><span class="${cfg.badgeClass}">${zone}</span></div>
       <div class="kpi-zone-main" style="font-size:32px;font-weight:700">${fmt(n)}</div>
       <div>Conformes: ${fmt(d.filter(isOk).length)} (${pct(d.filter(isOk).length, n)})</div>
@@ -1532,8 +1610,8 @@ function renderTable() {
     : slice.map(r => {
         const gi = zoneData.indexOf(r);
         const cells = cols.map(c => renderCell(r, c)).join('');
-        if (!(isAdmin || isSuperviseur)) return `<tr>${cells}</td>`;
-        return `<tr><td class="td-act"><button class="btn-tbl-edit" onclick="openEditModal(${gi})" style="background:color-mix(in srgb, var(--blue) 12%, var(--s1));border:1px solid var(--blue);border-radius:5px;padding:4px 10px;cursor:pointer">✏</button></td>${cells}</tr>`;
+        if (!(isAdmin || isSuperviseur)) return `<tr>${cells}</tr>`;
+        return `<tr><td class="td-act"><button class="btn-tbl-edit" onclick="openEditModal(${gi})">✏</button></td>${cells}</tr>`;
       }).join('');
   
   document.getElementById('pagInfo').textContent = PG >= n ? `${fmt(n)} résultats` : `Page ${page}/${pages} — ${fmt(n)} résultats`;
@@ -1575,8 +1653,8 @@ function openEditModal(gi) {
   modalRowIndex = gi;
   modalZone = zone;
   
-  document.getElementById('modalTitle').textContent = `✏ Modifier - ${zone}`;
-  document.getElementById('modalZoneBadge').textContent = zone;
+  document.getElementById('modalTitle').innerHTML = `✏ Modifier - ${zone}`;
+  document.getElementById('modalZoneBadge').innerHTML = zone;
   
   const deleteBtn = document.getElementById('modalDeleteBtn');
   if (deleteBtn) deleteBtn.style.display = (isAdmin || isSuperviseur) ? '' : 'none';
@@ -1627,7 +1705,7 @@ function closeModal() {
   document.getElementById('modalOverlay').style.display = 'none';
 }
 
-function submitModal() {
+async function submitModal() {
   const row = zoneData[modalRowIndex];
   const zone = modalZone || (row && row.Source) || currentZone;
   const headers = sourceHeaders.filter(h => h && h !== 'Source');
@@ -1654,11 +1732,11 @@ function submitModal() {
     return;
   }
   
-  let msg = `<strong>${zone}</strong><div style="background:var(--s3);border-radius:8px;padding:14px;margin-top:10px;text-align:left">`;
+  let msg = `<strong>${zone}</strong><div class="confirm-details">`;
   const idImmo = row.ID_Imobilisation || row.ID_Immobilisation || '';
-  if (idImmo) msg += `<p><span style="font-weight:700">🏷️ ID Immobilisation:</span> ${esc(idImmo)}</p>`;
-  if (row.Lib_Article) msg += `<p><span style="font-weight:700">📦 Libellé:</span> ${esc(row.Lib_Article)}</p>`;
-  msg += `<p><span style="font-weight:700">✏️ Champs modifiés:</span> ${changes.join(', ')}</p></div>`;
+  if (idImmo) msg += `<p><span class="label">🏷️ ID Immobilisation:</span> ${esc(idImmo)}</p>`;
+  if (row.Lib_Article) msg += `<p><span class="label">📦 Libellé:</span> ${esc(row.Lib_Article)}</p>`;
+  msg += `<p><span class="label">✏️ Champs modifiés:</span> ${changes.join(', ')}</p></div>`;
   
   pendingAction = { type: 'update', rowIndex: sheetRow, data, zone, globalIdx: modalRowIndex };
   closeModal();
@@ -1672,10 +1750,10 @@ function askDeleteFromModal() {
   const idxInZone = zoneRows.indexOf(row);
   const sheetRow = idxInZone + 2;
   
-  let msg = `<strong>${zone}</strong><div style="background:var(--s3);border-radius:8px;padding:14px;margin-top:10px;text-align:left">`;
+  let msg = `<strong>${zone}</strong><div class="confirm-details">`;
   const idImmo = row.ID_Imobilisation || row.ID_Immobilisation || '';
-  if (idImmo) msg += `<p><span style="font-weight:700">🏷️ ID Immobilisation:</span> ${esc(idImmo)}</p>`;
-  if (row.Lib_Article) msg += `<p><span style="font-weight:700">📦 Libellé:</span> ${esc(row.Lib_Article)}</p>`;
+  if (idImmo) msg += `<p><span class="label">🏷️ ID Immobilisation:</span> ${esc(idImmo)}</p>`;
+  if (row.Lib_Article) msg += `<p><span class="label">📦 Libellé:</span> ${esc(row.Lib_Article)}</p>`;
   msg += `<p style="color:var(--red);margin-top:8px;">⚠️ Suppression définitive !</p></div>`;
   
   pendingAction = { type: 'delete', rowIndex: sheetRow, data: {}, zone, globalIdx: modalRowIndex };
@@ -1684,10 +1762,11 @@ function askDeleteFromModal() {
 }
 
 function openConfirm(msg, icon, title) {
-  document.getElementById('confirmIcon').textContent = icon;
-  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmIcon').innerHTML = icon;
+  document.getElementById('confirmTitle').innerHTML = title;
   document.getElementById('confirmMsg').innerHTML = msg;
   document.getElementById('confirmOverlay').style.display = 'flex';
+  document.getElementById('confirmOkBtn').onclick = () => executeConfirmed();
 }
 
 function closeConfirm() {
@@ -1812,7 +1891,7 @@ function buildDlSection() {
   if (dlGrid) {
     dlGrid.innerHTML = zones.map(zone => {
       const cfg = ZONE_CONFIG[zone];
-      return `<div class="dl-card" style="background:var(--s1);border:1.5px solid var(--bd);border-radius:12px;padding:16px;display:flex;align-items:center;gap:14px">
+      return `<div class="dl-card">
         <div style="font-size:22px">${cfg.icon}</div>
         <div style="flex:1"><div style="font-weight:700">INVENTAIRE-${zone}.xlsx</div></div>
         <a class="btn btn-out" href="${cfg.dlHref}" target="_blank">↓ Télécharger</a>
