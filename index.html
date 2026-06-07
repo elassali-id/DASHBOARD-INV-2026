@@ -768,12 +768,15 @@ function setupHeader(){
   if(currentUser){
     chip.style.display='flex';
     let roleDisplay = '';
-    if(currentUser.role === 'administrateur_drro') roleDisplay = 'ADMIN DRRO';
-    else if(currentUser.role.startsWith('editeur_')) roleDisplay = 'EDITEUR ' + currentUser.role.split('_')[1].toUpperCase();
-    else if(currentUser.role.startsWith('lecteur_')) roleDisplay = 'LECTEUR ' + currentUser.role.split('_')[1].toUpperCase();
-    else roleDisplay = currentUser.role.toUpperCase();
+    if(currentUser.role === 'administrateur'){
+      roleDisplay = 'ADMINISTRATEUR';
+    } else if(currentUser.role === 'editeur'){
+      roleDisplay = 'EDITEUR';
+    } else {
+      roleDisplay = 'LECTEUR';
+    }
     
-    chip.innerHTML=`<span>👤 ${esc(currentUser.nomUtilisateur)}</span><span class="role-badge">${roleDisplay}</span>`;
+    chip.innerHTML=`<span>👤 ${esc(currentUser.nomUtilisateur)}</span><span class="role-badge ${currentUser.role}">${roleDisplay}</span>`;
   }else{
     chip.style.display='none';
   }
@@ -799,12 +802,12 @@ function setupHeader(){
   }
   
   // Pour l'admin DRRO, on cache les cartes admin car c'est déjà la vue consolidée
-  const isAdminDrro = currentUser && currentUser.role === 'administrateur_drro';
-  document.getElementById('fSrc').style.display=(isAdminDrro || isAdmin||(!currentUser&&currentZone==='ADMIN'))?'':'none';
-  document.getElementById('adminZoneCards').style.display='none'; // Pas de récap par zone pour DRRO
-  document.getElementById('adminChartSection').style.display=(isAdminDrro || isAdmin||(!currentUser&&currentZone==='ADMIN'))?'block':'none';
+  const isAdminUser = currentUser && currentUser.role === 'administrateur';
+  document.getElementById('fSrc').style.display=(isAdminUser || isAdmin||(!currentUser&&currentZone==='ADMIN'))?'':'none';
+  document.getElementById('adminZoneCards').style.display='none';
+  document.getElementById('adminChartSection').style.display=(isAdminUser || isAdmin||(!currentUser&&currentZone==='ADMIN'))?'block':'none';
 }
-
+  
 function buildNav(){
   const isAdminUser = currentUser && currentUser.role === 'administrateur';
   
@@ -985,11 +988,11 @@ async function reloadData(){
   setStatus('Chargement...',false);
   
   try{
-    // Si c'est l'administrateur DRRO → charger les 3 zones (DRRO consolidée)
-    if(currentUser && currentUser.role === 'administrateur_drro'){
+    // Si c'est l'administrateur → charger les 3 zones (DRRO consolidée)
+    if(currentUser && currentUser.role === 'administrateur'){
       await loadConsolidatedData();  // Fusionne CEBS + CEJ + AEBB
     } 
-    // Sinon charger la zone spécifique de l'utilisateur (editeur_cebs, lecteur_cej, etc.)
+    // Sinon charger la zone spécifique de l'utilisateur (editeur, lecteur)
     else if(currentUser && currentUser.zoneAcces && ZONE_CONFIG[currentUser.zoneAcces]){
       await loadSingleZone(currentUser.zoneAcces);
     }
@@ -1189,12 +1192,11 @@ function buildCharts(){
 
 // ═══ DOWNLOAD ═══
 function buildDlSection(){
-  const isAdminDrro = currentUser && currentUser.role === 'administrateur_drro';
-  const adminView = isAdminDrro || isAdmin || (!currentUser && currentZone === 'ADMIN');
+  const isAdminUser = currentUser && currentUser.role === 'administrateur';
+  const adminView = isAdminUser || isAdmin || (!currentUser && currentZone === 'ADMIN');
   
   let zones = [];
-  if(isAdminDrro){
-    // Admin DRRO voit les 3 zones en téléchargement
+  if(isAdminUser){
     zones = ['CEBS', 'CEJ', 'AEBB'];
   } else if(adminView){
     zones = ['CEBS', 'CEJ', 'AEBB'];
@@ -1220,11 +1222,12 @@ function buildDlSection(){
   
   document.getElementById('bddDlSection').style.display='none';
 }
-function buildExportBtns(){
-  const isAdminDrro = currentUser && currentUser.role === 'administrateur_drro';
-  const adminView = isAdminDrro || isAdmin || (!currentUser && currentZone === 'ADMIN');
   
-  if(isAdminDrro){
+function buildExportBtns(){
+  const isAdminUser = currentUser && currentUser.role === 'administrateur';
+  const adminView = isAdminUser || isAdmin || (!currentUser && currentZone === 'ADMIN');
+  
+  if(isAdminUser){
     document.getElementById('exportBtns').innerHTML = `
       <button class="btn btn-acc" onclick="exportFiltered()">↓ Exporter la sélection</button>
       <button class="btn btn-out" onclick="exportAll()">↓ Tout exporter (DRRO consolidé)</button>
