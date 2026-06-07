@@ -638,34 +638,34 @@ function switchLoginMode(mode){
 
 // ═══ LOGIN PAR COMPTE UTILISATEUR ═══
 async function doLogin(){
-  const err=document.getElementById('loginErr');
-  const btn=document.getElementById('loginBtn');
-  const username=document.getElementById('loginUsername').value.trim().toUpperCase();
-  const password=document.getElementById('loginPassword').value.trim();
-
-  if(!username||!password){ err.textContent='Veuillez saisir votre identifiant et mot de passe.'; err.style.display='block'; return; }
-
-  if(!USERS_API_URL||USERS_API_URL.startsWith('COLLER')){
-    err.textContent="API Utilisateurs non configurée. Utilisez le mode connexion par zone."; err.style.display='block'; return;
-  }
-
-  btn.disabled=true; btn.textContent='Connexion...';
-  const hash=await sha256Hex(password);
-  try{
-    const res=await fetch(USERS_API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({token:API_TOKEN,action:'login',nomUtilisateur:username,passwordHash:hash})});
-    const result=await res.json();
-    btn.disabled=false; btn.textContent='Se connecter →';
-    if(!result.success){ err.textContent=result.error; err.style.display='block'; return; }
-    err.style.display='none';
+  // ... début identique ...
+  
+  if(result.success){
     currentUser=result.user;
-    currentZone=(currentUser.role==='administrateur'||currentUser.role==='superviseur')?'ADMIN':currentUser.zone;
-    isAdmin=(currentUser.role==='administrateur');
-    canEdit=['editeur','superviseur','administrateur'].includes(currentUser.role);
+    
+    // Déterminer la zone selon le rôle
+    if(currentUser.role === 'administrateur_drro'){
+      currentZone = 'DRRO';  // Vue consolidée (3 zones)
+      isAdmin = true;
+      canEdit = true;
+    } else if(currentUser.role.startsWith('editeur_')){
+      const zone = currentUser.role.split('_')[1].toUpperCase();
+      currentZone = zone;
+      isAdmin = false;
+      canEdit = true;
+    } else if(currentUser.role.startsWith('lecteur_')){
+      const zone = currentUser.role.split('_')[1].toUpperCase();
+      currentZone = zone;
+      isAdmin = false;
+      canEdit = false;
+    } else {
+      currentZone = currentUser.zoneAcces || 'CEBS';
+      isAdmin = false;
+      canEdit = false;
+    }
+    
     saveSession();
     launchApp();
-  }catch(e){
-    btn.disabled=false; btn.textContent='Se connecter →';
-    err.textContent='Erreur réseau. Vérifiez votre connexion.'; err.style.display='block';
   }
 }
 
@@ -725,33 +725,56 @@ function setupHeader(){
   const chip=document.getElementById('userChipEl');
   if(currentUser){
     chip.style.display='flex';
-    chip.innerHTML=`<span>👤 ${esc(currentUser.nomUtilisateur)}</span><span class="role-badge ${currentUser.role}">${currentUser.role.toUpperCase()}</span>`;
+    let roleDisplay = '';
+    if(currentUser.role === 'administrateur_drro') roleDisplay = 'ADMIN DRRO';
+    else if(currentUser.role.startsWith('editeur_')) roleDisplay = 'EDITEUR ' + currentUser.role.split('_')[1].toUpperCase();
+    else if(currentUser.role.startsWith('lecteur_')) roleDisplay = 'LECTEUR ' + currentUser.role.split('_')[1].toUpperCase();
+    else roleDisplay = currentUser.role.toUpperCase();
+    
+    chip.innerHTML=`<span>👤 ${esc(currentUser.nomUtilisateur)}</span><span class="role-badge">${roleDisplay}</span>`;
   }else{
     chip.style.display='none';
   }
+  
   const badge=document.getElementById('hdrZoneBadge');
   const ovLabel=document.getElementById('ovZoneLabel');
-  if(isAdmin||(!currentUser&&currentZone==='ADMIN')){
-    badge.textContent='ADMIN'; badge.className='zone-badge-hdr admin-badge';
+  
+  // Si c'est DRRO (vue consolidée)
+  if(currentZone === 'DRRO'){
+    badge.textContent='DRRO'; 
+    badge.className='zone-badge-hdr admin-badge';
+    ovLabel.textContent='DRRO (Toutes zones)';
+  }
+  else if(isAdmin||(!currentUser&&currentZone==='ADMIN')){
+    badge.textContent='ADMIN'; 
+    badge.className='zone-badge-hdr admin-badge';
     ovLabel.textContent='Toutes zones';
   }else{
     const cfg=ZONE_CONFIG[currentZone]||{};
-    badge.textContent=currentZone; badge.className='zone-badge-hdr '+(cfg.badgeClass||'');
+    badge.textContent=currentZone; 
+    badge.className='zone-badge-hdr '+(cfg.badgeClass||'');
     ovLabel.textContent=currentZone;
   }
-  document.getElementById('fSrc').style.display=(isAdmin||(!currentUser&&currentZone==='ADMIN'))?'':'none';
-  document.getElementById('adminZoneCards').style.display=(isAdmin||(!currentUser&&currentZone==='ADMIN'))?'block':'none';
-  document.getElementById('adminChartSection').style.display=(isAdmin||(!currentUser&&currentZone==='ADMIN'))?'block':'none';
+  
+  // Pour l'admin DRRO, on cache les cartes admin car c'est déjà la vue consolidée
+  const isAdminDrro = currentUser && currentUser.role === 'administrateur_drro';
+  document.getElementById('fSrc').style.display=(isAdminDrro || isAdmin||(!currentUser&&currentZone==='ADMIN'))?'':'none';
+  document.getElementById('adminZoneCards').style.display='none'; // Pas de récap par zone pour DRRO
+  document.getElementById('adminChartSection').style.display=(isAdminDrro || isAdmin||(!currentUser&&currentZone==='ADMIN'))?'block':'none';
 }
 
 function buildNav(){
-  const adminView=isAdmin||(!currentUser&&currentZone==='ADMIN');
-  let html=`
+  const isAdminDrro = currentUser && currentUser.role === 'administrateur_drro';
+  const adminView = isAdminDrro || isAdmin || (!currentUser && currentZone === 'ADMIN');
+  
+  let html = `
     <button class="tab on" onclick="showTab('overview')">Vue d'ensemble</button>
     <button class="tab" onclick="showTab('tableau')">Données</button>
     <button class="tab" onclick="showTab('telechargement')">Téléchargement</button>`;
+  
   if(currentUser) html+=`<button class="tab" onclick="showTab('account')">Mon compte</button>`;
-  if(isAdmin&&currentUser) html+=`<button class="tab" onclick="showTab('users')">👥 Utilisateurs</button>`;
+  if(isAdminDrro) html+=`<button class="tab" onclick="showTab('users')">👥 Utilisateurs</button>`;
+  
   document.getElementById('mainNav').innerHTML=html;
 }
 
@@ -900,27 +923,89 @@ async function reloadData(){
   document.getElementById('refreshBtn').classList.add('spinning');
   zoneData=[]; filteredData=[]; sourceHeaders=[]; locCol=null;
   setStatus('Chargement...',false);
-  const adminView=isAdmin||(!currentUser&&currentZone==='ADMIN');
+  
   try{
-    if(adminView) await loadAdminData();
-    else await loadSingleZone(currentZone);
-  }finally{
+    // Si c'est l'administrateur DRRO → charger les 3 zones (DRRO consolidée)
+    if(currentUser && currentUser.role === 'administrateur_drro'){
+      await loadConsolidatedData();  // Fusionne CEBS + CEJ + AEBB
+    } 
+    // Sinon charger la zone spécifique de l'utilisateur (editeur_cebs, lecteur_cej, etc.)
+    else if(currentUser && currentUser.zoneAcces && ZONE_CONFIG[currentUser.zoneAcces]){
+      await loadSingleZone(currentUser.zoneAcces);
+    }
+    // Mode legacy (sans connexion utilisateur)
+    else if(!currentUser && currentZone === 'ADMIN'){
+      await loadConsolidatedData();
+    }
+    else if(!currentUser && currentZone){
+      await loadSingleZone(currentZone);
+    }
+    else {
+      setStatus('Aucune donnée à charger', false);
+    }
+  } finally {
     isLoading=false;
     document.getElementById('refreshBtn').classList.remove('spinning');
   }
 }
 
+// NOUVELLE FONCTION : Charge les 3 zones et les fusionne (vue consolidée DRRO)
+async function loadConsolidatedData(){
+  const zones = ['CEBS', 'CEJ', 'AEBB'];
+  let allData = [];
+  let headersUnion = [];
+  let loadedCount = 0;
+  
+  setStatus('Chargement des 3 zones...', false);
+  
+  for(const zone of zones){
+    try{
+      const cfg = ZONE_CONFIG[zone];
+      if(!cfg) continue;
+      const buf = await fetchBuf(EXPORT_URL(cfg.id));
+      const { rows, headers } = parseXLSX(buf);
+      
+      // Fusionner les headers
+      headers.forEach(h => {
+        if(h && !headersUnion.includes(h)) headersUnion.push(h);
+      });
+      
+      // Ajouter la source (zone) à chaque ligne
+      const rowsWithSource = rows.map(r => ({ ...r, Source: zone }));
+      allData = allData.concat(rowsWithSource);
+      lastCounts[zone] = rows.length;
+      loadedCount++;
+    } catch(e){
+      console.error(`Erreur chargement ${zone}:`, e);
+      lastCounts[zone] = null;
+      toast(`Zone ${zone} inaccessible`, 'err');
+    }
+  }
+  
+  sourceHeaders = headersUnion;
+  zoneData = allData;
+  
+  setStatus(`DRRO — ${fmt(zoneData.length)} articles (${loadedCount}/3 zones)`, loadedCount > 0);
+  updateAll();
+  
+  if(loadedCount < 3){
+    toast(`${3 - loadedCount} zone(s) non accessible(s). Vérifiez les accès.`, 'err');
+  }
+}
+
 async function loadSingleZone(zone){
-  const cfg=ZONE_CONFIG[zone];
-  if(!cfg){ setStatus(`Zone ${zone} inconnue`,false); return; }
+  const cfg = ZONE_CONFIG[zone];
+  if(!cfg){ setStatus(`Zone ${zone} inconnue`, false); return; }
   try{
     const buf=await fetchBuf(EXPORT_URL(cfg.id));
     const {rows,headers}=parseXLSX(buf);
-    sourceHeaders=headers; zoneData=rows.map(r=>({...r,Source:zone}));
+    sourceHeaders=headers; 
+    zoneData=rows.map(r=>({...r,Source:zone}));
     lastCounts[zone]=rows.length;
-    updateAll(); setStatus(`${zone} — ${fmt(rows.length)} articles`,true);
+    updateAll(); 
+    setStatus(`${zone} — ${fmt(rows.length)} articles`, true);
   }catch(e){
-    setStatus(`Fichier ${zone} non accessible`,false);
+    setStatus(`Fichier ${zone} non accessible`, false);
     toast(`Impossible de charger ${zone}`,'err');
   }
 }
@@ -1044,24 +1129,60 @@ function buildCharts(){
 
 // ═══ DOWNLOAD ═══
 function buildDlSection(){
-  const adminView=isAdmin||(!currentUser&&currentZone==='ADMIN');
-  const zones=adminView?['CEBS','CEJ','AEBB']:[currentZone];
+  const isAdminDrro = currentUser && currentUser.role === 'administrateur_drro';
+  const adminView = isAdminDrro || isAdmin || (!currentUser && currentZone === 'ADMIN');
+  
+  let zones = [];
+  if(isAdminDrro){
+    // Admin DRRO voit les 3 zones en téléchargement
+    zones = ['CEBS', 'CEJ', 'AEBB'];
+  } else if(adminView){
+    zones = ['CEBS', 'CEJ', 'AEBB'];
+  } else {
+    zones = [currentZone];
+  }
+  
   document.getElementById('dlGrid').innerHTML=zones.map(zone=>{
     const cfg=ZONE_CONFIG[zone];
-    return`<div class="dl-card"><div class="dl-icon">${cfg.icon}</div><div class="dl-info"><div class="dl-name">INVENTAIRE-${zone}.xlsx</div><div class="dl-meta">Fichier source Google Sheets</div></div><div class="dl-btns"><a class="btn btn-grn" href="${cfg.dlHref}" target="_blank" rel="noopener">↓ Télécharger</a><a class="btn btn-gold" href="https://docs.google.com/spreadsheets/d/${cfg.id}/edit" target="_blank" rel="noopener">↗ Ouvrir</a></div></div>`;
+    if(!cfg) return '';
+    return`<div class="dl-card">
+      <div class="dl-icon">${cfg.icon}</div>
+      <div class="dl-info">
+        <div class="dl-name">INVENTAIRE-${zone}.xlsx</div>
+        <div class="dl-meta">Fichier source Google Sheets</div>
+      </div>
+      <div class="dl-btns">
+        <a class="btn btn-grn" href="${cfg.dlHref}" target="_blank">↓ Télécharger</a>
+        <a class="btn btn-gold" href="https://docs.google.com/spreadsheets/d/${cfg.id}/edit" target="_blank">↗ Ouvrir</a>
+      </div>
+    </div>`;
   }).join('');
-  document.getElementById('bddDlSection').style.display=adminView?'block':'none';
+  
+  document.getElementById('bddDlSection').style.display='none';
 }
 function buildExportBtns(){
-  const adminView=isAdmin||(!currentUser&&currentZone==='ADMIN');
-  document.getElementById('exportBtns').innerHTML=adminView
-    ?`<button class="btn btn-acc" onclick="exportFiltered()">↓ Exporter la sélection</button>
-       <button class="btn btn-out" onclick="exportAll()">↓ Tout exporter</button>
-       <button class="btn btn-out" onclick="exportByZone('CEBS')">↓ CEBS</button>
-       <button class="btn btn-out" onclick="exportByZone('CEJ')">↓ CEJ</button>
-       <button class="btn btn-out" onclick="exportByZone('AEBB')">↓ AEBB</button>`
-    :`<button class="btn btn-acc" onclick="exportFiltered()">↓ Exporter la sélection</button>
-       <button class="btn btn-out" onclick="exportAll()">↓ Exporter tout</button>`;
+  const isAdminDrro = currentUser && currentUser.role === 'administrateur_drro';
+  const adminView = isAdminDrro || isAdmin || (!currentUser && currentZone === 'ADMIN');
+  
+  if(isAdminDrro){
+    document.getElementById('exportBtns').innerHTML = `
+      <button class="btn btn-acc" onclick="exportFiltered()">↓ Exporter la sélection</button>
+      <button class="btn btn-out" onclick="exportAll()">↓ Tout exporter (DRRO consolidé)</button>
+      <button class="btn btn-out" onclick="exportByZone('CEBS')">↓ CEBS</button>
+      <button class="btn btn-out" onclick="exportByZone('CEJ')">↓ CEJ</button>
+      <button class="btn btn-out" onclick="exportByZone('AEBB')">↓ AEBB</button>`;
+  } else if(adminView){
+    document.getElementById('exportBtns').innerHTML = `
+      <button class="btn btn-acc" onclick="exportFiltered()">↓ Exporter la sélection</button>
+      <button class="btn btn-out" onclick="exportAll()">↓ Tout exporter</button>
+      <button class="btn btn-out" onclick="exportByZone('CEBS')">↓ CEBS</button>
+      <button class="btn btn-out" onclick="exportByZone('CEJ')">↓ CEJ</button>
+      <button class="btn btn-out" onclick="exportByZone('AEBB')">↓ AEBB</button>`;
+  } else {
+    document.getElementById('exportBtns').innerHTML = `
+      <button class="btn btn-acc" onclick="exportFiltered()">↓ Exporter la sélection</button>
+      <button class="btn btn-out" onclick="exportAll()">↓ Exporter tout</button>`;
+  }
 }
 
 // ═══ FILTERS ═══
