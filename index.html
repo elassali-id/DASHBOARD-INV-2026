@@ -1315,7 +1315,23 @@ input[type=text] {
   border-color: var(--acc);
   box-shadow: 0 0 0 3px rgba(26,54,93,.12);
 }
+  
+.modal-field input[readonly], 
+.modal-field input:disabled {
+  background: var(--s3) !important;
+  color: var(--tx3) !important;
+  border: 1.5px solid var(--bd) !important;
+  cursor: not-allowed !important;
+  font-style: italic !important;
+  opacity: 0.8;
+}
 
+.modal-field label:has(+ input[readonly])::after {
+  content: " 🔒";
+  font-size: 10px;
+  opacity: 0.6;
+}
+  
 .modal-sep {
   grid-column: 1/-1;
   height: 1px;
@@ -2942,6 +2958,10 @@ function openEditModal(gi) {
       let val = row[h] != null ? row[h] : '';
       const isObs = h === 'Observation';
       const isDate = /date/i.test(h);
+      // ⚠️ IMPORTANT: Détection correcte des champs protégés
+      const isProtected = h === 'Date inventaire' || h === 'Date_Inventaire' || 
+                          h === "Date d'inventaire" || h === 'Inventoriste' || 
+                          h === 'INVENTORISTE';
       const isDateModification = h === 'Date modification' || h === 'Date_Modification' || 
                                   h === 'Date de modification' || h === 'Date_modification' ||
                                   (h && h.toLowerCase().includes('date') && h.toLowerCase().includes('modif'));
@@ -2961,9 +2981,15 @@ function openEditModal(gi) {
         <input type="text" id="mf_obs_disc" placeholder="Préciser..." value="${esc(dt)}"
           style="width:100%;background:var(--s2);border:1.5px solid var(--bd);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--tx);outline:none;display:${sv === 'DISCORDANCE' ? 'block' : 'none'}">`;
       } 
+      // Champs protégés (Date inventaire et Inventoriste) - lecture seule avec style grisé
+      else if (isProtected) {
+        fld = `<input type="text" value="${esc(val)}" 
+          style="width:100%;background:var(--s3);border:1.5px solid var(--bd);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--tx3);outline:none;cursor:not-allowed;font-style:italic"
+          readonly disabled>`;
+      }
       else if (isDateModification) {
         const displayValue = isFrenchDateTime(val) ? val : (val && val !== '—' ? val : '');
-        fld = `<input type="text" id="mf_${h.replace(/\W/g, '_')}" value="${esc(displayValue)}" 
+        fld = `<input type="text" value="${esc(displayValue)}" 
           style="width:100%;background:var(--s3);border:1.5px solid var(--bd);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--tx3);outline:none;font-style:italic"
           readonly disabled
           placeholder="Sera mis à jour automatiquement">`;
@@ -2976,7 +3002,9 @@ function openEditModal(gi) {
         fld = `<input type="text" id="mf_${h.replace(/\W/g, '_')}" value="${esc(val.toString())}">`;
       }
       
-      return `<div class="modal-field${isObs ? ' full' : ''}"><label>${esc(h)}</label>${fld}</div>`;
+      // Ajouter une icône 🔒 pour les champs protégés
+      const protectedIcon = isProtected ? ' 🔒' : '';
+      return `<div class="modal-field${isObs ? ' full' : ''}"><label>${esc(h)}${protectedIcon}</label>${fld}</div>`;
     }).join('');
   }
   
