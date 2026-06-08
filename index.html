@@ -229,70 +229,6 @@ body {
   background: var(--grad);
 }
 
-.login-zone-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.zone-btn {
-  border: 1.5px solid var(--bd);
-  border-radius: var(--r2);
-  padding: 16px 8px;
-  text-align: center;
-  cursor: pointer;
-  background: var(--s2);
-  transition: .18s;
-}
-
-.zone-btn:hover {
-  border-color: var(--acc);
-  background: var(--s3);
-  transform: translateY(-2px);
-}
-
-.zone-btn.sel {
-  border-color: var(--acc);
-  background: var(--s3);
-  box-shadow: 0 0 0 3px rgba(26,54,93,.18);
-}
-
-.zone-btn-icon {
-  font-size: 22px;
-  margin-bottom: 6px;
-}
-
-.zone-btn-label {
-  font-family: var(--mono);
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--tx);
-}
-
-.admin-btn-row {
-  margin-bottom: 16px;
-}
-
-.zone-btn.admin-zone {
-  border-color: #d4a017;
-  background: color-mix(in srgb, var(--gold) 12%, var(--s2));
-}
-
-.zone-btn.admin-zone:hover {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 3px rgba(200,149,26,.18);
-}
-
-.zone-btn.admin-zone.sel {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 3px rgba(200,149,26,.28);
-}
-
-.zone-btn.admin-zone .zone-btn-label {
-  color: var(--gold);
-}
-
 .login-field {
   margin-bottom: 12px;
 }
@@ -435,6 +371,17 @@ header {
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 200px;
+}
+
+.agent-badge {
+  font-family: var(--mono);
+  font-size: 10px;
+  background: var(--s2);
+  padding: 3px 8px;
+  border-radius: 5px;
+  border: 1px solid var(--bd);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .zone-badge-hdr {
@@ -1768,27 +1715,25 @@ input[type=text] {
       <div style="font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.32em;color:var(--tx);text-align:center;margin-top:4px">INVENTAIRE 2026</div>
       <div style="font-family:var(--mono);font-size:9px;letter-spacing:.25em;color:var(--tx3);text-align:center;margin-top:6px">ELASSALI IDRISS</div>
     </div>
-    <div style="font-size:12px;color:var(--tx3);margin-bottom:20px;text-align:center">Sélectionnez votre zone et saisissez votre code d'accès</div>
-    <div class="login-zone-grid">
-      <div class="zone-btn" id="zBtn-CEBS" onclick="selectZone('CEBS')"><div class="zone-btn-icon">📘</div><div class="zone-btn-label">CEBS</div></div>
-      <div class="zone-btn" id="zBtn-CEJ"  onclick="selectZone('CEJ')"><div class="zone-btn-icon">📗</div><div class="zone-btn-label">CEJ</div></div>
-      <div class="zone-btn" id="zBtn-AEBB" onclick="selectZone('AEBB')"><div class="zone-btn-icon">📙</div><div class="zone-btn-label">AEBB</div></div>
-    </div>
-    <div class="admin-btn-row">
-      <div class="zone-btn admin-zone" id="zBtn-ADMIN" onclick="selectZone('ADMIN')" style="display:flex;align-items:center;gap:10px;padding:12px 16px">
-        <div style="font-size:22px">🧭</div>
-        <div><div class="zone-btn-label" style="font-size:11px">DRRO — TOUTES ZONES</div></div>
-      </div>
-    </div>
-    <div id="loginErr" class="login-err"></div>
+    <div style="font-size:12px;color:var(--tx3);margin-bottom:20px;text-align:center">Identifiez-vous avec vos accès</div>
+    
     <div class="login-field">
-      <label>Code d'accès</label>
+      <label>👤 Nom d'utilisateur</label>
+      <input type="text" id="loginUsername" placeholder="ex: karim, youssef, admin" autocomplete="off">
+    </div>
+    
+    <div class="login-field">
+      <label>🔐 Mot de passe</label>
       <div class="pwd-wrap">
         <input type="password" id="loginPwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
         <button type="button" class="pwd-eye" onclick="togglePwd()" id="pwdEye">👁</button>
       </div>
     </div>
-    <button class="login-btn" id="loginBtn" onclick="doLogin()">Accéder →</button>
+    
+    <div id="loginErr" class="login-err"></div>
+    
+    <button class="login-btn" id="loginBtn" onclick="doLogin()">Se connecter →</button>
+    
     <div class="login-footer"><span id="loginFooterDate">—</span> — ELASSALI IDRISS</div>
   </div>
 </div>
@@ -1805,6 +1750,7 @@ input[type=text] {
   </div>
   <div class="hdr-right">
     <span id="hdrZoneBadge" class="zone-badge-hdr"></span>
+    <span id="agentNameBadge" class="agent-badge" style="display:none">👤 <span id="agentNameValue">—</span></span>
     <span id="sessionExpiryBadge" class="session-expiry-badge" style="display:none"></span>
     <div class="status-dot" id="statusDot" style="background:var(--tx3);box-shadow:none"></div>
     <span class="status-txt" id="statusTxt">Chargement...</span>
@@ -1907,7 +1853,6 @@ input[type=text] {
   <div class="sec-title">Fichiers source — Inventaires zones</div>
   <div class="dl-grid" id="dlGrid"></div>
   <div id="bddDlSection" style="display:none">
-    <!-- Sera rempli dynamiquement -->
   </div>
   <div class="sec-title" style="margin-top:24px">Exporter les données filtrées</div>
   <div class="card">
@@ -1930,7 +1875,7 @@ input[type=text] {
       <div id="modalFields" class="modal-form-grid"></div>
     </div>
     <div class="modal-buttons">
-      <button class="btn btn-red" id="modalDeleteBtn" onclick="askDeleteFromModal()" style="display:none">🗑 Supprimer cette ligne</button>
+      <button class="btn btn-red" id="modalDeleteBtn" onclick="askDeleteFromModal()" style="display:none">🗑 Supprimer l'article</button>
       <div class="modal-buttons-right">
         <button class="btn btn-out" onclick="closeModal()">✕ Annuler</button>
         <button class="btn btn-acc" id="modalSaveBtn" onclick="submitModal()">✓ Enregistrer</button>
@@ -1960,6 +1905,7 @@ input[type=text] {
 
 const SECRET_TOKEN = '1ppRNrQPgcKOHoBeKI40g35RPFW07bkqDkyw14_6O2mm7flNYVpLOYqWQ';
 
+// Configuration des zones
 const ZONE_CONFIG = {
   CEBS: {
     pwdHash: 'eac8a3fd67a18fc94babbc4d47928a98889ea3f1418283b54dd9342b7275a9b4',
@@ -1984,11 +1930,11 @@ const ZONE_CONFIG = {
     color: '#1d9e75', color2: 'rgba(29,158,117,0.65)',
     dlHref: 'https://docs.google.com/spreadsheets/d/1krHCtAzSB53cAMKZJ6YXb9K881d__KOKo2yC_hfMxeA/export?format=xlsx',
     icon: '📙', badgeClass: 'src-aebb', zcolor: '#1d9e75'
-  },
-  ADMIN: {
-    pwdHash: '61abf6b31686359bac1755390b8c420403f3f85de7d06607dc2250b707c1cb79'
   }
 };
+
+// API Utilisateurs Google Sheets
+const USERS_API_URL = 'https://script.google.com/macros/s/AKfycbxS0wP0QA6MIzA_LgDZSVQqG8tw9tMS52cTgmrJytoTSOj0x1N7VfC-kS94pysDI4pm/exec';
 
 const EXPORT_URL = id => `https://docs.google.com/spreadsheets/d/${id}/export?format=xlsx`;
 const SESSION_KEY = 'drro-session-v3';
@@ -2020,7 +1966,8 @@ function isFrenchDateTime(str) {
 // STATE
 // ============================================================
 
-let currentZone = null, isAdmin = false, selectedLoginZone = null;
+let currentZone = null, isAdmin = false;
+let currentUser = null;
 let zoneData = [], filteredData = [];
 let page = 1, PG = 50, sortCol = null, sortDir = 1;
 let charts = {}, lastCounts = {}, sourceHeaders = [];
@@ -2062,140 +2009,79 @@ function toast(msg, type = '') {
 }
 
 // ============================================================
-// NOUVELLE FONCTION : GÉNÉRATION BDD-DRRO À PARTIR DES 3 ZONES
+// GESTION DES UTILISATEURS VIA GOOGLE SHEETS API
 // ============================================================
 
-async function generateBDD_DRRO() {
-  if (!isAdmin) {
-    toast('Accès réservé à l\'administrateur', 'err');
-    return;
+let usersCache = null;
+let usersCacheTime = 0;
+const CACHE_DURATION = 5 * 60 * 1000;
+
+async function fetchUsers() {
+  if (usersCache && (Date.now() - usersCacheTime) < CACHE_DURATION) {
+    return usersCache;
   }
-  
-  if (zoneData.length === 0) {
-    toast('Aucune donnée disponible. Veuillez d\'abord charger les zones.', 'err');
-    return;
-  }
-  
-  toast('⏳ Génération de BDD-DRRO.xlsx en cours...', 'info');
   
   try {
-    // Récupérer les données par zone
-    const zones = ['CEBS', 'CEJ', 'AEBB'];
-    const zonesData = {};
-    let allHeaders = new Set();
-    
-    for (const zone of zones) {
-      const zoneRows = zoneData.filter(r => r.Source === zone);
-      zonesData[zone] = zoneRows;
-      
-      // Collecter tous les en-têtes uniques
-      zoneRows.forEach(row => {
-        Object.keys(row).forEach(key => {
-          if (key !== 'Source') {
-            allHeaders.add(key);
-          }
-        });
-      });
-    }
-    
-    // Définir l'ordre des colonnes souhaité
-    const orderedHeaders = [
-      'ID_Immobilisation', 'ID_Imobilisation', 'ID Immobilisation',
-      'Lib_Article', 'Libellé article', 'LIB_ARTICLE',
-      'NumSerie', 'Numerie', 'NUMERIE', 'COM-ALU',
-      'Lib_Modele', 'Modele', 'Modèle', 'LIB_MODELE',
-      'Lib_Marque', 'Marque', 'LIB_MARQUE',
-      'Localisation', 'LOCALISATION', 'Emplacement',
-      'Gare', 'GARE',
-      'Date MAJ', 'Date_inventaire', 'Date d\'inventaire', 'DATE_INVENTAIRE',
-      'Inventoriste', 'INVENTORISTE',
-      'Observation', 'OBSERVATION',
-      'Cod_Article', 'Code article', 'COD_ARTICLE',
-      'Marche', 'N° Marché', 'N_MARCHE',
-      'PU', 'Prix',
-      'Date_modification', 'Date de modification', 'DATE_MODIFICATION'
-    ];
-    
-    // Construire la liste finale des colonnes
-    const finalHeaders = [];
-    for (const h of orderedHeaders) {
-      if (allHeaders.has(h) && !finalHeaders.includes(h)) {
-        finalHeaders.push(h);
-      }
-    }
-    // Ajouter les colonnes restantes
-    allHeaders.forEach(h => {
-      if (!finalHeaders.includes(h) && h !== 'Source') {
-        finalHeaders.push(h);
-      }
+    const response = await fetch(`${USERS_API_URL}?action=getUsers&t=${Date.now()}`, {
+      mode: 'cors'
     });
     
-    // Créer un nouveau classeur
-    const wb = XLSX.utils.book_new();
+    if (!response.ok) throw new Error('Erreur chargement utilisateurs');
     
-    // Pour chaque zone, créer une feuille
-    for (const zone of zones) {
-      const data = zonesData[zone];
-      
-      // Transformer les données pour la feuille
-      const sheetData = data.map(row => {
-        const newRow = {};
-        finalHeaders.forEach(header => {
-          let value = row[header];
-          if (value === undefined || value === null) {
-            // Chercher des variantes
-            const lowerHeader = header.toLowerCase();
-            for (const [key, val] of Object.entries(row)) {
-              if (key.toLowerCase() === lowerHeader || key === header) {
-                value = val;
-                break;
-              }
-            }
-          }
-          newRow[header] = (value === undefined || value === null) ? '' : value;
-        });
-        return newRow;
-      });
-      
-      // Créer la feuille
-      const ws = sheetData.length > 0 
-        ? XLSX.utils.json_to_sheet(sheetData, { header: finalHeaders })
-        : XLSX.utils.json_to_sheet([], { header: finalHeaders });
-      
-      // Ajuster les largeurs de colonnes
-      ws['!cols'] = finalHeaders.map(header => {
-        let maxLen = header.length;
-        sheetData.slice(0, 100).forEach(row => {
-          const val = row[header] ? row[header].toString() : '';
-          if (val.length > maxLen) maxLen = Math.min(val.length, 50);
-        });
-        return { wch: Math.min(35, Math.max(12, maxLen + 2)) };
-      });
-      
-      XLSX.utils.book_append_sheet(wb, ws, `${zone}_ALL`);
-    }
+    const users = await response.json();
+    usersCache = users;
+    usersCacheTime = Date.now();
     
-    // Exporter le fichier
-    const dateStr = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
-    XLSX.writeFile(wb, `BDD-DRRO_${dateStr}.xlsx`);
-    toast('✓ BDD-DRRO.xlsx généré avec succès !', '');
+    // Sauvegarde locale
+    try {
+      localStorage.setItem('drro_users_backup', JSON.stringify(users));
+    } catch(e) {}
     
+    return users;
   } catch (error) {
-    console.error('Erreur génération BDD-DRRO:', error);
-    toast('Erreur lors de la génération: ' + error.message, 'err');
+    console.error('Erreur fetchUsers:', error);
+    const cached = localStorage.getItem('drro_users_backup');
+    if (cached) {
+      return JSON.parse(cached);
+    }
+    return {};
   }
 }
 
-function openBDDInfo() {
-  toast('La BDD est générée localement à partir des 3 zones. Cliquez sur "Générer et télécharger" pour créer le fichier Excel.', 'info');
+async function hashPassword(password) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password);
+  const hash = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function authenticateUser(username, password) {
+  const users = await fetchUsers();
+  const user = users[username.toLowerCase()];
+  
+  if (!user || user.is_active !== 'TRUE') return null;
+  
+  const hash = await hashPassword(password);
+  if (hash !== user.password_hash) return null;
+  
+  return {
+    username: username,
+    name: user.full_name,
+    zone: user.zone,
+    isAdmin: user.zone === 'ADMIN'
+  };
 }
 
 // ============================================================
-// SESSION (suite)
+// FONCTIONS DE GESTION DES DATES (suite)
+// ============================================================
+
+// ============================================================
+// SESSION
 // ============================================================
 
 function saveSession(z) {
-  try { localStorage.setItem(SESSION_KEY, JSON.stringify({ zone: z, expiry: Date.now() + SESSION_HOURS * 3600000 })); } catch (e) {}
+  try { localStorage.setItem(SESSION_KEY, JSON.stringify({ zone: z, expiry: Date.now() + SESSION_HOURS * 3600000, user: currentUser })); } catch (e) {}
 }
 
 function clearSession() {
@@ -2282,11 +2168,6 @@ function cssVar(n) {
   return getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 }
 
-async function sha256Hex(s) {
-  const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
-  return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join('');
-}
-
 // ============================================================
 // STICKY HEIGHTS
 // ============================================================
@@ -2307,50 +2188,46 @@ function syncStickyHeights() {
 }
 
 // ============================================================
-// LOGIN (suite)
+// LOGIN
 // ============================================================
-
-function selectZone(z) {
-  selectedLoginZone = z;
-  document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('sel'));
-  const btn = document.getElementById('zBtn-' + z);
-  if (btn) btn.classList.add('sel');
-  const pwdInput = document.getElementById('loginPwd');
-  if (pwdInput) pwdInput.focus();
-}
 
 async function doLogin() {
   const err = document.getElementById('loginErr');
   const btn = document.getElementById('loginBtn');
-  const pwd = document.getElementById('loginPwd').value.trim();
+  const username = document.getElementById('loginUsername')?.value.trim().toLowerCase();
+  const password = document.getElementById('loginPwd')?.value;
   
-  if (!selectedLoginZone) {
-    if (err) { err.textContent = 'Veuillez sélectionner une zone.'; err.style.display = 'block'; }
+  if (!username || !password) {
+    if (err) { err.textContent = 'Veuillez saisir votre nom d\'utilisateur et mot de passe'; err.style.display = 'block'; }
     return;
   }
   
-  if (btn) btn.disabled = true;
-  if (btn) btn.textContent = 'Vérification...';
+  if (btn) { btn.disabled = true; btn.textContent = 'Connexion...'; }
   
-  const hash = await sha256Hex(pwd);
-  
-  if (btn) { btn.disabled = false; btn.textContent = 'Accéder →'; }
-  
-  const cfg = ZONE_CONFIG[selectedLoginZone];
-  if (!cfg || hash !== cfg.pwdHash) {
-    if (err) { err.textContent = 'Code incorrect pour : ' + selectedLoginZone; err.style.display = 'block'; }
-    const pwdField = document.getElementById('loginPwd');
-    if (pwdField) pwdField.value = '';
-    return;
+  try {
+    const user = await authenticateUser(username, password);
+    
+    if (!user) {
+      if (err) { err.textContent = 'Nom d\'utilisateur ou mot de passe incorrect'; err.style.display = 'block'; }
+      if (btn) { btn.disabled = false; btn.textContent = 'Se connecter →'; }
+      document.getElementById('loginPwd').value = '';
+      return;
+    }
+    
+    if (err) err.style.display = 'none';
+    
+    currentUser = user;
+    currentZone = user.zone;
+    isAdmin = user.isAdmin;
+    
+    saveSession(currentZone);
+    launchApp();
+    
+  } catch (error) {
+    if (err) { err.textContent = 'Erreur: ' + error.message; err.style.display = 'block'; }
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Se connecter →'; }
   }
-  
-  if (err) err.style.display = 'none';
-  currentZone = selectedLoginZone;
-  isAdmin = (currentZone === 'ADMIN');
-  saveSession(currentZone);
-  launchApp();
-  const s = readSession();
-  if (s) startSessionCountdown(s.expiry);
 }
 
 function launchApp() {
@@ -2358,6 +2235,15 @@ function launchApp() {
   const appShell = document.getElementById('appShell');
   if (loginScreen) loginScreen.style.display = 'none';
   if (appShell) appShell.style.display = 'block';
+  
+  // Afficher le nom de l'utilisateur dans le header
+  const agentBadge = document.getElementById('agentNameBadge');
+  const agentValue = document.getElementById('agentNameValue');
+  if (agentBadge && agentValue && currentUser) {
+    agentBadge.style.display = 'inline-flex';
+    agentValue.textContent = currentUser.name;
+  }
+  
   setupHeader();
   buildNav();
   buildDlSection();
@@ -2365,6 +2251,9 @@ function launchApp() {
   syncStickyHeights();
   [100, 400, 900].forEach(d => setTimeout(syncStickyHeights, d));
   reloadData();
+  
+  const s = readSession();
+  if (s) startSessionCountdown(s.expiry);
 }
 
 function setupHeader() {
@@ -2397,7 +2286,7 @@ function doLogout() {
   
   currentZone = null;
   isAdmin = false;
-  selectedLoginZone = null;
+  currentUser = null;
   zoneData = [];
   filteredData = [];
   lastCounts = {};
@@ -2410,10 +2299,10 @@ function doLogout() {
   Object.keys(charts).forEach(k => { try { charts[k].destroy(); } catch (e) {} });
   charts = {};
   
-  document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('sel'));
-  
   const pwdField = document.getElementById('loginPwd');
   if (pwdField) pwdField.value = '';
+  const usernameField = document.getElementById('loginUsername');
+  if (usernameField) usernameField.value = '';
   
   const errDiv = document.getElementById('loginErr');
   if (errDiv) errDiv.style.display = 'none';
@@ -2430,7 +2319,7 @@ function doLogout() {
 }
 
 // ============================================================
-// NAV (suite)
+// NAV
 // ============================================================
 
 function buildNav() {
@@ -2445,7 +2334,7 @@ function buildNav() {
 }
 
 // ============================================================
-// LOAD DATA (suite)
+// LOAD DATA
 // ============================================================
 
 async function reloadData() {
@@ -2709,7 +2598,7 @@ function setStatus(txt, ok) {
 }
 
 // ============================================================
-// KPIs (suite)
+// KPIs
 // ============================================================
 
 const obsVal = r => (r.Observation || '').toString().toUpperCase().trim();
@@ -2781,7 +2670,7 @@ function buildAdminZoneCards() {
 }
 
 // ============================================================
-// CHARTS (suite)
+// CHARTS
 // ============================================================
 
 function applyChartDefaults() {
@@ -2932,8 +2821,117 @@ function buildCharts() {
 }
 
 // ============================================================
-// DOWNLOAD (MODIFIÉ POUR LA BDD DYNAMIQUE)
+// DOWNLOAD
 // ============================================================
+
+async function generateBDD_DRRO() {
+  if (!isAdmin) {
+    toast('Accès réservé à l\'administrateur', 'err');
+    return;
+  }
+  
+  if (zoneData.length === 0) {
+    toast('Aucune donnée disponible. Veuillez d\'abord charger les zones.', 'err');
+    return;
+  }
+  
+  toast('⏳ Génération de BDD-DRRO.xlsx en cours...', 'info');
+  
+  try {
+    const zones = ['CEBS', 'CEJ', 'AEBB'];
+    const zonesData = {};
+    let allHeaders = new Set();
+    
+    for (const zone of zones) {
+      const zoneRows = zoneData.filter(r => r.Source === zone);
+      zonesData[zone] = zoneRows;
+      
+      zoneRows.forEach(row => {
+        Object.keys(row).forEach(key => {
+          if (key !== 'Source') {
+            allHeaders.add(key);
+          }
+        });
+      });
+    }
+    
+    const orderedHeaders = [
+      'ID_Immobilisation', 'ID_Imobilisation', 'ID Immobilisation',
+      'Lib_Article', 'Libellé article', 'LIB_ARTICLE',
+      'NumSerie', 'Numerie', 'NUMERIE', 'COM-ALU',
+      'Lib_Modele', 'Modele', 'Modèle', 'LIB_MODELE',
+      'Lib_Marque', 'Marque', 'LIB_MARQUE',
+      'Localisation', 'LOCALISATION', 'Emplacement',
+      'Gare', 'GARE',
+      'Date MAJ', 'Date_inventaire', 'Date d\'inventaire', 'DATE_INVENTAIRE',
+      'Inventoriste', 'INVENTORISTE',
+      'Observation', 'OBSERVATION',
+      'Cod_Article', 'Code article', 'COD_ARTICLE',
+      'Marche', 'N° Marché', 'N_MARCHE',
+      'PU', 'Prix',
+      'Date_modification', 'Date de modification', 'DATE_MODIFICATION'
+    ];
+    
+    const finalHeaders = [];
+    for (const h of orderedHeaders) {
+      if (allHeaders.has(h) && !finalHeaders.includes(h)) {
+        finalHeaders.push(h);
+      }
+    }
+    allHeaders.forEach(h => {
+      if (!finalHeaders.includes(h) && h !== 'Source') {
+        finalHeaders.push(h);
+      }
+    });
+    
+    const wb = XLSX.utils.book_new();
+    
+    for (const zone of zones) {
+      const data = zonesData[zone];
+      
+      const sheetData = data.map(row => {
+        const newRow = {};
+        finalHeaders.forEach(header => {
+          let value = row[header];
+          if (value === undefined || value === null) {
+            const lowerHeader = header.toLowerCase();
+            for (const [key, val] of Object.entries(row)) {
+              if (key.toLowerCase() === lowerHeader || key === header) {
+                value = val;
+                break;
+              }
+            }
+          }
+          newRow[header] = (value === undefined || value === null) ? '' : value;
+        });
+        return newRow;
+      });
+      
+      const ws = sheetData.length > 0 
+        ? XLSX.utils.json_to_sheet(sheetData, { header: finalHeaders })
+        : XLSX.utils.json_to_sheet([], { header: finalHeaders });
+      
+      ws['!cols'] = finalHeaders.map(header => {
+        let maxLen = header.length;
+        sheetData.slice(0, 100).forEach(row => {
+          const val = row[header] ? row[header].toString() : '';
+          if (val.length > maxLen) maxLen = Math.min(val.length, 50);
+        });
+        return { wch: Math.min(35, Math.max(12, maxLen + 2)) };
+      });
+      
+      XLSX.utils.book_append_sheet(wb, ws, `${zone}_ALL`);
+    }
+    
+    const dateStr = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+    XLSX.writeFile(wb, `BDD-DRRO_${dateStr}.xlsx`);
+    toast('✓ BDD-DRRO.xlsx généré avec succès !', '');
+    
+  } catch (error) {
+    console.error('Erreur génération BDD-DRRO:', error);
+    toast('Erreur lors de la génération: ' + error.message, 'err');
+  }
+}
 
 function buildDlSection() {
   const zones = isAdmin ? ['CEBS', 'CEJ', 'AEBB'] : [currentZone];
@@ -2995,7 +2993,7 @@ function buildExportBtns() {
 }
 
 // ============================================================
-// FILTERS (suite)
+// FILTERS
 // ============================================================
 
 function captureFilters() {
@@ -3083,7 +3081,7 @@ function applyFilters() {
 }
 
 // ============================================================
-// TABLE (suite)
+// TABLE
 // ============================================================
 
 function displayCols() {
@@ -3215,7 +3213,7 @@ function goPage(p) {
 }
 
 // ============================================================
-// MODAL EDIT - Version complète (inchangée pour la longueur)
+// MODAL EDIT
 // ============================================================
 
 function openEditModal(gi) {
@@ -3252,7 +3250,7 @@ function openEditModal(gi) {
     <input type="text" id="mf_id_immo" value="${esc(idImmoValue)}" placeholder="ID Immobilisation">
   </div>`;
   
-  let serieValue = row.Numerie || row.NUMERIE || row['COM-ALU'] || '';
+  let serieValue = row.Numserie || row.NUMSERIE || row['NumSerie'] || '';
   html += `<div class="modal-field">
     <label>🔢 NUMÉRO DE SÉRIE</label>
     <input type="text" id="mf_serie" value="${esc(serieValue)}" placeholder="Numéro de série">
@@ -3349,22 +3347,14 @@ function openEditModal(gi) {
   
   modalFields.innerHTML = html;
   
-if (selectValue === 'DISCORDANCE') {
+  if (selectValue === 'DISCORDANCE') {
     const obsSelect = document.getElementById('mf_obs_sel');
     if (obsSelect && obsSelect.parentElement) {
       let discInput = document.createElement('input');
       discInput.type = 'text';
       discInput.id = 'mf_obs_disc_input';
       discInput.placeholder = 'Préciser la discordance...';
-      
-      // Nettoyer le texte d'affichage (enlever ":" initial pour l'édition)
-      let cleanText = discordText;
-      if (cleanText.startsWith(':')) {
-        cleanText = cleanText.substring(1).trim();
-        if (cleanText.startsWith(' ')) cleanText = cleanText.substring(1);
-      }
-      discInput.value = cleanText;
-      
+      discInput.value = discordText;
       discInput.style.marginTop = '8px';
       discInput.style.width = '100%';
       discInput.style.padding = '8px 12px';
@@ -3373,7 +3363,7 @@ if (selectValue === 'DISCORDANCE') {
       discInput.style.background = 'var(--s2)';
       obsSelect.parentElement.appendChild(discInput);
     }
-}
+  }
   
   const overlay = document.getElementById('modalOverlay');
   if (overlay) overlay.style.display = 'flex';
@@ -3403,13 +3393,11 @@ function toggleDiscText() {
       discInput.style.background = 'var(--s2)';
       sel.parentElement.appendChild(discInput);
     }
-    // Restaurer le texte sauvegardé
     if (hiddenDisc && hiddenDisc.value && discInput.value === '') {
       discInput.value = hiddenDisc.value;
     }
   } else {
     if (discInput) {
-      // Sauvegarder le texte avant suppression
       if (hiddenDisc) {
         hiddenDisc.value = discInput.value;
       }
@@ -3439,13 +3427,10 @@ function submitModal() {
   
   const obsSelect = document.getElementById('mf_obs_sel');
   let observation = obsSelect?.value || '';
-  
-  // Gestion du texte de discordance avec le format ": texte"
   if (observation === 'DISCORDANCE') {
     const discInput = document.getElementById('mf_obs_disc_input');
     if (discInput && discInput.value.trim()) {
       let discText = discInput.value.trim();
-      // S'assurer que le texte commence par ":" (avec espace optionnel)
       if (!discText.startsWith(':')) {
         discText = ': ' + discText;
       } else if (discText === ':') {
@@ -3590,6 +3575,9 @@ async function executeConfirmed() {
   captureFilters();
   toast('⏳ Enregistrement...', 'info');
   
+  // Récupérer le nom de l'utilisateur connecté
+  const utilisateur = currentUser ? currentUser.name : (isAdmin ? 'ADMIN' : currentZone);
+  
   try {
     const res = await fetch(cfg.apiUrl, {
       method: 'POST',
@@ -3599,7 +3587,9 @@ async function executeConfirmed() {
         zone: action.zone,
         action: action.type,
         rowIndex: action.rowIndex,
-        data: action.data
+        data: action.data,
+        utilisateur: utilisateur,
+        sessionId: Date.now().toString()
       })
     });
     
@@ -3743,10 +3733,10 @@ window.addEventListener('load', () => {
     const loadScreen = document.getElementById('loadScreen');
     if (loadScreen) loadScreen.style.display = 'none';
     const s = readSession();
-    if (s && ZONE_CONFIG[s.zone]) {
+    if (s && s.user) {
+      currentUser = s.user;
       currentZone = s.zone;
-      isAdmin = (currentZone === 'ADMIN');
-      selectedLoginZone = s.zone;
+      isAdmin = currentUser.isAdmin;
       launchApp();
       startSessionCountdown(s.expiry);
     } else {
