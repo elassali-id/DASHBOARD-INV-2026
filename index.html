@@ -399,7 +399,10 @@ header {
   color: var(--gold);
   border: 1px solid var(--gold);
 }
-
+  
+.session-expiry-badge {
+  display: none !important;
+}
 .session-expiry-badge {
   font-family: var(--mono);
   font-size: 10px;
@@ -2098,9 +2101,10 @@ function readSession() {
 }
 
 function startSessionCountdown(expiry) {
-  if (isAdmin) {
-    const b = document.getElementById('sessionExpiryBadge');
-    if (b) b.style.display = 'none';
+  const b = document.getElementById('sessionExpiryBadge');
+  if (b) b.style.display = 'none';
+  
+  if (!isAdmin) {
     return;
   }
   if (sessionExpiryInterval) clearInterval(sessionExpiryInterval);
@@ -2114,14 +2118,9 @@ function startSessionCountdown(expiry) {
       setTimeout(doLogout, 1500);
       return;
     }
-    badge.style.display = '';
-    const h = Math.floor(rem / 3600000), m = Math.floor((rem % 3600000) / 60000);
-    badge.textContent = h > 0 ? `⏱ ${h}h${String(m).padStart(2, '0')}` : `⏱ ${m}min`;
-    badge.style.color = rem < 600000 ? 'var(--amber)' : 'var(--tx3)';
-    badge.style.borderColor = rem < 600000 ? 'var(--amber)' : 'var(--bd)';
+    badge.style.display = 'none';
   };
   tick();
-  sessionExpiryInterval = setInterval(tick, 30000);
 }
 
 // ============================================================
