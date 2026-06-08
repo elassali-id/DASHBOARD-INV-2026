@@ -2451,7 +2451,7 @@ async function loadAdminData() {
   
   if (zoneData.length > 0) {
     updateAll();
-    setStatus(`Admin — ${fmt(zoneData.length)} articles (${loadedCount}/3 zones)`, loadedCount > 0);
+    setStatus(`DRRO — ${fmt(zoneData.length)} articles (${loadedCount}/3 zones)`, loadedCount > 0);
     startUpdateWatcher();
     if (loadedCount < 3) {
       showErrorBanner(`${3 - loadedCount} zone(s) non accessible(s). Vérifiez les accès Google Sheets.`);
