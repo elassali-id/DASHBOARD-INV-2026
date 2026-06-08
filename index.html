@@ -1324,10 +1324,21 @@ input[type=text] {
   gap: 20px 24px;
 }
 
+/* Style pour chaque champ avec conteneur rectangulaire */
 .modal-field {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  background: var(--s1);
+  border: 1px solid var(--bd);
+  border-radius: var(--r);
+  padding: 12px 14px;
+  transition: all 0.2s ease;
+}
+
+.modal-field:hover {
+  border-color: var(--acc);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 .modal-field.full-width {
@@ -1336,7 +1347,7 @@ input[type=text] {
 
 .modal-field label {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 600;
   letter-spacing: 0.5px;
   text-transform: uppercase;
@@ -1344,6 +1355,7 @@ input[type=text] {
   display: flex;
   align-items: center;
   gap: 5px;
+  margin-bottom: 4px;
 }
 
 .modal-field input,
@@ -1351,13 +1363,14 @@ input[type=text] {
 .modal-field textarea {
   background: var(--s2);
   border: 1.5px solid var(--bd);
-  border-radius: var(--r);
+  border-radius: calc(var(--r) - 2px);
   padding: 10px 12px;
   font-family: var(--sans);
   font-size: 13px;
   color: var(--tx);
   outline: none;
   transition: .15s;
+  width: 100%;
 }
 
 .modal-field input:focus,
@@ -1380,6 +1393,19 @@ input[type=text] {
 .modal-field label .lock-icon {
   font-size: 10px;
   opacity: 0.6;
+}
+
+/* Style spécifique pour les boutons */
+.modal-buttons .btn,
+.modal-buttons-right .btn {
+  cursor: pointer;
+  pointer-events: auto;
+  position: relative;
+  z-index: 100;
+}
+
+.btn:active {
+  transform: translateY(1px);
 }
 
 .modal-separator {
@@ -1954,9 +1980,9 @@ input[type=text] {
 <div class="toast" id="toast"></div>
 
 <script>
-// ═══════════════════════════════════════════════════════
-//  CONFIGURATION (inchangée)
-// ═══════════════════════════════════════════════════════
+// ============================================================
+// CONFIGURATION
+// ============================================================
 
 const SECRET_TOKEN = '1ppRNrQPgcKOHoBeKI40g35RPFW07bkqDkyw14_6O2mm7flNYVpLOYqWQ';
 
@@ -1994,9 +2020,9 @@ const EXPORT_URL = id => `https://docs.google.com/spreadsheets/d/${id}/export?fo
 const SESSION_KEY = 'drro-session-v3';
 const SESSION_HOURS = 8;
 
-// ═══════════════════════════════════════════════════════
-//  FONCTIONS DE GESTION DES DATES
-// ═══════════════════════════════════════════════════════
+// ============================================================
+// FONCTIONS DE GESTION DES DATES
+// ============================================================
 
 function formatDateToFrench(date) {
   if (!date) return '—';
@@ -2016,7 +2042,10 @@ function isFrenchDateTime(str) {
   return /^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}:\d{2}$/.test(str);
 }
 
-// ═══ STATE ═══
+// ============================================================
+// STATE
+// ============================================================
+
 let currentZone = null, isAdmin = false, selectedLoginZone = null;
 let zoneData = [], filteredData = [];
 let page = 1, PG = 50, sortCol = null, sortDir = 1;
@@ -2027,7 +2056,10 @@ let modalRowIndex = null, modalZone = null, pendingAction = null;
 let savedFilters = null, savedPage = 1;
 let zoneLoadErrors = {};
 
-// ═══ FONCTIONS UTILITAIRES ═══
+// ============================================================
+// FONCTIONS UTILITAIRES
+// ============================================================
+
 function esc(v) {
   return (v == null ? '' : v.toString()).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
@@ -2055,7 +2087,10 @@ function toast(msg, type = '') {
   t._tid = setTimeout(() => t.classList.remove('show'), 3500);
 }
 
-// ═══ SESSION ═══
+// ============================================================
+// SESSION
+// ============================================================
+
 function saveSession(z) {
   try { localStorage.setItem(SESSION_KEY, JSON.stringify({ zone: z, expiry: Date.now() + SESSION_HOURS * 3600000 })); } catch (e) {}
 }
@@ -2104,7 +2139,10 @@ function startSessionCountdown(expiry) {
   sessionExpiryInterval = setInterval(tick, 30000);
 }
 
-// ═══ THEME ═══
+// ============================================================
+// THEME
+// ============================================================
+
 function applyTheme(t) {
   document.documentElement.setAttribute('data-theme', t);
   try { localStorage.setItem('drro-theme', t); } catch (e) {}
@@ -2146,7 +2184,10 @@ async function sha256Hex(s) {
   return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join('');
 }
 
-// ═══ STICKY HEIGHTS ═══
+// ============================================================
+// STICKY HEIGHTS
+// ============================================================
+
 function syncStickyHeights() {
   requestAnimationFrame(() => requestAnimationFrame(() => {
     const hdr = document.querySelector('header');
@@ -2162,7 +2203,10 @@ function syncStickyHeights() {
   }));
 }
 
-// ═══ LOGIN ═══
+// ============================================================
+// LOGIN
+// ============================================================
+
 function selectZone(z) {
   selectedLoginZone = z;
   document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('sel'));
@@ -2282,7 +2326,10 @@ function doLogout() {
   showTab('overview');
 }
 
-// ═══ NAV ═══
+// ============================================================
+// NAV
+// ============================================================
+
 function buildNav() {
   const nav = document.getElementById('mainNav');
   if (nav) {
@@ -2294,7 +2341,10 @@ function buildNav() {
   setTimeout(syncStickyHeights, 20);
 }
 
-// ═══ LOAD DATA ═══
+// ============================================================
+// LOAD DATA
+// ============================================================
+
 async function reloadData() {
   if (!currentZone || isLoading) return;
   isLoading = true;
@@ -2505,7 +2555,10 @@ function handleManual(file) {
   reader.readAsArrayBuffer(file);
 }
 
-// ═══ UPDATE WATCHER ═══
+// ============================================================
+// UPDATE WATCHER
+// ============================================================
+
 function startUpdateWatcher() {
   if (updateCheckInterval) clearInterval(updateCheckInterval);
   updateCheckInterval = setInterval(async () => {
@@ -2552,7 +2605,10 @@ function setStatus(txt, ok) {
   }
 }
 
-// ═══ KPIs ═══
+// ============================================================
+// KPIs
+// ============================================================
+
 const obsVal = r => (r.Observation || '').toString().toUpperCase().trim();
 const gareVal = r => (r.Gare || '').toString().trim();
 const invVal = r => (r.Inventoriste || '').toString().trim().replace(/\s+/g, ' ');
@@ -2621,7 +2677,10 @@ function buildAdminZoneCards() {
   }).join('');
 }
 
-// ═══ CHARTS ═══
+// ============================================================
+// CHARTS
+// ============================================================
+
 function applyChartDefaults() {
   if (typeof Chart !== 'undefined') {
     Chart.defaults.color = cssVar('--tx2') || '#2C5282';
@@ -2769,7 +2828,10 @@ function buildCharts() {
   }
 }
 
-// ═══ DOWNLOAD ═══
+// ============================================================
+// DOWNLOAD
+// ============================================================
+
 function buildDlSection() {
   const zones = isAdmin ? ['CEBS', 'CEJ', 'AEBB'] : [currentZone];
   const dlGrid = document.getElementById('dlGrid');
@@ -2808,7 +2870,10 @@ function buildExportBtns() {
   }
 }
 
-// ═══ FILTERS ═══
+// ============================================================
+// FILTERS
+// ============================================================
+
 function captureFilters() {
   savedFilters = {
     src: document.getElementById('fSrc')?.value || '',
@@ -2893,7 +2958,10 @@ function applyFilters() {
   renderTable();
 }
 
-// ═══ TABLE ═══
+// ============================================================
+// TABLE
+// ============================================================
+
 function displayCols() {
   return (isAdmin ? ['Source'] : []).concat(sourceHeaders.filter(h => h && h !== 'Source'));
 }
@@ -2982,10 +3050,9 @@ function renderTable() {
       }).join('');
       tBody.innerHTML = rowsHtml;
       
-      // ⭐ NOUVEAU : Ajouter les écouteurs de clic sur chaque ligne cliquable
+      // Ajouter les écouteurs de clic sur chaque ligne cliquable
       document.querySelectorAll('#tBody .clickable-row').forEach(row => {
         row.addEventListener('click', (e) => {
-          // Éviter de déclencher si on clique sur le bouton (pour ne pas double-déclencher)
           if (e.target.tagName === 'BUTTON' || e.target.closest('.btn-tbl-edit')) return;
           const idx = row.getAttribute('data-row-index');
           if (idx !== null) openEditModal(parseInt(idx));
@@ -3024,12 +3091,14 @@ function goPage(p) {
   renderTable();
 }
 
-// ═══ MODAL EDIT ═══
+// ============================================================
+// MODAL EDIT - VERSION CORRIGÉE
+// ============================================================
+
 function openEditModal(gi) {
   const row = zoneData[gi];
   if (!row) return;
   const zone = row.Source || currentZone;
-  const headers = sourceHeaders.filter(h => h && h !== 'Source');
   modalRowIndex = gi;
   modalZone = zone;
   const cfg = ZONE_CONFIG[zone] || {};
@@ -3050,13 +3119,13 @@ function openEditModal(gi) {
   const deleteBtn = document.getElementById('modalDeleteBtn');
   if (deleteBtn) deleteBtn.style.display = '';
   
-  // Construction du formulaire en grille 2 colonnes propre
+  // Construction du formulaire en grille 2 colonnes
   const modalFields = document.getElementById('modalFields');
   if (!modalFields) return;
   
   let html = '';
   
-  // 1. ID Immobilisation (non modifiable avec cadenas)
+  // 1. ID Immobilisation (NON MODIFIABLE avec 🔒)
   let idImmoValue = row.ID_Imobilisation || row.ID_Immobilisation || row['ID Immobilisation'] || '';
   html += `<div class="modal-field">
     <label><span class="lock-icon">🔒</span> ID IMMOBILISATION</label>
@@ -3077,7 +3146,7 @@ function openEditModal(gi) {
     <input type="text" id="mf_libelle" value="${esc(libValue)}" placeholder="Libellé de l'article" style="width:100%">
   </div>`;
   
-  // 4. Observation (select avec option Discordance)
+  // 4. Observation
   let obsValue = row.Observation || row.OBSERVATION || '';
   let obsUpper = obsValue.toString().toUpperCase();
   let isDiscord = obsUpper.startsWith('DISCORDANCE');
@@ -3101,63 +3170,74 @@ function openEditModal(gi) {
     <input type="text" id="mf_code_article" value="${esc(codeValue)}" placeholder="Code article">
   </div>`;
   
-  // 6. N° Marché + PU (deux champs côte à côte)
+  // 6. N° Marché
   html += `<div class="modal-field">
     <label>📋 N° MARCHÉ</label>
     <input type="text" id="mf_marche" value="${esc(row.Marche || row['N° Marché'] || row.N_MARCHE || '')}" placeholder="Numéro de marché">
   </div>`;
   
+  // 7. PU
   html += `<div class="modal-field">
     <label>💰 PU</label>
     <input type="text" id="mf_pu" value="${esc(row.PU || row.Prix || '')}" placeholder="Prix unitaire">
   </div>`;
   
-  // 7. Marque + Modèle
+  // 8. Marque
   html += `<div class="modal-field">
     <label>🏷️ MARQUE</label>
     <input type="text" id="mf_marque" value="${esc(row.Marque || row.LIB_MARQUE || '')}" placeholder="Marque">
   </div>`;
   
+  // 9. Modèle
   html += `<div class="modal-field">
     <label>📐 MODÈLE</label>
     <input type="text" id="mf_modele" value="${esc(row.Modele || row.LIB_MODELE || '')}" placeholder="Modèle">
   </div>`;
   
-  // 8. Numérie (non modifiable avec cadenas)
+  // 10. NUMÉRIE (NON MODIFIABLE avec 🔒)
   html += `<div class="modal-field">
     <label><span class="lock-icon">🔒</span> NUMÉRIE</label>
     <input type="text" class="readonly-field" value="${esc(serieValue)}" readonly disabled>
   </div>`;
   
-  // 9. Localisation (non modifiable avec cadenas)
+  // 11. LOCALISATION (NON MODIFIABLE avec 🔒)
   let locValue = row.Localisation || row.LOCALISATION || row.Emplacement || '';
   html += `<div class="modal-field">
     <label><span class="lock-icon">🔒</span> LOCALISATION</label>
     <input type="text" class="readonly-field" value="${esc(locValue)}" readonly disabled>
   </div>`;
   
-  // 10. Gare (non modifiable avec cadenas)
+  // 12. GARE (NON MODIFIABLE avec 🔒)
   let gareValue = row.Gare || row.GARE || '';
   html += `<div class="modal-field">
     <label><span class="lock-icon">🔒</span> GARE</label>
     <input type="text" class="readonly-field" value="${esc(gareValue)}" readonly disabled>
   </div>`;
   
-  // 11. Inventoriste
+  // 13. INVENTORISTE (MODIFIABLE)
   let invValue = row.Inventoriste || row.INVENTORISTE || '';
   html += `<div class="modal-field">
     <label>👤 INVENTORISTE</label>
     <input type="text" id="mf_inventoriste" value="${esc(invValue)}" placeholder="Nom de l'inventoriste">
   </div>`;
   
-  // 12. Date d'inventaire
+  // 14. DATE D'INVENTAIRE (MODIFIABLE)
   let dateInvValue = row.Date_inventaire || row['Date d\'inventaire'] || row.DATE_INVENTAIRE || '';
+  if (dateInvValue && !isFrenchDateTime(dateInvValue) && dateInvValue.includes(' ')) {
+    let parts = dateInvValue.split(' ');
+    if (parts[0].includes('-')) {
+      let dateParts = parts[0].split('-');
+      if (dateParts.length === 3) {
+        dateInvValue = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]} ${parts[1] || '00:00:00'}`;
+      }
+    }
+  }
   html += `<div class="modal-field">
     <label>📅 DATE D'INVENTAIRE</label>
-    <input type="text" id="mf_date_inventaire" value="${esc(dateInvValue)}" placeholder="DD/MM/YYYY">
+    <input type="text" id="mf_date_inventaire" value="${esc(dateInvValue)}" placeholder="DD/MM/YYYY HH:MM:SS">
   </div>`;
   
-  // 13. Date de modification (non modifiable avec cadenas)
+  // 15. DATE DE MODIFICATION (NON MODIFIABLE avec 🔒)
   let dateModifValue = row.Date_modification || row['Date de modification'] || row.DATE_MODIFICATION || '';
   html += `<div class="modal-field">
     <label><span class="lock-icon">🔒</span> DATE DE MODIFICATION</label>
@@ -3169,10 +3249,8 @@ function openEditModal(gi) {
   
   modalFields.innerHTML = html;
   
-  // Afficher/masquer le champ Discordance
-  const discField = document.getElementById('mf_obs_disc');
-  if (discField && selectValue === 'DISCORDANCE') {
-    // Ajouter le champ Discordance après le select
+  // Afficher le champ Discordance si nécessaire
+  if (selectValue === 'DISCORDANCE') {
     const obsSelect = document.getElementById('mf_obs_sel');
     if (obsSelect && obsSelect.parentElement) {
       let discInput = document.createElement('input');
@@ -3198,7 +3276,6 @@ function openEditModal(gi) {
   }, 80);
 }
 
-// Fonction toggleDiscText corrigée
 function toggleDiscText() {
   const sel = document.getElementById('mf_obs_sel');
   if (!sel) return;
@@ -3222,14 +3299,18 @@ function toggleDiscText() {
   }
 }
 
-// Fonction submitModal corrigée
+function closeModal() {
+  const overlay = document.getElementById('modalOverlay');
+  if (overlay) overlay.style.display = 'none';
+}
+
 function submitModal() {
   const row = zoneData[modalRowIndex];
   const zone = modalZone || (row && row.Source) || currentZone;
   const headers = sourceHeaders.filter(h => h && h !== 'Source');
   const data = {};
   
-  // Récupérer les valeurs des champs
+  // Récupérer les valeurs des champs MODIFIABLES
   const serie = document.getElementById('mf_serie')?.value || '';
   const libelle = document.getElementById('mf_libelle')?.value || '';
   const codeArticle = document.getElementById('mf_code_article')?.value || '';
@@ -3254,19 +3335,22 @@ function submitModal() {
   headers.forEach(h => {
     const hUpper = h.toUpperCase();
     if (h === 'Numerie' || h === 'NUMERIE' || h === 'COM-ALU') data[h] = serie;
-    else if (h === 'Lib_Article' || h === 'LIB_ARTICLE') data[h] = libelle;
-    else if (h === 'Cod_Article' || h === 'COD_ARTICLE') data[h] = codeArticle;
+    else if (h === 'Lib_Article' || h === 'LIB_ARTICLE' || h === 'Libellé article') data[h] = libelle;
+    else if (h === 'Cod_Article' || h === 'COD_ARTICLE' || h === 'Code article') data[h] = codeArticle;
     else if (h === 'Marche' || h === 'N° Marché' || h === 'N_MARCHE') data[h] = marche;
     else if (h === 'PU' || h === 'Prix') data[h] = pu;
     else if (h === 'Marque' || h === 'LIB_MARQUE') data[h] = marque;
-    else if (h === 'Modele' || h === 'LIB_MODELE') data[h] = modele;
+    else if (h === 'Modele' || h === 'LIB_MODELE' || h === 'Modèle') data[h] = modele;
     else if (h === 'Inventoriste' || h === 'INVENTORISTE') data[h] = inventoriste;
-    else if (h === 'Date_inventaire' || h === "Date d'inventaire") data[h] = dateInventaire;
+    else if (h === 'Date_inventaire' || h === "Date d'inventaire" || h === 'DATE_INVENTAIRE') data[h] = dateInventaire;
     else if (h === 'Observation' || h === 'OBSERVATION') data[h] = observation;
   });
   
-  // Vérifier les modifications
+  // Vérifier les modifications (ignorer les champs non modifiables)
+  const nonModifiable = ['Localisation', 'LOCALISATION', 'Gare', 'GARE', 'Date_modification', 'Date de modification', 'ID_Imobilisation', 'ID_Immobilisation'];
+  
   const changes = headers.filter(h => {
+    if (nonModifiable.includes(h)) return false;
     const newVal = (data[h] != null ? data[h] : '').toString();
     const oldVal = (row[h] != null ? row[h] : '').toString();
     return newVal !== oldVal;
@@ -3305,6 +3389,7 @@ function submitModal() {
   closeModal();
   openConfirm(msg, '✏️', 'Confirmer la modification', 'var(--grad)', '✓ Enregistrer');
 }
+
 function askDeleteFromModal() {
   const row = zoneData[modalRowIndex];
   if (!row) return;
@@ -3344,12 +3429,7 @@ function openConfirm(msg, icon = '⚠️', title = 'Confirmer', btnGrad = 'var(-
   if (confirmIcon) confirmIcon.textContent = icon;
   if (confirmTitle) confirmTitle.textContent = title;
   if (confirmMsg) {
-    // 🔥 Améliore l'affichage du message
-    confirmMsg.innerHTML = `
-      <div style="text-align:left; line-height:1.6;">
-        ${msg}
-      </div>
-    `;
+    confirmMsg.innerHTML = `<div style="text-align:left; line-height:1.6;">${msg}</div>`;
   }
   
   if (confirmBox && okBtn) {
@@ -3463,7 +3543,10 @@ function removeZoneDataRow(zone, sheetRowIndex) {
   return true;
 }
 
-// ═══ EXPORT ═══
+// ============================================================
+// EXPORT
+// ============================================================
+
 function exportFiltered() {
   exportData(filteredData, 'inventaire_' + (isAdmin ? 'admin' : 'zone_' + currentZone) + '_filtre');
 }
@@ -3505,7 +3588,10 @@ function exportData(data, name) {
   toast('Export téléchargé — ' + fmt(data.length) + ' lignes');
 }
 
-// ═══ TABS ═══
+// ============================================================
+// TABS
+// ============================================================
+
 function showTab(id) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
@@ -3517,7 +3603,10 @@ function showTab(id) {
   setTimeout(syncStickyHeights, 50);
 }
 
-// ═══ INIT ═══
+// ============================================================
+// INIT
+// ============================================================
+
 initTheme();
 (function() {
   const f = document.getElementById('loginFooterDate');
