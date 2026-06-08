@@ -1341,11 +1341,7 @@ input[type=text] {
   font-size: 10px;
   opacity: 0.6;
 }
-  
-.modal-field:has(input[placeholder*="automatiquement"]) label::after {
-  content: "";
-}
-  
+
 .modal-sep {
   grid-column: 1/-1;
   height: 1px;
@@ -1888,7 +1884,7 @@ input[type=text] {
 
 <script>
 // ═══════════════════════════════════════════════════════
-//  CONFIGURATION
+//  CONFIGURATION AVEC LES APIS DE CHAQUE ZONE
 // ═══════════════════════════════════════════════════════
 
 const SECRET_TOKEN = '1ppRNrQPgcKOHoBeKI40g35RPFW07bkqDkyw14_6O2mm7flNYVpLOYqWQ';
@@ -1913,7 +1909,7 @@ const ZONE_CONFIG = {
   AEBB: {
     pwdHash: 'b81ec7c1b0f0b711c77b52cf3efacdae4c8e585ce5c80b4c056ea7fbc6dfd218',
     sheetId: '1krHCtAzSB53cAMKZJ6YXb9K881d__KOKo2yC_hfMxeA',
-    apiUrl: 'https://script.google.com/macros/s/AKfycbyy1Y2R0ihtSBH1SUwbAYe5hIWpTKmSEXjR_p6A9G1biZm7kthMm6SBp2kTWwdm1NKH/exec',
+    apiUrl: 'https://script.google.com/macros/s/AKfycbzgxkzvnqwCUyTuFM6dvE87iGXdHk3hV3vHdPRfiILKL2cFGKoxZFH_YZ87ele7dldM/exec',
     color: '#1d9e75', color2: 'rgba(29,158,117,0.65)',
     dlHref: 'https://docs.google.com/spreadsheets/d/1krHCtAzSB53cAMKZJ6YXb9K881d__KOKo2yC_hfMxeA/export?format=xlsx',
     icon: '📙', badgeClass: 'src-aebb', zcolor: '#1d9e75'
@@ -2860,7 +2856,12 @@ function renderCell(r, c) {
     }
     return `<td style="font-family:var(--mono);font-size:10px">${dateValue || '—'}</td>`;
   }
-  return `<td>${esc(r[c])||'—'}</td>`;
+  let cellContent = esc(r[c]) || '—';
+  // Indicateur visuel pour les lignes non modifiables par l'utilisateur courant
+  if (!isAdmin && r.Source !== currentZone) {
+    cellContent = `<span style="opacity:0.5;filter:grayscale(0.3)">${cellContent}</span>`;
+  }
+  return `<td>${cellContent}</td>`;
 }
 
 function buildTableHead() {
@@ -2908,6 +2909,7 @@ function renderTable() {
           const gi = zoneData.indexOf(r);
           const cells = cols.map(c => renderCell(r, c)).join('');
           if (!isAdmin) return `<tr>${cells}</tr>`;
+          // Pour l'admin : bouton visible pour toutes les zones
           return `<tr><td class="td-act"><button class="btn-tbl-edit" onclick="openEditModal(${gi})" title="Modifier cette ligne">✏</button></td>${cells}</tr>`;
         }).join('');
   }
@@ -2942,11 +2944,18 @@ function goPage(p) {
   renderTable();
 }
 
-// ═══ MODAL EDIT ═══
+// ═══ MODAL EDIT AVEC VÉRIFICATION DES PERMISSIONS ═══
 function openEditModal(gi) {
   const row = zoneData[gi];
   if (!row) return;
   const zone = row.Source || currentZone;
+  
+  // VÉRIFICATION DES PERMISSIONS : seul l'admin ou la zone concernée peut modifier
+  if (!isAdmin && zone !== currentZone) {
+    toast(`⛔ Vous ne pouvez modifier que les données de votre zone (${currentZone})`, 'err');
+    return;
+  }
+  
   const headers = sourceHeaders.filter(h => h && h !== 'Source');
   modalRowIndex = gi;
   modalZone = zone;
@@ -2967,7 +2976,14 @@ function openEditModal(gi) {
   }
   
   const deleteBtn = document.getElementById('modalDeleteBtn');
-  if (deleteBtn) deleteBtn.style.display = '';
+  // Bouton suppression visible seulement pour ADMIN ou la zone propriétaire
+  if (deleteBtn) {
+    if (isAdmin || zone === currentZone) {
+      deleteBtn.style.display = '';
+    } else {
+      deleteBtn.style.display = 'none';
+    }
+  }
   
   // Ordre personnalisé des champs
   const order = [
@@ -3026,12 +3042,10 @@ function openEditModal(gi) {
         <input type="text" id="mf_obs_disc" placeholder="Préciser..." value="${esc(dt)}"
           style="width:100%;background:var(--s2);border:1.5px solid var(--bd);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--tx);outline:none;display:${sv === 'DISCORDANCE' ? 'block' : 'none'}">`;
       } 
-      // Lib_Article : champ sur toute la largeur
       else if (isLibArticle) {
         fld = `<input type="text" id="mf_${h.replace(/\W/g, '_')}" value="${esc(val.toString())}" 
           style="width:100%;background:var(--s2);border:1.5px solid var(--bd);border-radius:var(--r);padding:10px 12px;font-size:13px;color:var(--tx);outline:none">`;
       }
-      // Champs protégés
       else if (isProtected) {
         fld = `<input type="text" value="${esc(val)}" 
           style="width:100%;background:var(--s3);border:1.5px solid var(--bd);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--tx3);outline:none;cursor:not-allowed;font-style:italic"
@@ -3052,7 +3066,6 @@ function openEditModal(gi) {
         fld = `<input type="text" id="mf_${h.replace(/\W/g, '_')}" value="${esc(val.toString())}">`;
       }
       
-      // Lib_Article occupe toute la largeur
       const isFullWidth = isLibArticle || isObs;
       return `<div class="modal-field${isFullWidth ? ' full' : ''}"><label>${esc(h)}</label>${fld}</div>`;
     }).join('');
@@ -3077,6 +3090,14 @@ function closeModal() {
 function submitModal() {
   const row = zoneData[modalRowIndex];
   const zone = modalZone || (row && row.Source) || currentZone;
+  
+  // VÉRIFICATION : seul l'admin ou la zone concernée peut modifier
+  if (!isAdmin && zone !== currentZone) {
+    toast(`⛔ Vous ne pouvez modifier que les données de votre zone (${currentZone})`, 'err');
+    closeModal();
+    return;
+  }
+  
   const headers = sourceHeaders.filter(h => h && h !== 'Source');
   const data = {};
   
@@ -3091,6 +3112,7 @@ function submitModal() {
       if (sel) data[h] = sel.value === 'DISCORDANCE' && disc && disc.value.trim() ? 'DISCORDANCE ' + disc.value.trim() : sel.value;
     } 
     else if (isDateModification) {
+      // Ne pas envoyer la date modification, l'API la gère
     }
     else {
       const el = document.getElementById('mf_' + h.replace(/\W/g, '_'));
@@ -3142,6 +3164,14 @@ function askDeleteFromModal() {
   const row = zoneData[modalRowIndex];
   if (!row) return;
   const zone = modalZone || (row && row.Source) || currentZone;
+  
+  // VÉRIFICATION : seul l'admin ou la zone concernée peut supprimer
+  if (!isAdmin && zone !== currentZone) {
+    toast(`⛔ Vous ne pouvez supprimer que les données de votre zone (${currentZone})`, 'err');
+    closeModal();
+    return;
+  }
+  
   const zoneRows = zoneData.filter(r => r.Source === zone);
   const idxInZone = zoneRows.indexOf(row);
   const sheetRow = idxInZone + 2;
@@ -3204,9 +3234,10 @@ async function executeConfirmed() {
   const action = pendingAction;
   closeConfirm();
   
+  // Utiliser l'API de la zone concernée
   const cfg = ZONE_CONFIG[action.zone];
   if (!cfg || !cfg.apiUrl) {
-    toast('URL Apps Script manquante pour ' + action.zone, 'err');
+    toast(`URL API manquante pour ${action.zone}`, 'err');
     return;
   }
   
@@ -3222,7 +3253,8 @@ async function executeConfirmed() {
         zone: action.zone,
         action: action.type,
         rowIndex: action.rowIndex,
-        data: action.data
+        data: action.data,
+        modificateur: currentZone  // Envoie la zone qui fait la modification
       })
     });
     
@@ -3244,6 +3276,15 @@ async function executeConfirmed() {
             }
           }
         }
+        if (result.modificateur) {
+          const row = zoneData[action.globalIdx];
+          for (const key in row) {
+            if (key === 'Modificateur' || key === 'Dernier_modificateur' || key === 'Modifié par') {
+              row[key] = result.modificateur;
+              break;
+            }
+          }
+        }
       } else if (action.type === 'delete') {
         removeZoneDataRow(action.zone, action.rowIndex);
       }
@@ -3257,6 +3298,7 @@ async function executeConfirmed() {
       renderTable();
       buildKPIs();
       if (isAdmin) buildAdminZoneCards();
+      buildCharts(); // Rafraîchir les graphiques
     } else {
       toast('Erreur : ' + (result.error || 'Inconnue'), 'err');
     }
