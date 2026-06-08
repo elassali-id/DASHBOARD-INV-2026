@@ -3194,34 +3194,30 @@ function openEditModal(gi) {
     <input type="text" id="mf_modele" value="${esc(row.Modele || row.LIB_MODELE || '')}" placeholder="Modèle">
   </div>`;
   
-  // 10. NUMÉRIE (MODIFIABLE)
-  html += `<div class="modal-field">
-    <label>🔢 NUM-SÉRIE</label>
-    <input type="text" id="mf_numerie" value="${esc(serieValue)}" placeholder="Numérie">
-  </div>`;
+
   
-  // 11. LOCALISATION (MODIFIABLE)
+  // 10. LOCALISATION (MODIFIABLE)
   let locValue = row.Localisation || row.LOCALISATION || row.Emplacement || '';
   html += `<div class="modal-field">
     <label>📍 LOCALISATION</label>
     <input type="text" id="mf_localisation" value="${esc(locValue)}" placeholder="Localisation">
   </div>`;
   
-  // 12. GARE (MODIFIABLE)
+  // 11. GARE (MODIFIABLE)
   let gareValue = row.Gare || row.GARE || '';
   html += `<div class="modal-field">
     <label>🎫 GARE</label>
     <input type="text" id="mf_gare" value="${esc(gareValue)}" placeholder="Gare">
   </div>`;
   
-  // 13. INVENTORISTE (NON MODIFIABLE avec 🔒)
+  // 12. INVENTORISTE (NON MODIFIABLE avec 🔒)
   let invValue = row.Inventoriste || row.INVENTORISTE || '';
   html += `<div class="modal-field">
     <label><span class="lock-icon">🔒</span> 👤 INVENTORISTE</label>
     <input type="text" class="readonly-field" value="${esc(invValue)}" readonly disabled>
   </div>`;
   
-  // 14. DATE D'INVENTAIRE (NON MODIFIABLE avec 🔒)
+  // 13. DATE D'INVENTAIRE (NON MODIFIABLE avec 🔒)
   let dateInvValue = row.Date_inventaire || row['Date d\'inventaire'] || row.DATE_INVENTAIRE || '';
   if (dateInvValue && !isFrenchDateTime(dateInvValue) && dateInvValue.includes(' ')) {
     let parts = dateInvValue.split(' ');
@@ -3237,7 +3233,7 @@ function openEditModal(gi) {
     <input type="text" class="readonly-field" value="${esc(dateInvValue)}" readonly disabled>
   </div>`;
   
-  // 15. DATE DE MODIFICATION (NON MODIFIABLE avec 🔒)
+  // 14. DATE DE MODIFICATION (NON MODIFIABLE avec 🔒)
   let dateModifValue = row.Date_modification || row['Date de modification'] || row.DATE_MODIFICATION || '';
   html += `<div class="modal-field">
     <label><span class="lock-icon">🔒</span> 📅 DATE DE MODIFICATION</label>
