@@ -968,7 +968,6 @@ thead th:not(.th-act):hover {
   background: var(--s3);
 }
 
-/* LIGNE CLAVIABLE COMME BOUTON - NOUVEAU */
 .clickable-row {
   cursor: pointer;
 }
@@ -1233,8 +1232,8 @@ input[type=text] {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
-  flex-shrink: 0;
 }
+
 .confirm-msg p {
   margin: 8px 0;
   padding: 4px 0;
@@ -1250,10 +1249,15 @@ input[type=text] {
   min-width: 180px;
   display: inline-block;
 }
+
+/* ============================================ */
+/* STYLES MODAL CORRIGÉS - Structure propre     */
+/* ============================================ */
+
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.45);
+  background: rgba(0,0,0,.55);
   z-index: 5000;
   display: flex;
   align-items: center;
@@ -1265,9 +1269,8 @@ input[type=text] {
   background: var(--s1);
   border: 1.5px solid var(--bd);
   border-radius: var(--r3);
-  padding: 28px 32px;
   width: 100%;
-  max-width: 640px;
+  max-width: 950px;
   max-height: 92vh;
   overflow-y: auto;
   box-shadow: var(--shadow-lg);
@@ -1286,111 +1289,158 @@ input[type=text] {
 
 .modal-title {
   font-family: var(--mono);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--tx);
-  margin-bottom: 20px;
+  padding: 20px 24px 12px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border-bottom: 1px solid var(--bd);
+  background: var(--s2);
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
-.modal-grid {
+.modal-zone-badge {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: var(--s3);
+  color: var(--tx2);
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+/* Grille 2 colonnes pour la modale */
+.modal-form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 4px;
+  gap: 20px 24px;
 }
 
 .modal-field {
-  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.modal-field.full {
-  grid-column: 1/-1;
+.modal-field.full-width {
+  grid-column: span 2;
 }
 
 .modal-field label {
-  display: block;
   font-family: var(--mono);
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 600;
-  letter-spacing: .1em;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
   color: var(--tx3);
-  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
-.modal-field input, .modal-field select {
-  width: 100%;
+.modal-field input,
+.modal-field select,
+.modal-field textarea {
   background: var(--s2);
   border: 1.5px solid var(--bd);
   border-radius: var(--r);
-  padding: 8px 12px;
+  padding: 10px 12px;
   font-family: var(--sans);
-  font-size: 12px;
+  font-size: 13px;
   color: var(--tx);
   outline: none;
   transition: .15s;
 }
 
-.modal-field input:focus, .modal-field select:focus {
+.modal-field input:focus,
+.modal-field select:focus,
+.modal-field textarea:focus {
   border-color: var(--acc);
   box-shadow: 0 0 0 3px rgba(26,54,93,.12);
 }
-  
-.modal-field.full input {
-  font-size: 13px;
-  padding: 10px 12px;
+
+/* Champ non modifiable (lecture seule) - UN SEUL CADENAS */
+.modal-field input.readonly-field {
+  background: var(--s3);
+  color: var(--tx3);
+  border-color: var(--bd);
+  cursor: not-allowed;
+  font-style: italic;
 }
 
-.modal-grid {
-  row-gap: 14px;
-  column-gap: 16px;
-}
-  
-.modal-field input[readonly], 
-.modal-field input:disabled {
-  background: var(--s3) !important;
-  color: var(--tx3) !important;
-  border: 1.5px solid var(--bd) !important;
-  cursor: not-allowed !important;
-  font-style: italic !important;
-  opacity: 0.8;
-}
-
-.modal-field:has(input[readonly]:disabled) label::after {
-  content: " 🔒";
+/* Cadenas unique dans le label */
+.modal-field label .lock-icon {
   font-size: 10px;
   opacity: 0.6;
 }
-  
-.modal-field:has(input[placeholder*="automatiquement"]) label::after {
-  content: "";
-}
-  
-.modal-sep {
-  grid-column: 1/-1;
+
+.modal-separator {
+  grid-column: span 2;
   height: 1px;
   background: var(--bd);
-  margin: 8px 0;
+  margin: 8px 0 16px 0;
 }
 
-.modal-btns {
+.modal-buttons {
   display: flex;
-  gap: 8px;
   justify-content: space-between;
-  margin-top: 20px;
-  flex-wrap: wrap;
+  align-items: center;
+  padding: 16px 24px;
   border-top: 1px solid var(--bd);
-  padding-top: 16px;
+  background: var(--s2);
+  border-radius: 0 0 var(--r3) var(--r3);
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
 }
 
-.modal-btns-right {
+.modal-buttons-right {
   display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+  gap: 12px;
 }
+
+/* Responsive modal */
+@media (max-width: 700px) {
+  .modal-form-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  .modal-field.full-width {
+    grid-column: span 1;
+  }
+  .modal-box {
+    max-width: 95vw;
+  }
+  .modal-buttons {
+    flex-direction: column-reverse;
+    gap: 12px;
+  }
+  .modal-buttons-right {
+    width: 100%;
+    justify-content: center;
+  }
+  .modal-buttons .btn-red {
+    width: 100%;
+    justify-content: center;
+  }
+  .modal-title {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+}
+
+/* ============================================ */
+/* FIN STYLES MODAL CORRIGÉS                    */
+/* ============================================ */
 
 .confirm-overlay {
   position: fixed;
@@ -1667,14 +1717,6 @@ input[type=text] {
     grid-column: 1fr;
   }
   
-  .modal-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .modal-box {
-    padding: 20px 16px;
-  }
-  
   .login-box {
     padding: 24px 18px;
     max-width: 95vw;
@@ -1881,13 +1923,15 @@ input[type=text] {
 <div class="modal-overlay" id="modalOverlay" style="display:none" onclick="if(event.target===this)closeModal()">
   <div class="modal-box">
     <div class="modal-title">
-      <span id="modalTitle">Modifier</span>
-      <span id="modalZoneBadge" style="font-family:var(--mono);font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:var(--s3);color:var(--tx3)"></span>
+      <span id="modalTitle">✏️ Modifier l'article</span>
+      <span id="modalZoneBadge" class="modal-zone-badge">—</span>
     </div>
-    <div class="modal-grid" id="modalFields"></div>
-    <div class="modal-btns">
-      <button class="btn btn-red btn-sm" id="modalDeleteBtn" onclick="askDeleteFromModal()" style="display:none">🗑 Supprimer cette ligne</button>
-      <div class="modal-btns-right">
+    <div class="modal-body">
+      <div id="modalFields" class="modal-form-grid"></div>
+    </div>
+    <div class="modal-buttons">
+      <button class="btn btn-red" id="modalDeleteBtn" onclick="askDeleteFromModal()" style="display:none">🗑 Supprimer cette ligne</button>
+      <div class="modal-buttons-right">
         <button class="btn btn-out" onclick="closeModal()">✕ Annuler</button>
         <button class="btn btn-acc" id="modalSaveBtn" onclick="submitModal()">✓ Enregistrer</button>
       </div>
@@ -2990,240 +3034,242 @@ function openEditModal(gi) {
   modalZone = zone;
   const cfg = ZONE_CONFIG[zone] || {};
   
-  // Récupérer l'ID Immobilisation pour le titre
+  // ID Immobilisation pour le titre
   const idImmo = row.ID_Imobilisation || row.ID_Immobilisation || row['ID Immobilisation'] || 'Sans ID';
   
   const modalTitle = document.getElementById('modalTitle');
-  if (modalTitle) modalTitle.textContent = `✏ Modifier l'article - ${idImmo}`;
+  if (modalTitle) modalTitle.textContent = `✏️ Modifier l'article - ${idImmo}`;
   
   const badge = document.getElementById('modalZoneBadge');
   if (badge) {
     badge.textContent = zone;
     badge.style.background = `color-mix(in srgb, ${cfg.zcolor || 'var(--acc)'} 14%, var(--s1))`;
     badge.style.color = cfg.zcolor || 'var(--acc)';
-    badge.style.border = `1px solid ${cfg.zcolor || 'var(--acc)'}`;
   }
   
   const deleteBtn = document.getElementById('modalDeleteBtn');
   if (deleteBtn) deleteBtn.style.display = '';
   
-  // ⚠️ SUPPRIME tout ce qui concerne "order" et "sortedHeaders" ici
-  // car on n'en a plus besoin
-  
-  // ⚠️ CONSTRUCTION DIRECTE DU MODAL sans passer par sortedHeaders
+  // Construction du formulaire en grille 2 colonnes propre
   const modalFields = document.getElementById('modalFields');
-  if (modalFields) {
-    // Séparer les champs par catégories
-    const idImmoFields = headers.filter(h => 
-      h === 'ID_Imobilisation' || h === 'ID_Immobilisation' || h === 'ID Immobilisation'
-    );
-    const serieFields = headers.filter(h => 
-      h === 'Numérie' || h === 'NUMERIE' || h === 'COM-ALU' || h === 'Série'
-    );
-    const libArticleFields = headers.filter(h => 
-      h === 'Lib_Article' || h === 'LIB_ARTICLE' || h === 'Libellé article'
-    );
-    const observationFields = headers.filter(h => 
-      h === 'Observation' || h === 'OBSERVATION'
-    );
-    const codeArticleFields = headers.filter(h => 
-      h === 'Cod_Article' || h === 'COD_ARTICLE' || h === 'Code article'
-    );
-    const otherFields = headers.filter(h => 
-      !idImmoFields.includes(h) && !serieFields.includes(h) && 
-      !libArticleFields.includes(h) && !observationFields.includes(h) && 
-      !codeArticleFields.includes(h)
-    );
-    
-    let html = '';
-    
-    // LIGNE 1 : ID Immobilisation + Numéro de série (côte à côte)
-    html += `<div class="modal-grid" style="grid-template-columns:1fr 1fr; margin-bottom:12px;">`;
-    
-    // ID Immobilisation
-    if (idImmoFields.length) {
-      const h = idImmoFields[0];
-      let val = row[h] != null ? row[h] : '';
-      html += `<div class="modal-field">
-        <label>🏷️ ${esc(h)}</label>
-        <input type="text" id="mf_${h.replace(/\W/g, '_')}" value="${esc(val)}" style="font-family:var(--mono);font-weight:600;">
-      </div>`;
-    } else {
-      html += `<div class="modal-field">
-        <label>🏷️ ID Immobilisation</label>
-        <input type="text" id="mf_id_immo" value="${esc(row.ID_Imobilisation || row.ID_Immobilisation || row['ID Immobilisation'] || '')}">
-      </div>`;
+  if (!modalFields) return;
+  
+  let html = '';
+  
+  // 1. ID Immobilisation (non modifiable avec cadenas)
+  let idImmoValue = row.ID_Imobilisation || row.ID_Immobilisation || row['ID Immobilisation'] || '';
+  html += `<div class="modal-field">
+    <label><span class="lock-icon">🔒</span> ID IMMOBILISATION</label>
+    <input type="text" class="readonly-field" value="${esc(idImmoValue)}" readonly disabled>
+  </div>`;
+  
+  // 2. Numéro de série
+  let serieValue = row.Numerie || row.NUMERIE || row['COM-ALU'] || '';
+  html += `<div class="modal-field">
+    <label>🔢 NUMÉRO DE SÉRIE</label>
+    <input type="text" id="mf_serie" value="${esc(serieValue)}" placeholder="Numéro de série">
+  </div>`;
+  
+  // 3. Libellé article (pleine largeur)
+  let libValue = row.Lib_Article || row.LIB_ARTICLE || row['Libellé article'] || '';
+  html += `<div class="modal-field full-width">
+    <label>📦 LIBELLÉ ARTICLE</label>
+    <input type="text" id="mf_libelle" value="${esc(libValue)}" placeholder="Libellé de l'article" style="width:100%">
+  </div>`;
+  
+  // 4. Observation (select avec option Discordance)
+  let obsValue = row.Observation || row.OBSERVATION || '';
+  let obsUpper = obsValue.toString().toUpperCase();
+  let isDiscord = obsUpper.startsWith('DISCORDANCE');
+  let discordText = isDiscord && obsValue.toString().length > 11 ? obsValue.toString().slice(11).trim() : '';
+  let selectValue = obsUpper === 'CONFORME' ? 'CONFORME' : obsUpper === 'A VERIFIER' ? 'A VERIFIER' : isDiscord ? 'DISCORDANCE' : '';
+  
+  html += `<div class="modal-field">
+    <label>⚠️ OBSERVATION</label>
+    <select id="mf_obs_sel" onchange="toggleDiscText()">
+      <option value="">— Non renseigné —</option>
+      <option value="CONFORME" ${selectValue === 'CONFORME' ? 'selected' : ''}>CONFORME</option>
+      <option value="A VERIFIER" ${selectValue === 'A VERIFIER' ? 'selected' : ''}>A VÉRIFIER</option>
+      <option value="DISCORDANCE" ${selectValue === 'DISCORDANCE' ? 'selected' : ''}>DISCORDANCE</option>
+    </select>
+  </div>`;
+  
+  // 5. Code article
+  let codeValue = row.Cod_Article || row.COD_ARTICLE || row['Code article'] || '';
+  html += `<div class="modal-field">
+    <label>🔢 CODE ARTICLE</label>
+    <input type="text" id="mf_code_article" value="${esc(codeValue)}" placeholder="Code article">
+  </div>`;
+  
+  // 6. N° Marché + PU (deux champs côte à côte)
+  html += `<div class="modal-field">
+    <label>📋 N° MARCHÉ</label>
+    <input type="text" id="mf_marche" value="${esc(row.Marche || row['N° Marché'] || row.N_MARCHE || '')}" placeholder="Numéro de marché">
+  </div>`;
+  
+  html += `<div class="modal-field">
+    <label>💰 PU</label>
+    <input type="text" id="mf_pu" value="${esc(row.PU || row.Prix || '')}" placeholder="Prix unitaire">
+  </div>`;
+  
+  // 7. Marque + Modèle
+  html += `<div class="modal-field">
+    <label>🏷️ MARQUE</label>
+    <input type="text" id="mf_marque" value="${esc(row.Marque || row.LIB_MARQUE || '')}" placeholder="Marque">
+  </div>`;
+  
+  html += `<div class="modal-field">
+    <label>📐 MODÈLE</label>
+    <input type="text" id="mf_modele" value="${esc(row.Modele || row.LIB_MODELE || '')}" placeholder="Modèle">
+  </div>`;
+  
+  // 8. Numérie (non modifiable avec cadenas)
+  html += `<div class="modal-field">
+    <label><span class="lock-icon">🔒</span> NUMÉRIE</label>
+    <input type="text" class="readonly-field" value="${esc(serieValue)}" readonly disabled>
+  </div>`;
+  
+  // 9. Localisation (non modifiable avec cadenas)
+  let locValue = row.Localisation || row.LOCALISATION || row.Emplacement || '';
+  html += `<div class="modal-field">
+    <label><span class="lock-icon">🔒</span> LOCALISATION</label>
+    <input type="text" class="readonly-field" value="${esc(locValue)}" readonly disabled>
+  </div>`;
+  
+  // 10. Gare (non modifiable avec cadenas)
+  let gareValue = row.Gare || row.GARE || '';
+  html += `<div class="modal-field">
+    <label><span class="lock-icon">🔒</span> GARE</label>
+    <input type="text" class="readonly-field" value="${esc(gareValue)}" readonly disabled>
+  </div>`;
+  
+  // 11. Inventoriste
+  let invValue = row.Inventoriste || row.INVENTORISTE || '';
+  html += `<div class="modal-field">
+    <label>👤 INVENTORISTE</label>
+    <input type="text" id="mf_inventoriste" value="${esc(invValue)}" placeholder="Nom de l'inventoriste">
+  </div>`;
+  
+  // 12. Date d'inventaire
+  let dateInvValue = row.Date_inventaire || row['Date d\'inventaire'] || row.DATE_INVENTAIRE || '';
+  html += `<div class="modal-field">
+    <label>📅 DATE D'INVENTAIRE</label>
+    <input type="text" id="mf_date_inventaire" value="${esc(dateInvValue)}" placeholder="DD/MM/YYYY">
+  </div>`;
+  
+  // 13. Date de modification (non modifiable avec cadenas)
+  let dateModifValue = row.Date_modification || row['Date de modification'] || row.DATE_MODIFICATION || '';
+  html += `<div class="modal-field">
+    <label><span class="lock-icon">🔒</span> DATE DE MODIFICATION</label>
+    <input type="text" class="readonly-field" value="${esc(dateModifValue) || 'Non modifiée'}" readonly disabled>
+  </div>`;
+  
+  // Champ caché pour le texte Discordance
+  html += `<input type="hidden" id="mf_obs_disc" value="${esc(discordText)}">`;
+  
+  modalFields.innerHTML = html;
+  
+  // Afficher/masquer le champ Discordance
+  const discField = document.getElementById('mf_obs_disc');
+  if (discField && selectValue === 'DISCORDANCE') {
+    // Ajouter le champ Discordance après le select
+    const obsSelect = document.getElementById('mf_obs_sel');
+    if (obsSelect && obsSelect.parentElement) {
+      let discInput = document.createElement('input');
+      discInput.type = 'text';
+      discInput.id = 'mf_obs_disc_input';
+      discInput.placeholder = 'Préciser la discordance...';
+      discInput.value = discordText;
+      discInput.style.marginTop = '8px';
+      discInput.style.width = '100%';
+      discInput.style.padding = '8px 12px';
+      discInput.style.borderRadius = 'var(--r)';
+      discInput.style.border = '1.5px solid var(--bd)';
+      discInput.style.background = 'var(--s2)';
+      obsSelect.parentElement.appendChild(discInput);
     }
-    
-    // Numéro de série (COM-ALU / NUMERIE)
-    if (serieFields.length) {
-      const h = serieFields[0];
-      let val = row[h] != null ? row[h] : '';
-      html += `<div class="modal-field">
-        <label>🔢 ${esc(h)}</label>
-        <input type="text" id="mf_${h.replace(/\W/g, '_')}" value="${esc(val)}" style="font-family:var(--mono);font-weight:600;">
-      </div>`;
-    } else {
-      const serieVal = row.Numerie || row.NUMERIE || row['COM-ALU'] || '';
-      html += `<div class="modal-field">
-        <label>🔢 Numéro de série</label>
-        <input type="text" id="mf_serie" value="${esc(serieVal)}">
-      </div>`;
-    }
-    html += `</div>`;
-    
-    // LIGNE 2 : Libellé article (pleine largeur)
-    if (libArticleFields.length) {
-      const h = libArticleFields[0];
-      let val = row[h] != null ? row[h] : '';
-      html += `<div class="modal-field full" style="margin-bottom:12px;">
-        <label>📦 ${esc(h)}</label>
-        <input type="text" id="mf_${h.replace(/\W/g, '_')}" value="${esc(val)}" style="width:100%;padding:10px 12px;font-size:13px;">
-      </div>`;
-    }
-    
-    // LIGNE 3 : Observation + Code article (côte à côte)
-    html += `<div class="modal-grid" style="grid-template-columns:1fr 1fr; margin-bottom:12px;">`;
-    
-    // Observation (select)
-    if (observationFields.length) {
-      const h = observationFields[0];
-      let val = row[h] != null ? row[h] : '';
-      const u = val.toString().toUpperCase();
-      const isD = u.startsWith('DISCORDANCE');
-      const dt = isD && val.toString().length > 11 ? val.toString().slice(11).trim() : '';
-      const sv = u === 'CONFORME' ? 'CONFORME' : u === 'A VERIFIER' ? 'A VERIFIER' : isD ? 'DISCORDANCE' : '';
-      html += `<div class="modal-field">
-        <label>⚠️ ${esc(h)}</label>
-        <select id="mf_obs_sel" onchange="toggleDiscText()" style="width:100%;margin-bottom:6px;">
-          <option value="">— Non renseigné —</option>
-          <option value="CONFORME"${sv === 'CONFORME' ? ' selected' : ''}>CONFORME</option>
-          <option value="A VERIFIER"${sv === 'A VERIFIER' ? ' selected' : ''}>A VERIFIER</option>
-          <option value="DISCORDANCE"${sv === 'DISCORDANCE' ? ' selected' : ''}>DISCORDANCE</option>
-        </select>
-        <input type="text" id="mf_obs_disc" placeholder="Préciser..." value="${esc(dt)}" style="width:100%;display:${sv === 'DISCORDANCE' ? 'block' : 'none'}">
-      </div>`;
-    } else {
-      let val = row.Observation || '';
-      const u = val.toString().toUpperCase();
-      const isD = u.startsWith('DISCORDANCE');
-      const dt = isD && val.toString().length > 11 ? val.toString().slice(11).trim() : '';
-      const sv = u === 'CONFORME' ? 'CONFORME' : u === 'A VERIFIER' ? 'A VERIFIER' : isD ? 'DISCORDANCE' : '';
-      html += `<div class="modal-field">
-        <label>⚠️ Observation</label>
-        <select id="mf_obs_sel" onchange="toggleDiscText()" style="width:100%;margin-bottom:6px;">
-          <option value="">— Non renseigné —</option>
-          <option value="CONFORME"${sv === 'CONFORME' ? ' selected' : ''}>CONFORME</option>
-          <option value="A VERIFIER"${sv === 'A VERIFIER' ? ' selected' : ''}>A VERIFIER</option>
-          <option value="DISCORDANCE"${sv === 'DISCORDANCE' ? ' selected' : ''}>DISCORDANCE</option>
-        </select>
-        <input type="text" id="mf_obs_disc" placeholder="Préciser..." value="${esc(dt)}" style="width:100%;display:${sv === 'DISCORDANCE' ? 'block' : 'none'}">
-      </div>`;
-    }
-    
-    // Code article
-    if (codeArticleFields.length) {
-      const h = codeArticleFields[0];
-      let val = row[h] != null ? row[h] : '';
-      html += `<div class="modal-field">
-        <label>🔢 ${esc(h)}</label>
-        <input type="text" id="mf_${h.replace(/\W/g, '_')}" value="${esc(val)}" style="font-family:var(--mono);">
-      </div>`;
-    } else {
-      html += `<div class="modal-field">
-        <label>🔢 Code article</label>
-        <input type="text" id="mf_Cod_Article" value="${esc(row.Cod_Article || row.COD_ARTICLE || '')}">
-      </div>`;
-    }
-    html += `</div>`;
-    
-    // Le reste des champs (Gare, Localisation, Marque, Modèle, etc.) en grille
-    if (otherFields.length) {
-      html += `<div class="modal-sep"></div>`;
-      html += `<div class="modal-grid" style="grid-template-columns:1fr 1fr;">`;
-      for (const h of otherFields) {
-        const isDate = /date/i.test(h);
-        const isDateModification = h === 'Date modification' || h === 'Date_Modification' || h === 'Date de modification';
-        const isProtected = h === "Date d'inventaire" || h === 'Inventoriste';
-        let val = row[h] != null ? row[h] : '';
-        
-        if (isDateModification || isProtected) {
-          const displayValue = isFrenchDateTime(val) ? val : (val && val !== '—' ? val : '');
-          html += `<div class="modal-field">
-            <label>${isProtected ? '🔒' : '🕐'} ${esc(h)}</label>
-            <input type="text" value="${esc(displayValue)}" readonly disabled style="background:var(--s3);font-style:italic;" placeholder="${isDateModification ? 'Auto' : ''}">
-          </div>`;
-        } else if (isDate) {
-          html += `<div class="modal-field">
-            <label>📅 ${esc(h)}</label>
-            <input type="text" id="mf_${h.replace(/\W/g, '_')}" value="${esc(val)}" placeholder="DD/MM/YYYY">
-          </div>`;
-        } else {
-          html += `<div class="modal-field">
-            <label>${esc(h)}</label>
-            <input type="text" id="mf_${h.replace(/\W/g, '_')}" value="${esc(val)}">
-          </div>`;
-        }
-      }
-      html += `</div>`;
-    }
-    
-    modalFields.innerHTML = html;
   }
   
   const overlay = document.getElementById('modalOverlay');
   if (overlay) overlay.style.display = 'flex';
-  setTimeout(() => { const f = document.querySelector('#modalFields input:not([readonly])'); if (f) f.focus(); }, 80);
+  setTimeout(() => {
+    const firstInput = document.querySelector('#modalFields input:not(.readonly-field)');
+    if (firstInput) firstInput.focus();
+  }, 80);
 }
+
+// Fonction toggleDiscText corrigée
 function toggleDiscText() {
   const sel = document.getElementById('mf_obs_sel');
-  const disc = document.getElementById('mf_obs_disc');
-  if (sel && disc) disc.style.display = sel.value === 'DISCORDANCE' ? 'block' : 'none';
+  if (!sel) return;
+  let discInput = document.getElementById('mf_obs_disc_input');
+  if (sel.value === 'DISCORDANCE') {
+    if (!discInput) {
+      discInput = document.createElement('input');
+      discInput.type = 'text';
+      discInput.id = 'mf_obs_disc_input';
+      discInput.placeholder = 'Préciser la discordance...';
+      discInput.style.marginTop = '8px';
+      discInput.style.width = '100%';
+      discInput.style.padding = '8px 12px';
+      discInput.style.borderRadius = 'var(--r)';
+      discInput.style.border = '1.5px solid var(--bd)';
+      discInput.style.background = 'var(--s2)';
+      sel.parentElement.appendChild(discInput);
+    }
+  } else {
+    if (discInput) discInput.remove();
+  }
 }
 
-function closeModal() {
-  const overlay = document.getElementById('modalOverlay');
-  if (overlay) overlay.style.display = 'none';
-}
-
+// Fonction submitModal corrigée
 function submitModal() {
   const row = zoneData[modalRowIndex];
   const zone = modalZone || (row && row.Source) || currentZone;
   const headers = sourceHeaders.filter(h => h && h !== 'Source');
   const data = {};
   
+  // Récupérer les valeurs des champs
+  const serie = document.getElementById('mf_serie')?.value || '';
+  const libelle = document.getElementById('mf_libelle')?.value || '';
+  const codeArticle = document.getElementById('mf_code_article')?.value || '';
+  const marche = document.getElementById('mf_marche')?.value || '';
+  const pu = document.getElementById('mf_pu')?.value || '';
+  const marque = document.getElementById('mf_marque')?.value || '';
+  const modele = document.getElementById('mf_modele')?.value || '';
+  const inventoriste = document.getElementById('mf_inventoriste')?.value || '';
+  const dateInventaire = document.getElementById('mf_date_inventaire')?.value || '';
+  
+  // Observation
+  const obsSelect = document.getElementById('mf_obs_sel');
+  let observation = obsSelect?.value || '';
+  if (observation === 'DISCORDANCE') {
+    const discInput = document.getElementById('mf_obs_disc_input');
+    if (discInput && discInput.value.trim()) {
+      observation = 'DISCORDANCE ' + discInput.value.trim();
+    }
+  }
+  
+  // Associer aux bons champs
   headers.forEach(h => {
-    const isDateModification = h === 'Date modification' || h === 'Date_Modification' || 
-                                h === 'Date de modification' || h === 'Date_modification' ||
-                                (h && h.toLowerCase().includes('date') && h.toLowerCase().includes('modif'));
-    
-    if (h === 'Observation') {
-      const sel = document.getElementById('mf_obs_sel');
-      const disc = document.getElementById('mf_obs_disc');
-      if (sel) data[h] = sel.value === 'DISCORDANCE' && disc && disc.value.trim() ? 'DISCORDANCE ' + disc.value.trim() : sel.value;
-    } 
-    else if (isDateModification) {
-      // Ne pas inclure la date de modification dans les données envoyées
-    }
-    else {
-      const el = document.getElementById('mf_' + h.replace(/\W/g, '_'));
-      if (el && el.value !== undefined) {
-        data[h] = el.value;
-      }
-    }
+    const hUpper = h.toUpperCase();
+    if (h === 'Numerie' || h === 'NUMERIE' || h === 'COM-ALU') data[h] = serie;
+    else if (h === 'Lib_Article' || h === 'LIB_ARTICLE') data[h] = libelle;
+    else if (h === 'Cod_Article' || h === 'COD_ARTICLE') data[h] = codeArticle;
+    else if (h === 'Marche' || h === 'N° Marché' || h === 'N_MARCHE') data[h] = marche;
+    else if (h === 'PU' || h === 'Prix') data[h] = pu;
+    else if (h === 'Marque' || h === 'LIB_MARQUE') data[h] = marque;
+    else if (h === 'Modele' || h === 'LIB_MODELE') data[h] = modele;
+    else if (h === 'Inventoriste' || h === 'INVENTORISTE') data[h] = inventoriste;
+    else if (h === 'Date_inventaire' || h === "Date d'inventaire") data[h] = dateInventaire;
+    else if (h === 'Observation' || h === 'OBSERVATION') data[h] = observation;
   });
   
-  const zoneRows = zoneData.filter(r => r.Source === zone);
-  const idxInZone = zoneRows.indexOf(row);
-  const sheetRow = idxInZone + 2;
-  
-  // 🔥 CRITIQUE : Ne garder que les champs réellement modifiés
+  // Vérifier les modifications
   const changes = headers.filter(h => {
-    const isDateModif = h === 'Date modification' || h === 'Date_Modification' || 
-                        h === 'Date de modification' || h === 'Date_modification' ||
-                        (h && h.toLowerCase().includes('date') && h.toLowerCase().includes('modif'));
-    if (isDateModif) return false;
-    return (data[h] != null ? data[h] : '').toString() !== (row[h] != null ? row[h] : '').toString();
+    const newVal = (data[h] != null ? data[h] : '').toString();
+    const oldVal = (row[h] != null ? row[h] : '').toString();
+    return newVal !== oldVal;
   });
   
   if (changes.length === 0) {
@@ -3231,41 +3277,31 @@ function submitModal() {
     return;
   }
   
-  // 🔥 NOUVEAU : Construction du message sans Inventoriste ni Date d'inventaire
-  let msg = '';
-  
-  // ID Immobilisation
+  // Construire le message de confirmation
   const idImmo = row.ID_Imobilisation || row.ID_Immobilisation || row['ID Immobilisation'] || '';
-  msg += `<p><strong>ID Immobilisation :</strong> ${esc(idImmo)}</p>`;
+  let msg = `<p><strong>🏷️ ID Immobilisation :</strong> ${esc(idImmo)}</p>`;
+  if (row.Lib_Article) msg += `<p><strong>📦 Libellé :</strong> ${esc(row.Lib_Article)}</p>`;
+  msg += `<p><strong>✏️ Champs modifiés :</strong> ${changes.join(', ')}</p>`;
   
-  // Libellé article
-  if (row.Lib_Article) msg += `<p><strong>Libellé article :</strong> ${esc(row.Lib_Article)}</p>`;
-  
-  // 🔥 Afficher uniquement Cod_Article s'il est modifié
-  const isCodArticleModified = changes.includes('Cod_Article') || changes.includes('COD_ARTICLE') || changes.includes('Code article');
-  if (isCodArticleModified) {
-    const newCodValue = data['Cod_Article'] || data['COD_ARTICLE'] || data['Code article'] || '';
-    msg += `<p><strong>✏️ Modification :</strong> Cod_Article (${esc(newCodValue)})</p>`;
-  } else if (changes.length === 1) {
-    // Pour un autre champ modifié
-    msg += `<p><strong>✏️ Modification :</strong> ${changes.join(', ')}</p>`;
-  } else {
-    msg += `<p><strong>✏️ Champs modifiés :</strong> ${changes.join(', ')}</p>`;
-  }
-  
-  // 🔥 Date modification complète (générée automatiquement)
   const now = new Date();
   const dateComplete = now.toLocaleString('fr-FR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit'
+    day: '2-digit', month: '2-digit', year: 'numeric',
+    hour: '2-digit', minute: '2-digit', second: '2-digit'
   });
-  msg += `<p><strong>📅 Date de modification :</strong> ${dateComplete}</p>`;
+  msg += `<p><strong>📅 Nouvelle date de modification :</strong> ${dateComplete}</p>`;
   
-  pendingAction = { type: 'update', rowIndex: sheetRow, data, zone, globalIdx: modalRowIndex };
+  const zoneRows = zoneData.filter(r => r.Source === zone);
+  const idxInZone = zoneRows.indexOf(row);
+  const sheetRow = idxInZone + 2;
+  
+  pendingAction = { 
+    type: 'update', 
+    rowIndex: sheetRow, 
+    data, 
+    zone, 
+    globalIdx: modalRowIndex,
+    dateModification: dateComplete
+  };
   closeModal();
   openConfirm(msg, '✏️', 'Confirmer la modification', 'var(--grad)', '✓ Enregistrer');
 }
