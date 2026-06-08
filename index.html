@@ -3349,14 +3349,22 @@ function openEditModal(gi) {
   
   modalFields.innerHTML = html;
   
-  if (selectValue === 'DISCORDANCE') {
+if (selectValue === 'DISCORDANCE') {
     const obsSelect = document.getElementById('mf_obs_sel');
     if (obsSelect && obsSelect.parentElement) {
       let discInput = document.createElement('input');
       discInput.type = 'text';
       discInput.id = 'mf_obs_disc_input';
       discInput.placeholder = 'Préciser la discordance...';
-      discInput.value = discordText;
+      
+      // Nettoyer le texte d'affichage (enlever ":" initial pour l'édition)
+      let cleanText = discordText;
+      if (cleanText.startsWith(':')) {
+        cleanText = cleanText.substring(1).trim();
+        if (cleanText.startsWith(' ')) cleanText = cleanText.substring(1);
+      }
+      discInput.value = cleanText;
+      
       discInput.style.marginTop = '8px';
       discInput.style.width = '100%';
       discInput.style.padding = '8px 12px';
@@ -3365,7 +3373,7 @@ function openEditModal(gi) {
       discInput.style.background = 'var(--s2)';
       obsSelect.parentElement.appendChild(discInput);
     }
-  }
+}
   
   const overlay = document.getElementById('modalOverlay');
   if (overlay) overlay.style.display = 'flex';
@@ -3379,6 +3387,8 @@ function toggleDiscText() {
   const sel = document.getElementById('mf_obs_sel');
   if (!sel) return;
   let discInput = document.getElementById('mf_obs_disc_input');
+  const hiddenDisc = document.getElementById('mf_obs_disc');
+  
   if (sel.value === 'DISCORDANCE') {
     if (!discInput) {
       discInput = document.createElement('input');
@@ -3393,8 +3403,18 @@ function toggleDiscText() {
       discInput.style.background = 'var(--s2)';
       sel.parentElement.appendChild(discInput);
     }
+    // Restaurer le texte sauvegardé
+    if (hiddenDisc && hiddenDisc.value && discInput.value === '') {
+      discInput.value = hiddenDisc.value;
+    }
   } else {
-    if (discInput) discInput.remove();
+    if (discInput) {
+      // Sauvegarder le texte avant suppression
+      if (hiddenDisc) {
+        hiddenDisc.value = discInput.value;
+      }
+      discInput.remove();
+    }
   }
 }
 
@@ -3419,10 +3439,23 @@ function submitModal() {
   
   const obsSelect = document.getElementById('mf_obs_sel');
   let observation = obsSelect?.value || '';
+  
+  // Gestion du texte de discordance avec le format ": texte"
   if (observation === 'DISCORDANCE') {
     const discInput = document.getElementById('mf_obs_disc_input');
     if (discInput && discInput.value.trim()) {
-      observation = 'DISCORDANCE ' + discInput.value.trim();
+      let discText = discInput.value.trim();
+      // S'assurer que le texte commence par ":" (avec espace optionnel)
+      if (!discText.startsWith(':')) {
+        discText = ': ' + discText;
+      } else if (discText === ':') {
+        discText = ': ';
+      } else if (discText.startsWith(':') && !discText.startsWith(': ')) {
+        discText = ': ' + discText.substring(1).trim();
+      }
+      observation = 'DISCORDANCE ' + discText;
+    } else {
+      observation = 'DISCORDANCE';
     }
   }
   
