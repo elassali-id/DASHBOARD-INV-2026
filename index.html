@@ -2073,10 +2073,6 @@ async function authenticateUser(username, password) {
 }
 
 // ============================================================
-// FONCTIONS DE GESTION DES DATES (suite)
-// ============================================================
-
-// ============================================================
 // SESSION
 // ============================================================
 
@@ -2262,12 +2258,12 @@ function setupHeader() {
   const cfg = ZONE_CONFIG[currentZone] || {};
   
   if (isAdmin) {
-    if (badge) { badge.textContent = 'ADMIN'; badge.className = 'zone-badge-hdr admin-badge'; }
+    if (badge) { badge.textContent = 'DRRO'; badge.className = 'zone-badge-hdr admin-badge'; }
   } else {
     if (badge) { badge.textContent = currentZone; badge.className = 'zone-badge-hdr ' + (cfg.badgeClass || ''); }
   }
   
-  if (ovLabel) ovLabel.textContent = isAdmin ? 'Toutes zones' : currentZone;
+  if (ovLabel) ovLabel.textContent = isAdmin ? 'Toutes zones (DRRO)' : currentZone;
   
   const srcFilter = document.getElementById('fSrc');
   if (srcFilter) srcFilter.style.display = isAdmin ? '' : 'none';
