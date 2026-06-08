@@ -7,12 +7,1951 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-/* ... (garde tous tes styles existants) ... */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root, html[data-theme="light"] {
+  --bg: #F7FAFC;
+  --s1: #FFFFFF;
+  --s2: #F8FAFC;
+  --s3: #EDF2F7;
+  --bd: #E2E8F0;
+  --bd2: #CBD5E0;
+  --acc: #1A365D;
+  --acc2: #DD6B20;
+  --acc3: #38A169;
+  --amber: #B7791F;
+  --red: #C53030;
+  --blue: #2C5282;
+  --tx: #0F2645;
+  --tx2: #2C5282;
+  --tx3: #718096;
+  --gold: #F6CB46;
+  --thead: #EDF2F7;
+  --shadow-sm: 0 1px 3px rgba(26,54,93,.08);
+  --shadow: 0 6px 22px -8px rgba(26,54,93,.16);
+  --shadow-lg: 0 18px 48px -16px rgba(26,54,93,.24);
+  --grad: linear-gradient(135deg, #1A365D, #2C5282);
+  --mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --sans: 'Inter', system-ui, sans-serif;
+  --r: 8px;
+  --r2: 12px;
+  --r3: 16px;
+  --header-h: 54px;
+  --nav-h: 42px;
+}
+
+html[data-theme="dark"] {
+  --bg: #0F172A;
+  --s1: #162033;
+  --s2: #1C2840;
+  --s3: #24324F;
+  --bd: #334155;
+  --bd2: #475569;
+  --acc: #5B9BFF;
+  --acc2: #FB923C;
+  --acc3: #4ADE80;
+  --amber: #F6CB46;
+  --red: #F87171;
+  --blue: #60A5FA;
+  --tx: #F8FAFC;
+  --tx2: #CBD5E1;
+  --tx3: #94A3B8;
+  --gold: #FFD95A;
+  --thead: #1E293B;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.35);
+  --shadow: 0 6px 22px -8px rgba(0,0,0,.50);
+  --shadow-lg: 0 18px 48px -16px rgba(0,0,0,.65);
+  --grad: linear-gradient(135deg, #274C7A, #3B6AA6);
+}
+
+body {
+  background: var(--bg);
+  color: var(--tx);
+  font-family: var(--sans);
+  min-height: 100vh;
+  font-size: 14px;
+  transition: background .3s, color .3s;
+}
+
+:focus-visible {
+  outline: 2px solid var(--acc);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--bd2) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--bd2);
+  border-radius: 8px;
+  border: 2px solid var(--bg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    transition-duration: .001ms !important;
+  }
+}
+
+#loadScreen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#loadScreen > div {
+  width: 420px;
+  max-width: 90vw;
+  text-align: center;
+}
+
+.spinner {
+  width: 52px;
+  height: 52px;
+  margin: 24px auto;
+  border: 3px solid var(--bd);
+  border-top: 3px solid var(--acc);
+  border-radius: 50%;
+  animation: spin .9s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.load-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--s3);
+  border: 1px solid var(--bd);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.load-fill {
+  width: 0%;
+  height: 100%;
+  background: var(--grad);
+  border-radius: 999px;
+  transition: width .3s ease;
+}
+
+.load-status {
+  margin-top: 14px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--tx2);
+}
+
+.theme-toggle {
+  background: var(--s2);
+  border: 1.5px solid var(--bd);
+  border-radius: 99px;
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  transition: .2s;
+  color: var(--tx2);
+  flex-shrink: 0;
+}
+
+.theme-toggle:hover {
+  border-color: var(--acc);
+  transform: translateY(-1px);
+}
+
+.theme-toggle-login {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+}
+
+#loginScreen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 9998;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 20px 0;
+}
+
+.login-box {
+  background: var(--s1);
+  border: 1.5px solid var(--bd);
+  border-radius: var(--r3);
+  padding: 36px 44px;
+  width: 100%;
+  max-width: 460px;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.login-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--grad);
+}
+
+.login-zone-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.zone-btn {
+  border: 1.5px solid var(--bd);
+  border-radius: var(--r2);
+  padding: 16px 8px;
+  text-align: center;
+  cursor: pointer;
+  background: var(--s2);
+  transition: .18s;
+}
+
+.zone-btn:hover {
+  border-color: var(--acc);
+  background: var(--s3);
+  transform: translateY(-2px);
+}
+
+.zone-btn.sel {
+  border-color: var(--acc);
+  background: var(--s3);
+  box-shadow: 0 0 0 3px rgba(26,54,93,.18);
+}
+
+.zone-btn-icon {
+  font-size: 22px;
+  margin-bottom: 6px;
+}
+
+.zone-btn-label {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--tx);
+}
+
+.admin-btn-row {
+  margin-bottom: 16px;
+}
+
+.zone-btn.admin-zone {
+  border-color: #d4a017;
+  background: color-mix(in srgb, var(--gold) 12%, var(--s2));
+}
+
+.zone-btn.admin-zone:hover {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(200,149,26,.18);
+}
+
+.zone-btn.admin-zone.sel {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(200,149,26,.28);
+}
+
+.zone-btn.admin-zone .zone-btn-label {
+  color: var(--gold);
+}
+
+.login-field {
+  margin-bottom: 12px;
+}
+
+.login-field label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--tx3);
+  margin-bottom: 6px;
+}
+
+.pwd-wrap {
+  position: relative;
+}
+
+.login-field input {
+  width: 100%;
+  background: var(--s2);
+  border: 1.5px solid var(--bd);
+  border-radius: var(--r);
+  padding: 10px 40px 10px 14px;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--tx);
+  outline: none;
+  transition: .15s;
+}
+
+.login-field input:focus {
+  border-color: var(--acc);
+  box-shadow: 0 0 0 3px rgba(26,54,93,.12);
+}
+
+.login-field input::placeholder {
+  color: var(--tx3);
+}
+
+.pwd-eye {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  opacity: .6;
+  color: var(--tx2);
+}
+
+.login-btn {
+  width: 100%;
+  background: var(--grad);
+  color: #fff;
+  border: none;
+  border-radius: var(--r2);
+  padding: 12px;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: .06em;
+  transition: .18s;
+  margin-top: 4px;
+}
+
+.login-btn:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.login-btn:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.login-err {
+  background: color-mix(in srgb, var(--red) 14%, var(--s1));
+  border: 1px solid var(--red);
+  color: var(--red);
+  border-radius: var(--r);
+  padding: 9px 14px;
+  font-size: 12px;
+  margin-bottom: 12px;
+  display: none;
+}
+
+.login-footer {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--tx3);
+  text-align: center;
+  margin-top: 16px;
+}
+
+header {
+  background: var(--s1);
+  border-bottom: 1.5px solid var(--bd);
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  box-shadow: var(--shadow-sm);
+}
+
+.hdr-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  animation: pulse 2s ease infinite;
+  flex-shrink: 0;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .5; }
+}
+
+.status-txt {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--tx2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.zone-badge-hdr {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.zone-badge-hdr.admin-badge {
+  background: color-mix(in srgb, var(--gold) 18%, var(--s1));
+  color: var(--gold);
+  border: 1px solid var(--gold);
+}
+
+.session-expiry-badge {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--tx3);
+  padding: 3px 8px;
+  border-radius: 5px;
+  border: 1px solid var(--bd);
+  background: var(--s2);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.btn-logout {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 6px 10px;
+  border-radius: 5px;
+  background: var(--s2);
+  border: 1.5px solid var(--bd);
+  color: var(--red);
+  cursor: pointer;
+  transition: .15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.btn-logout:hover {
+  border-color: var(--red);
+}
+
+.refresh-btn {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 6px 10px;
+  border-radius: 5px;
+  background: transparent;
+  border: 1.5px solid var(--bd);
+  color: var(--tx3);
+  cursor: pointer;
+  transition: .15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.refresh-btn:hover {
+  border-color: var(--acc);
+  color: var(--acc);
+}
+
+.spinning {
+  opacity: .5;
+}
+
+nav {
+  background: var(--s1);
+  border-bottom: 1.5px solid var(--bd);
+  display: flex;
+  padding: 5px 24px;
+  gap: 2px;
+  position: sticky;
+  top: var(--header-h);
+  z-index: 190;
+  box-shadow: 0 2px 8px -4px rgba(26,54,93,.08);
+}
+
+.tab {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 8px 18px;
+  cursor: pointer;
+  color: var(--tx3);
+  border: none;
+  background: none;
+  border-radius: var(--r);
+  transition: .15s;
+  white-space: nowrap;
+}
+
+.tab:hover {
+  color: var(--tx2);
+  background: var(--s3);
+}
+
+.tab.on {
+  color: #fff;
+  background: var(--grad);
+}
+
+main {
+  padding: 0 !important;
+  width: 100%;
+  max-width: 100% !important;
+}
+
+.panel:not(#panel-tableau) {
+  padding: 20px;
+}
+
+.panel {
+  display: none;
+}
+
+.panel.on {
+  display: block;
+  animation: fade .3s ease;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.sec-title {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--tx3);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sec-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--bd);
+}
+
+.alert {
+  background: color-mix(in srgb, var(--amber) 12%, var(--s1));
+  border: 1.5px solid var(--amber);
+  border-radius: var(--r2);
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--tx);
+}
+
+.alert.ok {
+  background: color-mix(in srgb, var(--acc3) 12%, var(--s1));
+  border-color: var(--acc3);
+}
+
+.alert.update {
+  background: color-mix(in srgb, var(--blue) 12%, var(--s1));
+  border-color: var(--blue);
+}
+
+.alert.update .btn-refresh-inline {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 5px 14px;
+  cursor: pointer;
+  margin-top: 6px;
+  display: inline-block;
+}
+
+.error-banner {
+  background: color-mix(in srgb, var(--red) 20%, var(--s1));
+  border-left: 4px solid var(--red);
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  border-radius: var(--r);
+  font-size: 12px;
+}
+
+.error-banner button {
+  margin-left: 12px;
+  padding: 4px 12px;
+  background: var(--red);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.kpi {
+  background: var(--s1);
+  border: 1.5px solid var(--bd);
+  border-radius: var(--r2);
+  padding: 18px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: transform .2s, box-shadow .2s;
+}
+
+.kpi::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--kpi-color, var(--acc));
+}
+
+.kpi:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow);
+}
+
+.kpi-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--tx3);
+  margin-bottom: 8px;
+}
+
+.kpi-val {
+  font-family: var(--mono);
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--kpi-color, var(--acc));
+  line-height: 1;
+}
+
+.kpi-sub {
+  font-size: 11px;
+  color: var(--tx3);
+  margin-top: 6px;
+}
+
+.kpi-zone-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.kpi-zone-card {
+  background: var(--s1);
+  border: 1.5px solid var(--bd);
+  border-radius: var(--r2);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: transform .2s, box-shadow .2s;
+}
+
+.kpi-zone-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--zcolor, var(--acc));
+}
+
+.kpi-zone-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow);
+}
+
+.kpi-zone-title {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--zcolor, var(--acc));
+  margin-bottom: 14px;
+}
+
+.kpi-zone-main {
+  font-family: var(--mono);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--zcolor, var(--acc));
+  margin-bottom: 10px;
+}
+
+.kpi-zone-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--bd);
+  font-size: 12px;
+}
+
+.kpi-zone-row:last-child {
+  border-bottom: none;
+}
+
+.kpi-zone-lbl {
+  color: var(--tx2);
+}
+
+.kpi-zone-val {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--tx);
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.wide {
+  grid-column: 1/-1;
+}
+
+.card {
+  background: var(--s1);
+  border: 1.5px solid var(--bd);
+  border-radius: var(--r3);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.card-title {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--tx3);
+  margin-bottom: 16px;
+}
+
+.src-cebs, .src-cej, .src-aebb, .obs-ok, .obs-av, .obs-disc, .obs-nd {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.src-cebs {
+  background: color-mix(in srgb, var(--blue) 16%, var(--s1));
+  color: var(--blue);
+  border: 1px solid var(--blue);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 5px;
+}
+
+.src-cej {
+  background: color-mix(in srgb, var(--acc) 16%, var(--s1));
+  color: var(--acc);
+  border: 1px solid var(--acc);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 5px;
+}
+
+.src-aebb {
+  background: color-mix(in srgb, var(--acc3) 16%, var(--s1));
+  color: var(--acc3);
+  border: 1px solid var(--acc3);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 5px;
+}
+
+.obs-ok {
+  background: color-mix(in srgb, var(--acc3) 16%, var(--s1));
+  color: var(--acc3);
+  border: 1px solid var(--acc3);
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 5px;
+}
+
+.obs-av {
+  background: color-mix(in srgb, var(--amber) 16%, var(--s1));
+  color: var(--amber);
+  border: 1px solid var(--amber);
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 5px;
+}
+
+.obs-disc {
+  background: color-mix(in srgb, var(--red) 16%, var(--s1));
+  color: var(--red);
+  border: 1px solid var(--red);
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 5px;
+}
+
+.obs-nd {
+  background: var(--s3);
+  color: var(--tx3);
+  border: 1px solid var(--bd);
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 5px;
+}
+
+#panel-tableau {
+  display: none;
+  flex-direction: column;
+  height: calc(100vh - var(--header-h) - var(--nav-h));
+  overflow: hidden;
+  width: 100%;
+}
+
+#panel-tableau.on {
+  display: flex;
+}
+
+.tbl-hdr {
+  background: var(--s1);
+  border-bottom: 1px solid var(--bd);
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  width: 100%;
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.tbl-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.tbl-body-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  background: var(--s1);
+  width: 100%;
+}
+
+.tbl-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px;
+}
+
+thead th {
+  background: var(--thead);
+  padding: 12px 15px;
+  text-align: left;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--tx3);
+  text-transform: uppercase;
+  border-bottom: 1.5px solid var(--bd);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  position: sticky;
+  top: 0;
+  z-index: 150;
+}
+
+thead th.th-act {
+  cursor: default;
+  width: 50px;
+  text-align: center;
+}
+
+thead th:not(.th-act):hover {
+  background: var(--s3);
+}
+
+.clickable-row {
+  cursor: pointer;
+}
+
+.clickable-row:hover td:not(.td-act) {
+  background: var(--s3);
+}
+
+tbody tr:hover td {
+  background: var(--s3);
+}
+
+td {
+  padding: 9px 15px;
+  color: var(--tx2);
+  border-bottom: 1px solid var(--bd);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+td.td-act {
+  text-align: center;
+  padding: 5px 8px;
+}
+
+.pag {
+  background: var(--s1);
+  border-top: 1px solid var(--bd);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 24px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+input[type=text], select {
+  background: var(--s2);
+  border: 1.5px solid var(--bd);
+  border-radius: var(--r);
+  padding: 7px 10px;
+  font-family: var(--sans);
+  font-size: 12px;
+  color: var(--tx);
+  outline: none;
+  transition: .15s;
+}
+
+input[type=text]:focus, select:focus {
+  border-color: var(--acc);
+  box-shadow: 0 0 0 3px rgba(26,54,93,.12);
+}
+
+input[type=text]::placeholder {
+  color: var(--tx3);
+}
+
+input[type=text] {
+  width: 200px;
+}
+
+.pag-info {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--tx3);
+}
+
+.pag-btns {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+}
+
+.pb {
+  background: var(--s2);
+  border: 1.5px solid var(--bd);
+  border-radius: 5px;
+  padding: 4px 9px;
+  font-size: 10px;
+  font-family: var(--mono);
+  color: var(--tx2);
+  cursor: pointer;
+}
+
+.pb:hover {
+  border-color: var(--acc);
+  color: var(--acc);
+}
+
+.pb.on {
+  background: var(--acc);
+  color: #fff;
+  border-color: var(--acc);
+}
+
+.pb:disabled {
+  opacity: .3;
+  cursor: default;
+}
+
+.pagesize {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--tx3);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pagesize select {
+  padding: 4px 8px;
+  font-size: 10px;
+}
+
+.btn-tbl-edit {
+  background: color-mix(in srgb, var(--blue) 12%, var(--s1));
+  border: 1px solid var(--blue);
+  color: var(--blue);
+  border-radius: 5px;
+  padding: 4px 10px;
+  font-size: 10px;
+  font-family: var(--mono);
+  cursor: pointer;
+  transition: .15s;
+}
+
+.btn-tbl-edit:hover {
+  background: color-mix(in srgb, var(--blue) 22%, var(--s1));
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--r);
+  font-size: 12px;
+  font-family: var(--mono);
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: .15s;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-acc {
+  background: var(--grad);
+  color: #fff;
+}
+
+.btn-acc:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.btn-out {
+  background: transparent;
+  border: 1.5px solid var(--bd);
+  color: var(--tx2);
+}
+
+.btn-out:hover {
+  border-color: var(--acc);
+  color: var(--acc);
+  transform: translateY(-1px);
+}
+
+.btn-grn {
+  background: color-mix(in srgb, var(--acc3) 14%, var(--s1));
+  border: 1.5px solid var(--acc3);
+  color: var(--acc3);
+}
+
+.btn-grn:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
+.btn-gold {
+  background: color-mix(in srgb, var(--amber) 16%, var(--s1));
+  border: 1.5px solid var(--amber);
+  color: var(--amber);
+}
+
+.btn-gold:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
+.btn-red {
+  background: color-mix(in srgb, var(--red) 14%, var(--s1));
+  border: 1.5px solid var(--red);
+  color: var(--red);
+}
+
+.btn-red:hover {
+  background: color-mix(in srgb, var(--red) 24%, var(--s1));
+  transform: translateY(-1px);
+}
+
+.btn-sm {
+  padding: 5px 10px;
+  font-size: 10px;
+}
+
+.dl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.dl-card {
+  background: var(--s1);
+  border: 1.5px solid var(--bd);
+  border-radius: var(--r2);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: var(--shadow-sm);
+  transition: transform .2s, box-shadow .2s;
+}
+
+.dl-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.dl-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: var(--r2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.dl-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.dl-name {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 3px;
+  color: var(--tx);
+}
+
+.dl-meta {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--tx3);
+}
+
+.dl-btns {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.confirm-msg p {
+  margin: 8px 0;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--bd);
+}
+
+.confirm-msg p:last-child {
+  border-bottom: none;
+}
+
+.confirm-msg strong {
+  color: var(--acc);
+  min-width: 180px;
+  display: inline-block;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  z-index: 5000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-box {
+  background: var(--s1);
+  border: 1.5px solid var(--bd);
+  border-radius: var(--r3);
+  width: 100%;
+  max-width: 950px;
+  max-height: 92vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+}
+
+.modal-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--grad);
+}
+
+.modal-title {
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--tx);
+  padding: 20px 24px 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--bd);
+  background: var(--s2);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.modal-zone-badge {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: var(--s3);
+  color: var(--tx2);
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+.modal-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 24px;
+}
+
+.modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--s1);
+  border: 1px solid var(--bd);
+  border-radius: var(--r);
+  padding: 12px 14px;
+  transition: all 0.2s ease;
+}
+
+.modal-field:hover {
+  border-color: var(--acc);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.modal-field.full-width {
+  grid-column: span 2;
+}
+
+.modal-field label {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--tx3);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 4px;
+}
+
+.modal-field input,
+.modal-field select,
+.modal-field textarea {
+  background: var(--s2);
+  border: 1.5px solid var(--bd);
+  border-radius: calc(var(--r) - 2px);
+  padding: 10px 12px;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--tx);
+  outline: none;
+  transition: .15s;
+  width: 100%;
+}
+
+.modal-field input:focus,
+.modal-field select:focus,
+.modal-field textarea:focus {
+  border-color: var(--acc);
+  box-shadow: 0 0 0 3px rgba(26,54,93,.12);
+}
+
+.modal-field input.readonly-field {
+  background: var(--s3);
+  color: var(--tx3);
+  border-color: var(--bd);
+  cursor: not-allowed;
+  font-style: italic;
+}
+
+.modal-field label .lock-icon {
+  font-size: 10px;
+  opacity: 0.6;
+}
+
+.modal-buttons .btn,
+.modal-buttons-right .btn {
+  cursor: pointer;
+  pointer-events: auto;
+  position: relative;
+  z-index: 100;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.modal-separator {
+  grid-column: span 2;
+  height: 1px;
+  background: var(--bd);
+  margin: 8px 0 16px 0;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-top: 1px solid var(--bd);
+  background: var(--s2);
+  border-radius: 0 0 var(--r3) var(--r3);
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+}
+
+.modal-buttons-right {
+  display: flex;
+  gap: 12px;
+}
+
+@media (max-width: 700px) {
+  .modal-form-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  .modal-field.full-width {
+    grid-column: span 1;
+  }
+  .modal-box {
+    max-width: 95vw;
+  }
+  .modal-buttons {
+    flex-direction: column-reverse;
+    gap: 12px;
+  }
+  .modal-buttons-right {
+    width: 100%;
+    justify-content: center;
+  }
+  .modal-buttons .btn-red {
+    width: 100%;
+    justify-content: center;
+  }
+  .modal-title {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+}
+
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  z-index: 6000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.confirm-box {
+  background: var(--s1);
+  border: 1.5px solid var(--bd);
+  border-radius: var(--r3);
+  padding: 28px 32px;
+  width: 100%;
+  max-width: 520px;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+}
+
+.confirm-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--grad);
+}
+
+.confirm-box.danger::before {
+  background: var(--red);
+}
+
+.confirm-box.danger {
+  border-color: var(--red);
+}
+
+.confirm-icon {
+  font-size: 48px;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.confirm-title {
+  font-family: var(--mono);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--tx);
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.confirm-msg {
+  font-size: 13px;
+  color: var(--tx2);
+  margin-bottom: 20px;
+  line-height: 1.5;
+  text-align: center;
+  padding: 16px;
+  background: var(--s2);
+  border-radius: var(--r2);
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.confirm-details {
+  background: var(--s3);
+  border-radius: var(--r);
+  padding: 14px;
+  margin-top: 10px;
+  text-align: left;
+  word-break: break-word;
+}
+
+.confirm-details p {
+  margin: 6px 0;
+  line-height: 1.4;
+}
+
+.confirm-details .label {
+  font-weight: 700;
+  color: var(--tx);
+  margin-right: 10px;
+  min-width: 130px;
+  display: inline-block;
+}
+
+.confirm-btns {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.confirm-btns .btn {
+  min-width: 120px;
+  justify-content: center;
+  padding: 10px 20px;
+}
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--acc3);
+  color: #04342c;
+  padding: 10px 18px;
+  border-radius: var(--r);
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: .2s;
+  pointer-events: none;
+  z-index: 9999;
+  box-shadow: var(--shadow);
+  max-width: 360px;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toast.err {
+  background: var(--red);
+  color: #fff;
+}
+
+.toast.info {
+  background: var(--blue);
+  color: #fff;
+}
+
+.spin-inline {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,.4);
+  border-top: 2px solid #fff;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+.btn-short {
+  display: none;
+}
+
+.btn-full {
+  display: inline;
+}
+
+@media (max-width: 768px) {
+  header {
+    height: auto;
+    min-height: 52px;
+    padding: 8px 12px;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  
+  .hdr-right {
+    gap: 5px;
+  }
+  
+  .status-txt {
+    display: none;
+  }
+  
+  .btn-short {
+    display: inline;
+  }
+  
+  .btn-full {
+    display: none;
+  }
+  
+  .refresh-btn, .btn-logout {
+    padding: 5px 8px;
+    font-size: 9px;
+  }
+  
+  .theme-toggle {
+    width: 32px;
+    height: 32px;
+    font-size: 13px;
+  }
+  
+  nav {
+    padding: 4px 8px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+  
+  .tab {
+    padding: 7px 11px;
+    font-size: 10px;
+    flex-shrink: 0;
+  }
+  
+  #panel-tableau {
+    height: calc(100vh - 100px);
+  }
+  
+  .tbl-hdr {
+    flex-direction: column;
+    padding: 8px 10px;
+  }
+  
+  .tbl-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    width: 100%;
+  }
+  
+  .tbl-controls input[type=text] {
+    grid-column: 1/-1;
+    width: 100%;
+  }
+  
+  .tbl-body-wrap {
+    overflow-x: auto;
+  }
+  
+  table {
+    min-width: 640px;
+  }
+  
+  thead th {
+    font-size: 8px;
+    padding: 7px;
+  }
+  
+  td {
+    padding: 6px 7px;
+    font-size: 10px;
+  }
+  
+  .pag {
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 8px;
+  }
+  
+  .kpi-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .kpi-val {
+    font-size: 20px;
+  }
+  
+  .kpi-zone-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .dl-grid {
+    grid-column: 1fr;
+  }
+  
+  .login-box {
+    padding: 24px 18px;
+    max-width: 95vw;
+  }
+  
+  .confirm-box {
+    padding: 20px 16px;
+    max-width: 95vw;
+  }
+  
+  .confirm-details .label {
+    min-width: 100px;
+  }
+}
 </style>
 </head>
 <body>
 
-<!-- ... (garde tout le HTML inchangé jusqu'à l'intérieur de la modale) ... -->
+<div id="loadScreen">
+  <div>
+    <div style="font-family:var(--mono);font-size:22px;font-weight:700;letter-spacing:.12em;text-align:center;line-height:1.5;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">Autoroutes Du Maroc</div>
+    <div style="font-family:'Segoe UI',Arial,sans-serif;font-size:20px;font-weight:700;letter-spacing:.18em;text-align:center;line-height:1.5;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;direction:rtl">الطـــرق الـسيـــارة بالمغـــرب</div>
+    <div style="font-family:var(--mono);font-size:18px;font-weight:600;letter-spacing:.32em;color:var(--tx);text-align:center;margin-top:8px">INVENTAIRE 2026</div>
+    <div style="font-family:var(--mono);font-size:11px;letter-spacing:.25em;color:var(--tx3);text-align:center;margin-top:6px">ELASSALI IDRISS</div>
+    <div class="spinner"></div>
+    <div class="load-bar"><div class="load-fill" id="loadFill"></div></div>
+    <div class="load-status" id="loadStatus">Initialisation...</div>
+  </div>
+</div>
+
+<div id="loginScreen">
+  <button class="theme-toggle theme-toggle-login" onclick="toggleTheme()" id="themeBtnLogin">🌙</button>
+  <div class="login-box">
+    <div style="margin-bottom:22px">
+      <div style="font-family:var(--mono);font-size:15px;font-weight:700;letter-spacing:.10em;text-align:center;line-height:1.6;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">Autoroutes Du Maroc</div>
+      <div style="font-family:'Segoe UI',Arial,sans-serif;font-size:15px;font-weight:700;letter-spacing:.15em;text-align:center;line-height:1.6;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;direction:rtl">الطـــرق الـسيـــارة بالمغـــرب</div>
+      <div style="font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.32em;color:var(--tx);text-align:center;margin-top:4px">INVENTAIRE 2026</div>
+      <div style="font-family:var(--mono);font-size:9px;letter-spacing:.25em;color:var(--tx3);text-align:center;margin-top:6px">ELASSALI IDRISS</div>
+    </div>
+    <div style="font-size:12px;color:var(--tx3);margin-bottom:20px;text-align:center">Sélectionnez votre zone et saisissez votre code d'accès</div>
+    <div class="login-zone-grid">
+      <div class="zone-btn" id="zBtn-CEBS" onclick="selectZone('CEBS')"><div class="zone-btn-icon">📘</div><div class="zone-btn-label">CEBS</div></div>
+      <div class="zone-btn" id="zBtn-CEJ"  onclick="selectZone('CEJ')"><div class="zone-btn-icon">📗</div><div class="zone-btn-label">CEJ</div></div>
+      <div class="zone-btn" id="zBtn-AEBB" onclick="selectZone('AEBB')"><div class="zone-btn-icon">📙</div><div class="zone-btn-label">AEBB</div></div>
+    </div>
+    <div class="admin-btn-row">
+      <div class="zone-btn admin-zone" id="zBtn-ADMIN" onclick="selectZone('ADMIN')" style="display:flex;align-items:center;gap:10px;padding:12px 16px">
+        <div style="font-size:22px">🧭</div>
+        <div><div class="zone-btn-label" style="font-size:11px">DRRO — TOUTES ZONES</div></div>
+      </div>
+    </div>
+    <div id="loginErr" class="login-err"></div>
+    <div class="login-field">
+      <label>Code d'accès</label>
+      <div class="pwd-wrap">
+        <input type="password" id="loginPwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+        <button type="button" class="pwd-eye" onclick="togglePwd()" id="pwdEye">👁</button>
+      </div>
+    </div>
+    <button class="login-btn" id="loginBtn" onclick="doLogin()">Accéder →</button>
+    <div class="login-footer"><span id="loginFooterDate">—</span> — ELASSALI IDRISS</div>
+  </div>
+</div>
+
+<div id="appShell" style="display:none">
+<header>
+  <div style="display:flex;align-items:center;gap:15px;flex-shrink:0;overflow:hidden;min-width:0">
+    <span style="font-family:var(--mono);font-size:22px;font-weight:800;letter-spacing:.16em;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;white-space:nowrap;flex-shrink:0">DRRO</span>
+    <span style="width:1.5px;height:24px;background:var(--bd2);flex-shrink:0;opacity:.8"></span>
+    <div style="display:flex;flex-direction:column;line-height:1.2;flex-shrink:0">
+      <span style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.15em;color:var(--tx);white-space:nowrap">INVENTAIRE 2026</span>
+      <span style="font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--tx3);white-space:nowrap">ELASSALI IDRISS</span>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <span id="hdrZoneBadge" class="zone-badge-hdr"></span>
+    <span id="sessionExpiryBadge" class="session-expiry-badge" style="display:none"></span>
+    <div class="status-dot" id="statusDot" style="background:var(--tx3);box-shadow:none"></div>
+    <span class="status-txt" id="statusTxt">Chargement...</span>
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
+    <button class="refresh-btn" id="refreshBtn" onclick="reloadData()">
+      <span class="btn-full">↺ Actualiser</span><span class="btn-short">↺</span>
+    </button>
+    <button class="btn-logout" onclick="doLogout()">
+      <span class="btn-full">⎋ Déconnexion</span><span class="btn-short">⎋</span>
+    </button>
+  </div>
+</header>
+<nav id="mainNav"></nav>
+<main>
+
+<div class="panel on" id="panel-overview">
+  <div id="errorBanner" style="display:none" class="error-banner"></div>
+  <div id="alertZone"></div>
+  <div id="updateAlertZone"></div>
+  <div class="sec-title">Indicateurs — <span id="ovZoneLabel">—</span></div>
+  <div class="kpi-grid">
+    <div class="kpi" style="--kpi-color:var(--acc)"><div class="kpi-label">Total articles</div><div class="kpi-val" id="kTotal">—</div><div class="kpi-sub">zone courante</div></div>
+    <div class="kpi" style="--kpi-color:var(--acc3)"><div class="kpi-label">Conformes</div><div class="kpi-val" id="kOk">—</div><div class="kpi-sub" id="kOkP">—</div></div>
+    <div class="kpi" style="--kpi-color:var(--amber)"><div class="kpi-label">À vérifier</div><div class="kpi-val" id="kAv">—</div><div class="kpi-sub" id="kAvP">—</div></div>
+    <div class="kpi" style="--kpi-color:var(--red)"><div class="kpi-label">Discordances</div><div class="kpi-val" id="kDisc">—</div><div class="kpi-sub" id="kDiscP">—</div></div>
+    <div class="kpi" style="--kpi-color:var(--tx3)"><div class="kpi-label">Non renseigné</div><div class="kpi-val" id="kNd">—</div><div class="kpi-sub" id="kNdP">—</div></div>
+    <div class="kpi" style="--kpi-color:var(--blue)"><div class="kpi-label">Gares couvertes</div><div class="kpi-val" id="kGares">—</div><div class="kpi-sub">gares distinctes</div></div>
+    <div class="kpi" style="--kpi-color:var(--acc3)"><div class="kpi-label">Inventoristes</div><div class="kpi-val" id="kInvs">—</div><div class="kpi-sub">agents actifs</div></div>
+  </div>
+  <div id="adminZoneCards" style="display:none">
+    <div class="sec-title">Récapitulatif par zone</div>
+    <div class="kpi-zone-grid" id="zoneCardsGrid"></div>
+  </div>
+  <div class="sec-title">Observations</div>
+  <div class="charts-grid">
+    <div class="card"><div class="card-title">Répartition des observations</div><div style="position:relative;height:260px"><canvas id="cObs"></canvas></div></div>
+    <div class="card"><div class="card-title">Articles par inventoriste</div><div style="position:relative;height:260px"><canvas id="cInv"></canvas></div></div>
+  </div>
+  <div class="sec-title">Répartition par gare</div>
+  <div class="charts-grid">
+    <div class="card"><div class="card-title">Articles par gare — TOP 15</div><div style="position:relative;height:300px"><canvas id="cGare"></canvas></div></div>
+    <div class="card"><div class="card-title">Observations par gare — TOP 10</div><div style="position:relative;height:300px"><canvas id="cGareObs"></canvas></div></div>
+  </div>
+  <div class="sec-title">Libellés d'articles</div>
+  <div class="charts-grid">
+    <div class="card wide"><div class="card-title">Top 10 libellés d'articles</div><div style="position:relative;height:260px"><canvas id="cLib"></canvas></div></div>
+  </div>
+  <div id="adminChartSection" style="display:none">
+    <div class="sec-title">Comparaison inter-zones</div>
+    <div class="charts-grid">
+      <div class="card"><div class="card-title">Observations par zone</div><div style="position:relative;height:260px"><canvas id="cZoneObs"></canvas></div></div>
+      <div class="card"><div class="card-title">Taux de conformité par zone</div><div style="position:relative;height:260px"><canvas id="cZoneConf"></canvas></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="panel-tableau">
+  <div class="tbl-hdr">
+    <span id="tblCount" style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--tx);white-space:nowrap">—</span>
+    <div class="tbl-controls">
+      <input type="text" id="srch" placeholder="🔍 Recherche..." oninput="applyFilters()">
+      <select id="fSrc" onchange="applyFilters()" style="display:none">
+        <option value="">Toutes zones</option>
+        <option value="CEBS">CEBS</option><option value="CEJ">CEJ</option><option value="AEBB">AEBB</option>
+      </select>
+      <select id="fObs" onchange="applyFilters()">
+        <option value="">Toutes observations</option>
+        <option value="CONFORME">CONFORME</option><option value="A VERIFIER">A VERIFIER</option>
+        <option value="DISCORDANCE">DISCORDANCE</option><option value="vide">Non renseigné</option>
+      </select>
+      <select id="fGare" onchange="applyFilters()"><option value="">Toutes gares</option></select>
+      <select id="fLoc" onchange="applyFilters()"><option value="">Toutes localisations</option></select>
+      <select id="fInv" onchange="applyFilters()"><option value="">Tous inventoristes</option></select>
+      <button class="btn btn-out btn-sm" onclick="exportFiltered()">↓ Export Excel</button>
+    </div>
+  </div>
+  <div class="tbl-body-wrap">
+    <div class="tbl-wrap">
+      <table id="inventoryTable">
+        <thead><tr id="tblHead"></tr></thead>
+        <tbody id="tBody"></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="pag">
+    <span class="pag-info" id="pagInfo">—</span>
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+      <div class="pagesize">Lignes / page :
+        <select id="pageSize" onchange="changePageSize()">
+          <option value="50">50</option><option value="100">100</option>
+          <option value="200">200</option><option value="500">500</option><option value="all">Toutes</option>
+        </select>
+      </div>
+      <div class="pag-btns" id="pagBtns"></div>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="panel-telechargement">
+  <div class="sec-title">Fichiers source — Inventaires zones</div>
+  <div class="dl-grid" id="dlGrid"></div>
+  <div id="bddDlSection" style="display:none">
+    <!-- Sera rempli dynamiquement -->
+  </div>
+  <div class="sec-title" style="margin-top:24px">Exporter les données filtrées</div>
+  <div class="card">
+    <div class="card-title">Export depuis le tableau de données filtrées</div>
+    <p style="font-size:12px;color:var(--tx3);margin-bottom:14px">Les exports respectent les filtres actifs dans l'onglet Données.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap" id="exportBtns"></div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<div class="modal-overlay" id="modalOverlay" style="display:none" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <div class="modal-title">
+      <span id="modalTitle">✏️ Modifier l'article</span>
+      <span id="modalZoneBadge" class="modal-zone-badge">—</span>
+    </div>
+    <div class="modal-body">
+      <div id="modalFields" class="modal-form-grid"></div>
+    </div>
+    <div class="modal-buttons">
+      <button class="btn btn-red" id="modalDeleteBtn" onclick="askDeleteFromModal()" style="display:none">🗑 Supprimer cette ligne</button>
+      <div class="modal-buttons-right">
+        <button class="btn btn-out" onclick="closeModal()">✕ Annuler</button>
+        <button class="btn btn-acc" id="modalSaveBtn" onclick="submitModal()">✓ Enregistrer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="confirm-overlay" id="confirmOverlay" style="display:none">
+  <div class="confirm-box" id="confirmBox">
+    <div class="confirm-icon" id="confirmIcon">⚠️</div>
+    <div class="confirm-title" id="confirmTitle">Confirmer l'action</div>
+    <div class="confirm-msg" id="confirmMsg"></div>
+    <div class="confirm-btns">
+      <button class="btn btn-out" onclick="closeConfirm()">✕ Annuler</button>
+      <button class="btn btn-acc" id="confirmOkBtn" onclick="executeConfirmed()">✓ Confirmer</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
 
 <script>
 // ============================================================
@@ -143,7 +2082,7 @@ async function generateBDD_DRRO() {
     // Récupérer les données par zone
     const zones = ['CEBS', 'CEJ', 'AEBB'];
     const zonesData = {};
-    let allHeaders = [];
+    let allHeaders = new Set();
     
     for (const zone of zones) {
       const zoneRows = zoneData.filter(r => r.Source === zone);
@@ -152,70 +2091,63 @@ async function generateBDD_DRRO() {
       // Collecter tous les en-têtes uniques
       zoneRows.forEach(row => {
         Object.keys(row).forEach(key => {
-          if (key !== 'Source' && !allHeaders.includes(key)) {
-            allHeaders.push(key);
+          if (key !== 'Source') {
+            allHeaders.add(key);
           }
         });
       });
     }
     
-    // Trier les en-têtes dans l'ordre souhaité
+    // Définir l'ordre des colonnes souhaité
     const orderedHeaders = [
       'ID_Immobilisation', 'ID_Imobilisation', 'ID Immobilisation',
-      'Lib_Article', 'Libellé article',
-      'NumSerie', 'Numerie', 'COM-ALU',
-      'Lib_Modele', 'Modele', 'Modèle',
-      'Lib_Marque', 'Marque',
-      'Localisation', 'Emplacement',
-      'Gare',
-      'Date MAJ', 'Date_inventaire', 'Date d\'inventaire',
-      'Inventoriste',
-      'Observation',
-      'Cod_Article', 'Code article',
-      'Marche', 'N° Marché',
+      'Lib_Article', 'Libellé article', 'LIB_ARTICLE',
+      'NumSerie', 'Numerie', 'NUMERIE', 'COM-ALU',
+      'Lib_Modele', 'Modele', 'Modèle', 'LIB_MODELE',
+      'Lib_Marque', 'Marque', 'LIB_MARQUE',
+      'Localisation', 'LOCALISATION', 'Emplacement',
+      'Gare', 'GARE',
+      'Date MAJ', 'Date_inventaire', 'Date d\'inventaire', 'DATE_INVENTAIRE',
+      'Inventoriste', 'INVENTORISTE',
+      'Observation', 'OBSERVATION',
+      'Cod_Article', 'Code article', 'COD_ARTICLE',
+      'Marche', 'N° Marché', 'N_MARCHE',
       'PU', 'Prix',
-      'Date_modification', 'Date de modification'
+      'Date_modification', 'Date de modification', 'DATE_MODIFICATION'
     ];
     
-    // Compléter avec les en-têtes manquants
-    orderedHeaders.forEach(h => {
-      if (!allHeaders.includes(h) && h) allHeaders.unshift(h);
+    // Construire la liste finale des colonnes
+    const finalHeaders = [];
+    for (const h of orderedHeaders) {
+      if (allHeaders.has(h) && !finalHeaders.includes(h)) {
+        finalHeaders.push(h);
+      }
+    }
+    // Ajouter les colonnes restantes
+    allHeaders.forEach(h => {
+      if (!finalHeaders.includes(h) && h !== 'Source') {
+        finalHeaders.push(h);
+      }
     });
-    allHeaders = [...new Set([...orderedHeaders, ...allHeaders])].filter(h => h && h !== 'Source');
     
     // Créer un nouveau classeur
     const wb = XLSX.utils.book_new();
     
-    // Styles pour la mise en page (en-têtes)
-    const headerStyle = { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "1A365D" } }, alignment: { horizontal: "center" } };
-    
     // Pour chaque zone, créer une feuille
     for (const zone of zones) {
       const data = zonesData[zone];
-      if (data.length === 0) {
-        // Feuille vide avec juste les en-têtes
-        const emptySheet = XLSX.utils.json_to_sheet([], { header: allHeaders });
-        XLSX.utils.book_append_sheet(wb, emptySheet, `${zone}_ALL`);
-        continue;
-      }
       
       // Transformer les données pour la feuille
       const sheetData = data.map(row => {
         const newRow = {};
-        allHeaders.forEach(header => {
+        finalHeaders.forEach(header => {
           let value = row[header];
-          if (value === undefined) {
-            // Chercher des variantes du nom de colonne
-            const possibleKeys = [
-              header,
-              header.toLowerCase(),
-              header.toUpperCase(),
-              header.replace(/_/g, ' '),
-              header.replace(/ /g, '_')
-            ];
-            for (const key of possibleKeys) {
-              if (row[key] !== undefined) {
-                value = row[key];
+          if (value === undefined || value === null) {
+            // Chercher des variantes
+            const lowerHeader = header.toLowerCase();
+            for (const [key, val] of Object.entries(row)) {
+              if (key.toLowerCase() === lowerHeader || key === header) {
+                value = val;
                 break;
               }
             }
@@ -226,12 +2158,14 @@ async function generateBDD_DRRO() {
       });
       
       // Créer la feuille
-      const ws = XLSX.utils.json_to_sheet(sheetData, { header: allHeaders });
+      const ws = sheetData.length > 0 
+        ? XLSX.utils.json_to_sheet(sheetData, { header: finalHeaders })
+        : XLSX.utils.json_to_sheet([], { header: finalHeaders });
       
       // Ajuster les largeurs de colonnes
-      ws['!cols'] = allHeaders.map(header => {
+      ws['!cols'] = finalHeaders.map(header => {
         let maxLen = header.length;
-        sheetData.forEach(row => {
+        sheetData.slice(0, 100).forEach(row => {
           const val = row[header] ? row[header].toString() : '';
           if (val.length > maxLen) maxLen = Math.min(val.length, 50);
         });
@@ -242,7 +2176,8 @@ async function generateBDD_DRRO() {
     }
     
     // Exporter le fichier
-    XLSX.writeFile(wb, `BDD-DRRO_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.xlsx`);
+    const dateStr = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+    XLSX.writeFile(wb, `BDD-DRRO_${dateStr}.xlsx`);
     toast('✓ BDD-DRRO.xlsx généré avec succès !', '');
     
   } catch (error) {
@@ -251,14 +2186,8 @@ async function generateBDD_DRRO() {
   }
 }
 
-// ============================================================
-// NOUVELLE FONCTION : TÉLÉCHARGER LA BDD AU FORMAT GOOGLE SHEETS
-// ============================================================
-
-function openBDDDrive() {
-  // Cette fonction peut être adaptée pour créer un lien vers un Google Sheets dynamique
-  // ou simplement afficher un message
-  toast('La BDD est générée localement. Utilisez "Générer BDD-DRRO" pour créer le fichier Excel.', 'info');
+function openBDDInfo() {
+  toast('La BDD est générée localement à partir des 3 zones. Cliquez sur "Générer et télécharger" pour créer le fichier Excel.', 'info');
 }
 
 // ============================================================
@@ -1027,27 +2956,36 @@ function buildDlSection() {
   }
   
   const bddSection = document.getElementById('bddDlSection');
-  if (bddSection) bddSection.style.display = isAdmin ? 'block' : 'none';
-  
-  // MODIFICATION ICI : Remplacer les liens statiques par des boutons dynamiques
-  if (isAdmin) {
-    const bddDlSection = document.getElementById('bddDlSection');
-    if (bddDlSection) {
-      bddDlSection.innerHTML = `
+  if (bddSection) {
+    if (isAdmin) {
+      bddSection.style.display = 'block';
+      bddSection.innerHTML = `
         <div class="sec-title" style="margin-top:24px">Base de données consolidée</div>
         <div class="dl-grid">
           <div class="dl-card">
             <div class="dl-icon" style="background:color-mix(in srgb,var(--acc3) 14%,var(--s1))">📥</div>
-            <div class="dl-info"><div class="dl-name">BDD-DRRO.xlsx</div><div class="dl-meta">Base consolidée - Toutes zones (CEBS, CEJ, AEBB)</div></div>
-            <div class="dl-btns"><button class="btn btn-acc" onclick="generateBDD_DRRO()">🔄 Générer et télécharger</button></div>
+            <div class="dl-info">
+              <div class="dl-name">BDD-DRRO.xlsx</div>
+              <div class="dl-meta">Base consolidée - Toutes zones (CEBS, CEJ, AEBB)</div>
+            </div>
+            <div class="dl-btns">
+              <button class="btn btn-acc" onclick="generateBDD_DRRO()">🔄 Générer et télécharger</button>
+            </div>
           </div>
           <div class="dl-card">
-            <div class="dl-icon" style="background:color-mix(in srgb,var(--gold) 14%,var(--s1))">🔗</div>
-            <div class="dl-info"><div class="dl-name">Aide</div><div class="dl-meta">Informations sur la génération</div></div>
-            <div class="dl-btns"><button class="btn btn-gold" onclick="openBDDDrive()">ℹ️ Info</button></div>
+            <div class="dl-icon" style="background:color-mix(in srgb,var(--gold) 14%,var(--s1))">ℹ️</div>
+            <div class="dl-info">
+              <div class="dl-name">Information</div>
+              <div class="dl-meta">La BDD est générée à partir des 3 zones</div>
+            </div>
+            <div class="dl-btns">
+              <button class="btn btn-gold" onclick="openBDDInfo()">ℹ️ Info</button>
+            </div>
           </div>
         </div>
       `;
+    } else {
+      bddSection.style.display = 'none';
     }
   }
 }
@@ -1242,7 +3180,7 @@ function renderTable() {
         if (!isAdmin) {
           return `<tr class="clickable-row" data-row-index="${gi}">${cells}</tr>`;
         }
-        return `<tr class="clickable-row" data-row-index="${gi}"><td class="td-act"><button class="btn-tbl-edit" onclick="openEditModal(${gi})" title="Modifier cette ligne">✏</button></td>${cells}<tr>`;
+        return `<tr class="clickable-row" data-row-index="${gi}"><td class="td-act"><button class="btn-tbl-edit" onclick="openEditModal(${gi})" title="Modifier cette ligne">✏</button></td>${cells}</tr>`;
       }).join('');
       tBody.innerHTML = rowsHtml;
       
@@ -1287,7 +3225,7 @@ function goPage(p) {
 }
 
 // ============================================================
-// MODAL EDIT - Version complète (inchangée)
+// MODAL EDIT - Version complète (inchangée pour la longueur)
 // ============================================================
 
 function openEditModal(gi) {
@@ -1488,8 +3426,6 @@ function submitModal() {
   const pu = document.getElementById('mf_pu')?.value || '';
   const marque = document.getElementById('mf_marque')?.value || '';
   const modele = document.getElementById('mf_modele')?.value || '';
-  const inventoriste = document.getElementById('mf_inventoriste')?.value || '';
-  const dateInventaire = document.getElementById('mf_date_inventaire')?.value || '';
   
   const obsSelect = document.getElementById('mf_obs_sel');
   let observation = obsSelect?.value || '';
@@ -1509,12 +3445,10 @@ function submitModal() {
     else if (h === 'PU' || h === 'Prix') data[h] = pu;
     else if (h === 'Marque' || h === 'LIB_MARQUE') data[h] = marque;
     else if (h === 'Modele' || h === 'LIB_MODELE' || h === 'Modèle') data[h] = modele;
-    else if (h === 'Inventoriste' || h === 'INVENTORISTE') data[h] = inventoriste;
-    else if (h === 'Date_inventaire' || h === "Date d'inventaire" || h === 'DATE_INVENTAIRE') data[h] = dateInventaire;
     else if (h === 'Observation' || h === 'OBSERVATION') data[h] = observation;
   });
   
-  const nonModifiable = ['Localisation', 'LOCALISATION', 'Gare', 'GARE', 'Date_modification', 'Date de modification', 'ID_Imobilisation', 'ID_Immobilisation'];
+  const nonModifiable = ['Localisation', 'LOCALISATION', 'Gare', 'GARE', 'Date_modification', 'Date de modification', 'ID_Imobilisation', 'ID_Immobilisation', 'Inventoriste', 'INVENTORISTE', 'Date_inventaire', 'Date d\'inventaire'];
   
   const changes = headers.filter(h => {
     if (nonModifiable.includes(h)) return false;
@@ -1710,7 +3644,7 @@ function removeZoneDataRow(zone, sheetRowIndex) {
 }
 
 // ============================================================
-// EXPORT (inchangé)
+// EXPORT
 // ============================================================
 
 function exportFiltered() {
