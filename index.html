@@ -2960,26 +2960,16 @@ function buildDlSection() {
     if (isAdmin) {
       bddSection.style.display = 'block';
       bddSection.innerHTML = `
-        <div class="sec-title" style="margin-top:24px">Base de données consolidée</div>
-        <div class="dl-grid">
+         <div class="sec-title" style="margin-top:24px">Base de données consolidée</div>
+         <div class="dl-grid">
           <div class="dl-card">
             <div class="dl-icon" style="background:color-mix(in srgb,var(--acc3) 14%,var(--s1))">📥</div>
             <div class="dl-info">
-              <div class="dl-name">BDD-DRRO.xlsx</div>
-              <div class="dl-meta">Base consolidée - Toutes zones (CEBS, CEJ, AEBB)</div>
+               <div class="dl-name">BDD-DRRO.xlsx</div>
+               <div class="dl-meta">Base consolidée - Toutes zones (CEBS, CEJ, AEBB)</div>
             </div>
             <div class="dl-btns">
               <button class="btn btn-acc" onclick="generateBDD_DRRO()">🔄 Générer et télécharger</button>
-            </div>
-          </div>
-          <div class="dl-card">
-            <div class="dl-icon" style="background:color-mix(in srgb,var(--gold) 14%,var(--s1))">ℹ️</div>
-            <div class="dl-info">
-              <div class="dl-name">Information</div>
-              <div class="dl-meta">La BDD est générée à partir des 3 zones</div>
-            </div>
-            <div class="dl-btns">
-              <button class="btn btn-gold" onclick="openBDDInfo()">ℹ️ Info</button>
             </div>
           </div>
         </div>
