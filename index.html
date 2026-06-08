@@ -2972,6 +2972,7 @@ function openEditModal(gi) {
   // Ordre personnalisé des champs
   const order = [
     'ID_Imobilisation', 'ID_Immobilisation', 'ID Immobilisation',
+    'Numérie', 'NUMERIE', 'COM-ALU',
     'Lib_Article', 'LIB_ARTICLE', 'Libellé article',
     'Observation',
     'Gare', 'GARE',
@@ -2980,7 +2981,6 @@ function openEditModal(gi) {
     'Modèle', 'LIB_MODELE', 'MODELE',
     'N° Marché', 'N_MARCHE', 'NUMERO_MARCHE',
     'PU', 'Prix unitaire',
-    'Numérie', 'NUMERIE', 'COM-ALU',
     'Code article', 'COD_ARTICLE', 'Cod_Article',
     'Inventoriste', 'INVENTORISTE',
     'Date inventaire', 'Date_Inventaire', "Date d'inventaire",
@@ -3005,9 +3005,7 @@ function openEditModal(gi) {
       const isLibArticle = h && (h.toLowerCase() === 'lib_article' || h.toLowerCase() === 'libellé article');
       const isDate = /date/i.test(h);
       // Détection des champs protégés
-      const isProtected = h && (h.toLowerCase() === 'date inventaire' || 
-                                 h.toLowerCase() === 'date_inventaire' ||
-                                 h.toLowerCase() === "date d'inventaire" ||
+      const isProtected = h && (h.toLowerCase() === "date d'inventaire" ||
                                  h.toLowerCase() === 'inventoriste');
       const isDateModification = h && (h.toLowerCase() === 'date modification' || 
                                         h.toLowerCase() === 'date_modification' ||
