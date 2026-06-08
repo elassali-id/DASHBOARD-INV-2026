@@ -3035,70 +3035,166 @@ function openEditModal(gi) {
     return indexA - indexB;
   });
   
-  const modalFields = document.getElementById('modalFields');
-  if (modalFields) {
-    modalFields.innerHTML = sortedHeaders.map(h => {
-      let val = row[h] != null ? row[h] : '';
-      const isObs = h === 'Observation';
-      const isLibArticle = h && (h.toLowerCase() === 'lib_article' || h.toLowerCase() === 'libellé article');
-      const isDate = /date/i.test(h);
-      // Détection des champs protégés
-      const isProtected = h && (h.toLowerCase() === "date d'inventaire" ||
-                                 h.toLowerCase() === 'inventoriste');
-      const isDateModification = h && (h.toLowerCase() === 'date modification' || 
-                                        h.toLowerCase() === 'date_modification' ||
-                                        h.toLowerCase() === 'date de modification');
-      let fld;
-      
-      if (isObs) {
-        const u = val.toString().toUpperCase();
-        const isD = u.startsWith('DISCORDANCE');
-        const dt = isD && val.toString().length > 11 ? val.toString().slice(11).trim() : '';
-        const sv = u === 'CONFORME' ? 'CONFORME' : u === 'A VERIFIER' ? 'A VERIFIER' : isD ? 'DISCORDANCE' : '';
-        fld = `<select id="mf_obs_sel" onchange="toggleDiscText()" style="width:100%;background:var(--s2);border:1.5px solid var(--bd);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--tx);outline:none;margin-bottom:6px">
-          <option value="">— Non renseigné —</option>
-          <option value="CONFORME"${sv === 'CONFORME' ? ' selected' : ''}>CONFORME</option>
-          <option value="A VERIFIER"${sv === 'A VERIFIER' ? ' selected' : ''}>A VERIFIER</option>
-          <option value="DISCORDANCE"${sv === 'DISCORDANCE' ? ' selected' : ''}>DISCORDANCE</option>
-        </select>
-        <input type="text" id="mf_obs_disc" placeholder="Préciser..." value="${esc(dt)}"
-          style="width:100%;background:var(--s2);border:1.5px solid var(--bd);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--tx);outline:none;display:${sv === 'DISCORDANCE' ? 'block' : 'none'}">`;
-      } 
-      // Lib_Article : champ sur toute la largeur
-      else if (isLibArticle) {
-        fld = `<input type="text" id="mf_${h.replace(/\W/g, '_')}" value="${esc(val.toString())}" 
-          style="width:100%;background:var(--s2);border:1.5px solid var(--bd);border-radius:var(--r);padding:10px 12px;font-size:13px;color:var(--tx);outline:none">`;
-      }
-      // Champs protégés
-      else if (isProtected) {
-        fld = `<input type="text" value="${esc(val)}" 
-          style="width:100%;background:var(--s3);border:1.5px solid var(--bd);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--tx3);outline:none;cursor:not-allowed;font-style:italic"
-          readonly disabled>`;
-      }
-      else if (isDateModification) {
-        const displayValue = isFrenchDateTime(val) ? val : (val && val !== '—' ? val : '');
-        fld = `<input type="text" value="${esc(displayValue)}" 
-          style="width:100%;background:var(--s3);border:1.5px solid var(--bd);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--tx3);outline:none;font-style:italic"
-          readonly disabled
-          placeholder="Sera mis à jour automatiquement">`;
-      }
-      else if (isDate) {
-        const displayValue = val && val !== '—' ? val : '';
-        fld = `<input type="text" id="mf_${h.replace(/\W/g, '_')}" value="${esc(displayValue)}" placeholder="DD/MM/YYYY">`;
-      } 
-      else {
-        fld = `<input type="text" id="mf_${h.replace(/\W/g, '_')}" value="${esc(val.toString())}">`;
-      }
-      
-      // Lib_Article occupe toute la largeur
-      const isFullWidth = isLibArticle || isObs;
-      return `<div class="modal-field${isFullWidth ? ' full' : ''}"><label>${esc(h)}</label>${fld}</div>`;
-    }).join('');
+// À l'intérieur de openEditModal, remplace la partie qui construit modalFields.innerHTML par ceci :
+
+const modalFields = document.getElementById('modalFields');
+if (modalFields) {
+  // Séparer les champs par catégories
+  const idImmoFields = headers.filter(h => 
+    h === 'ID_Imobilisation' || h === 'ID_Immobilisation' || h === 'ID Immobilisation'
+  );
+  const serieFields = headers.filter(h => 
+    h === 'Numérie' || h === 'NUMERIE' || h === 'COM-ALU' || h === 'Série'
+  );
+  const libArticleFields = headers.filter(h => 
+    h === 'Lib_Article' || h === 'LIB_ARTICLE' || h === 'Libellé article'
+  );
+  const observationFields = headers.filter(h => 
+    h === 'Observation' || h === 'OBSERVATION'
+  );
+  const codeArticleFields = headers.filter(h => 
+    h === 'Cod_Article' || h === 'COD_ARTICLE' || h === 'Code article'
+  );
+  const otherFields = headers.filter(h => 
+    !idImmoFields.includes(h) && !serieFields.includes(h) && 
+    !libArticleFields.includes(h) && !observationFields.includes(h) && 
+    !codeArticleFields.includes(h)
+  );
+  
+  let html = '';
+  
+  // LIGNE 1 : ID Immobilisation + Numéro de série (côte à côte)
+  html += `<div class="modal-grid" style="grid-template-columns:1fr 1fr; margin-bottom:12px;">`;
+  
+  // ID Immobilisation
+  if (idImmoFields.length) {
+    const h = idImmoFields[0];
+    let val = row[h] != null ? row[h] : '';
+    html += `<div class="modal-field">
+      <label>🏷️ ${esc(h)}</label>
+      <input type="text" id="mf_${h.replace(/\W/g, '_')}" value="${esc(val)}" style="font-family:var(--mono);font-weight:600;">
+    </div>`;
+  } else {
+    html += `<div class="modal-field">
+      <label>🏷️ ID Immobilisation</label>
+      <input type="text" id="mf_id_immo" value="${esc(row.ID_Imobilisation || row.ID_Immobilisation || row['ID Immobilisation'] || '')}">
+    </div>`;
   }
   
-  const overlay = document.getElementById('modalOverlay');
-  if (overlay) overlay.style.display = 'flex';
-  setTimeout(() => { const f = document.querySelector('#modalFields input:not([readonly])'); if (f) f.focus(); }, 80);
+  // Numéro de série (COM-ALU / NUMERIE)
+  if (serieFields.length) {
+    const h = serieFields[0];
+    let val = row[h] != null ? row[h] : '';
+    html += `<div class="modal-field">
+      <label>🔢 ${esc(h)}</label>
+      <input type="text" id="mf_${h.replace(/\W/g, '_')}" value="${esc(val)}" style="font-family:var(--mono);font-weight:600;">
+    </div>`;
+  } else {
+    const serieVal = row.Numerie || row.NUMERIE || row['COM-ALU'] || '';
+    html += `<div class="modal-field">
+      <label>🔢 Numéro de série</label>
+      <input type="text" id="mf_serie" value="${esc(serieVal)}">
+    </div>`;
+  }
+  html += `</div>`;
+  
+  // LIGNE 2 : Libellé article (pleine largeur)
+  if (libArticleFields.length) {
+    const h = libArticleFields[0];
+    let val = row[h] != null ? row[h] : '';
+    html += `<div class="modal-field full" style="margin-bottom:12px;">
+      <label>📦 ${esc(h)}</label>
+      <input type="text" id="mf_${h.replace(/\W/g, '_')}" value="${esc(val)}" style="width:100%;padding:10px 12px;font-size:13px;">
+    </div>`;
+  }
+  
+  // LIGNE 3 : Observation + Code article (côte à côte)
+  html += `<div class="modal-grid" style="grid-template-columns:1fr 1fr; margin-bottom:12px;">`;
+  
+  // Observation (select)
+  if (observationFields.length) {
+    const h = observationFields[0];
+    let val = row[h] != null ? row[h] : '';
+    const u = val.toString().toUpperCase();
+    const isD = u.startsWith('DISCORDANCE');
+    const dt = isD && val.toString().length > 11 ? val.toString().slice(11).trim() : '';
+    const sv = u === 'CONFORME' ? 'CONFORME' : u === 'A VERIFIER' ? 'A VERIFIER' : isD ? 'DISCORDANCE' : '';
+    html += `<div class="modal-field">
+      <label>⚠️ ${esc(h)}</label>
+      <select id="mf_obs_sel" onchange="toggleDiscText()" style="width:100%;margin-bottom:6px;">
+        <option value="">— Non renseigné —</option>
+        <option value="CONFORME"${sv === 'CONFORME' ? ' selected' : ''}>CONFORME</option>
+        <option value="A VERIFIER"${sv === 'A VERIFIER' ? ' selected' : ''}>A VERIFIER</option>
+        <option value="DISCORDANCE"${sv === 'DISCORDANCE' ? ' selected' : ''}>DISCORDANCE</option>
+      </select>
+      <input type="text" id="mf_obs_disc" placeholder="Préciser..." value="${esc(dt)}" style="width:100%;display:${sv === 'DISCORDANCE' ? 'block' : 'none'}">
+    </div>`;
+  } else {
+    let val = row.Observation || '';
+    const u = val.toString().toUpperCase();
+    const isD = u.startsWith('DISCORDANCE');
+    const dt = isD && val.toString().length > 11 ? val.toString().slice(11).trim() : '';
+    const sv = u === 'CONFORME' ? 'CONFORME' : u === 'A VERIFIER' ? 'A VERIFIER' : isD ? 'DISCORDANCE' : '';
+    html += `<div class="modal-field">
+      <label>⚠️ Observation</label>
+      <select id="mf_obs_sel" onchange="toggleDiscText()" style="width:100%;margin-bottom:6px;">
+        <option value="">— Non renseigné —</option>
+        <option value="CONFORME"${sv === 'CONFORME' ? ' selected' : ''}>CONFORME</option>
+        <option value="A VERIFIER"${sv === 'A VERIFIER' ? ' selected' : ''}>A VERIFIER</option>
+        <option value="DISCORDANCE"${sv === 'DISCORDANCE' ? ' selected' : ''}>DISCORDANCE</option>
+      </select>
+      <input type="text" id="mf_obs_disc" placeholder="Préciser..." value="${esc(dt)}" style="width:100%;display:${sv === 'DISCORDANCE' ? 'block' : 'none'}">
+    </div>`;
+  }
+  
+  // Code article
+  if (codeArticleFields.length) {
+    const h = codeArticleFields[0];
+    let val = row[h] != null ? row[h] : '';
+    html += `<div class="modal-field">
+      <label>🔢 ${esc(h)}</label>
+      <input type="text" id="mf_${h.replace(/\W/g, '_')}" value="${esc(val)}" style="font-family:var(--mono);">
+    </div>`;
+  } else {
+    html += `<div class="modal-field">
+      <label>🔢 Code article</label>
+      <input type="text" id="mf_Cod_Article" value="${esc(row.Cod_Article || row.COD_ARTICLE || '')}">
+    </div>`;
+  }
+  html += `</div>`;
+  
+  // Le reste des champs (Gare, Localisation, Marque, Modèle, etc.) en grille
+  if (otherFields.length) {
+    html += `<div class="modal-sep"></div>`;
+    html += `<div class="modal-grid" style="grid-template-columns:1fr 1fr;">`;
+    for (const h of otherFields) {
+      const isDate = /date/i.test(h);
+      const isDateModification = h === 'Date modification' || h === 'Date_Modification' || h === 'Date de modification';
+      const isProtected = h === "Date d'inventaire" || h === 'Inventoriste';
+      let val = row[h] != null ? row[h] : '';
+      
+      if (isDateModification || isProtected) {
+        const displayValue = isFrenchDateTime(val) ? val : (val && val !== '—' ? val : '');
+        html += `<div class="modal-field">
+          <label>${isProtected ? '🔒' : '🕐'} ${esc(h)}</label>
+          <input type="text" value="${esc(displayValue)}" readonly disabled style="background:var(--s3);font-style:italic;" placeholder="${isDateModification ? 'Auto' : ''}">
+        </div>`;
+      } else if (isDate) {
+        html += `<div class="modal-field">
+          <label>📅 ${esc(h)}</label>
+          <input type="text" id="mf_${h.replace(/\W/g, '_')}" value="${esc(val)}" placeholder="DD/MM/YYYY">
+        </div>`;
+      } else {
+        html += `<div class="modal-field">
+          <label>${esc(h)}</label>
+          <input type="text" id="mf_${h.replace(/\W/g, '_')}" value="${esc(val)}">
+        </div>`;
+      }
+    }
+    html += `</div>`;
+  }
+  
+  modalFields.innerHTML = html;
 }
 
 function toggleDiscText() {
