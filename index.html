@@ -1235,7 +1235,21 @@ input[type=text] {
   flex-wrap: wrap;
   flex-shrink: 0;
 }
+.confirm-msg p {
+  margin: 8px 0;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--bd);
+}
 
+.confirm-msg p:last-child {
+  border-bottom: none;
+}
+
+.confirm-msg strong {
+  color: var(--acc);
+  min-width: 180px;
+  display: inline-block;
+}
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -3115,6 +3129,7 @@ function submitModal() {
       if (sel) data[h] = sel.value === 'DISCORDANCE' && disc && disc.value.trim() ? 'DISCORDANCE ' + disc.value.trim() : sel.value;
     } 
     else if (isDateModification) {
+      // Ne pas inclure la date de modification dans les données envoyées
     }
     else {
       const el = document.getElementById('mf_' + h.replace(/\W/g, '_'));
@@ -3128,6 +3143,7 @@ function submitModal() {
   const idxInZone = zoneRows.indexOf(row);
   const sheetRow = idxInZone + 2;
   
+  // 🔥 CRITIQUE : Ne garder que les champs réellement modifiés
   const changes = headers.filter(h => {
     const isDateModif = h === 'Date modification' || h === 'Date_Modification' || 
                         h === 'Date de modification' || h === 'Date_modification' ||
@@ -3141,27 +3157,44 @@ function submitModal() {
     return;
   }
   
-  let msg = `<strong>${zone}</strong>`;
-  msg += `<div class="confirm-details">`;
+  // 🔥 NOUVEAU : Construction du message sans Inventoriste ni Date d'inventaire
+  let msg = '';
   
+  // ID Immobilisation
   const idImmo = row.ID_Imobilisation || row.ID_Immobilisation || row['ID Immobilisation'] || '';
-  if (idImmo) {
-    msg += `<p><span class="label">🏷️ ID Immobilisation:</span> <strong style="color:var(--acc)">${esc(idImmo)}</strong></p>`;
+  msg += `<p><strong>ID Immobilisation :</strong> ${esc(idImmo)}</p>`;
+  
+  // Libellé article
+  if (row.Lib_Article) msg += `<p><strong>Libellé article :</strong> ${esc(row.Lib_Article)}</p>`;
+  
+  // 🔥 Afficher uniquement Cod_Article s'il est modifié
+  const isCodArticleModified = changes.includes('Cod_Article') || changes.includes('COD_ARTICLE') || changes.includes('Code article');
+  if (isCodArticleModified) {
+    const newCodValue = data['Cod_Article'] || data['COD_ARTICLE'] || data['Code article'] || '';
+    msg += `<p><strong>✏️ Modification :</strong> Cod_Article (${esc(newCodValue)})</p>`;
+  } else if (changes.length === 1) {
+    // Pour un autre champ modifié
+    msg += `<p><strong>✏️ Modification :</strong> ${changes.join(', ')}</p>`;
   } else {
-    msg += `<p><span class="label">🏷️ ID Immobilisation:</span> <em>non renseigné</em></p>`;
+    msg += `<p><strong>✏️ Champs modifiés :</strong> ${changes.join(', ')}</p>`;
   }
   
-  if (row.Lib_Article) msg += `<p><span class="label">📦 Libellé article:</span> ${esc(row.Lib_Article)}</p>`;
-  if (row.Cod_Article) msg += `<p><span class="label">🔢 Code article:</span> ${esc(row.Cod_Article)}</p>`;
-  msg += `<p style="margin-top:8px;border-top:1px solid var(--bd);padding-top:8px"><span class="label">✏️ Champs modifiés:</span> ${changes.join(', ')}</p>`;
-  msg += `<p><span class="label">🕐 Date modification:</span> sera mise à jour automatiquement</p>`;
-  msg += `</div>`;
+  // 🔥 Date modification complète (générée automatiquement)
+  const now = new Date();
+  const dateComplete = now.toLocaleString('fr-FR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  });
+  msg += `<p><strong>📅 Date de modification :</strong> ${dateComplete}</p>`;
   
   pendingAction = { type: 'update', rowIndex: sheetRow, data, zone, globalIdx: modalRowIndex };
   closeModal();
   openConfirm(msg, '✏️', 'Confirmer la modification', 'var(--grad)', '✓ Enregistrer');
 }
-
 function askDeleteFromModal() {
   const row = zoneData[modalRowIndex];
   if (!row) return;
@@ -3200,7 +3233,14 @@ function openConfirm(msg, icon = '⚠️', title = 'Confirmer', btnGrad = 'var(-
   
   if (confirmIcon) confirmIcon.textContent = icon;
   if (confirmTitle) confirmTitle.textContent = title;
-  if (confirmMsg) confirmMsg.innerHTML = msg;
+  if (confirmMsg) {
+    // 🔥 Améliore l'affichage du message
+    confirmMsg.innerHTML = `
+      <div style="text-align:left; line-height:1.6;">
+        ${msg}
+      </div>
+    `;
+  }
   
   if (confirmBox && okBtn) {
     if (btnGrad === 'var(--red)') {
