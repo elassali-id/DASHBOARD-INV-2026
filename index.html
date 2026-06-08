@@ -3200,28 +3200,28 @@ function openEditModal(gi) {
     <input type="text" class="readonly-field" value="${esc(serieValue)}" readonly disabled>
   </div>`;
   
-  // 11. LOCALISATION (NON MODIFIABLE avec 🔒)
+  // 11. LOCALISATION (MODIFIABLE)
   let locValue = row.Localisation || row.LOCALISATION || row.Emplacement || '';
   html += `<div class="modal-field">
-    <label><span class="lock-icon">🔒</span> LOCALISATION</label>
-    <input type="text" class="readonly-field" value="${esc(locValue)}" readonly disabled>
+    <label>LOCALISATION</label>
+    <input type="text" class="readonly-field" value="${esc(locValue)}" placeholder="LOCALISATION">
   </div>`;
   
-  // 12. GARE (NON MODIFIABLE avec 🔒)
+  // 12. GARE (MODIFIABLE)
   let gareValue = row.Gare || row.GARE || '';
   html += `<div class="modal-field">
-    <label><span class="lock-icon">🔒</span> GARE</label>
-    <input type="text" class="readonly-field" value="${esc(gareValue)}" readonly disabled>
+    <label>GARE</label>
+    <input type="text" class="readonly-field" value="${esc(gareValue)}" placeholder="La GARE">
   </div>`;
   
-  // 13. INVENTORISTE (MODIFIABLE)
+  // 13. INVENTORISTE (NON MODIFIABLE avec 🔒)
   let invValue = row.Inventoriste || row.INVENTORISTE || '';
   html += `<div class="modal-field">
-    <label>👤 INVENTORISTE</label>
-    <input type="text" id="mf_inventoriste" value="${esc(invValue)}" placeholder="Nom de l'inventoriste">
+    <label><span class="lock-icon">👤</span> INVENTORISTE</label>
+    <input type="text" id="mf_inventoriste" value="${esc(invValue)}" readonly disabled>
   </div>`;
   
-  // 14. DATE D'INVENTAIRE (MODIFIABLE)
+  // 14. DATE D'INVENTAIRE (NON MODIFIABLE avec 🔒)
   let dateInvValue = row.Date_inventaire || row['Date d\'inventaire'] || row.DATE_INVENTAIRE || '';
   if (dateInvValue && !isFrenchDateTime(dateInvValue) && dateInvValue.includes(' ')) {
     let parts = dateInvValue.split(' ');
@@ -3233,14 +3233,14 @@ function openEditModal(gi) {
     }
   }
   html += `<div class="modal-field">
-    <label>📅 DATE D'INVENTAIRE</label>
+    <label><span class="lock-icon">📅</span> DATE D'INVENTAIRE</label>
     <input type="text" id="mf_date_inventaire" value="${esc(dateInvValue)}" placeholder="DD/MM/YYYY HH:MM:SS">
   </div>`;
   
   // 15. DATE DE MODIFICATION (NON MODIFIABLE avec 🔒)
   let dateModifValue = row.Date_modification || row['Date de modification'] || row.DATE_MODIFICATION || '';
   html += `<div class="modal-field">
-    <label><span class="lock-icon">🔒</span> DATE DE MODIFICATION</label>
+    <label><span class="lock-icon">📅</span> DATE DE MODIFICATION</label>
     <input type="text" class="readonly-field" value="${esc(dateModifValue) || 'Non modifiée'}" readonly disabled>
   </div>`;
   
