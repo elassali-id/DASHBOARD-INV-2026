@@ -199,7 +199,7 @@ body {
 #loginScreen {
   position: fixed;
   inset: 0;
-  background: linear-gradient(135deg, var(--bg) 0%, var(--s2) 100%);
+  background: var(--bg);
   z-index: 9998;
   display: flex;
   align-items: center;
@@ -212,24 +212,19 @@ body {
   display: flex;
   width: 100%;
   max-width: 1100px;
-  min-height: 560px;
+  min-height: 580px;
   background: var(--s1);
-  border-radius: 24px;
+  border-radius: 28px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.login-container:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.3);
-}
-
 /* Panneau gauche - Branding */
 .login-brand {
   flex: 1.2;
-  background: linear-gradient(135deg, #0A2B3E 0%, #1A4A6F 50%, #2C6288 100%);
-  padding: 48px 40px;
+  background: linear-gradient(135deg, #0a2b3e 0%, #1a4a6f 50%, #2c6288 100%);
+  padding: 50px 42px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -245,7 +240,7 @@ body {
   right: -30%;
   width: 160%;
   height: 160%;
-  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -268,29 +263,29 @@ body {
 
 .brand-logo {
   font-family: var(--mono);
-  font-size: 34px;
+  font-size: 38px;
   font-weight: 700;
   letter-spacing: 4px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   display: inline-block;
   border-bottom: 3px solid rgba(255,255,255,0.3);
-  padding-bottom: 10px;
+  padding-bottom: 12px;
 }
 
 .brand-title {
-  font-size: 13px;
-  opacity: 0.8;
+  font-size: 12px;
+  opacity: 0.75;
   letter-spacing: 2px;
-  margin-top: 30px;
+  margin-top: 32px;
   font-weight: 500;
 }
 
 .brand-subtitle {
   font-family: 'Segoe UI', Arial, sans-serif;
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 500;
   letter-spacing: 1px;
-  margin-top: 10px;
+  margin-top: 12px;
   direction: rtl;
   opacity: 0.9;
 }
@@ -298,7 +293,7 @@ body {
 .brand-year {
   font-size: 13px;
   opacity: 0.7;
-  margin-top: 20px;
+  margin-top: 24px;
   letter-spacing: 2px;
   font-weight: 500;
 }
@@ -306,15 +301,26 @@ body {
 .brand-footer {
   position: relative;
   z-index: 2;
-  font-size: 12px;
-  opacity: 0.6;
+  margin-top: auto;
+}
+
+.brand-footer div:first-child {
+  font-size: 13px;
+  font-weight: 500;
   letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+
+.brand-footer-sub {
+  font-size: 10px;
+  opacity: 0.5;
+  letter-spacing: 0.5px;
 }
 
 /* Panneau droit - Formulaire */
 .login-form {
   flex: 0.9;
-  padding: 48px 44px;
+  padding: 50px 48px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -322,25 +328,26 @@ body {
 }
 
 .form-header {
-  margin-bottom: 36px;
+  margin-bottom: 40px;
 }
 
 .form-header h2 {
   font-family: var(--mono);
-  font-size: 22px;
-  font-weight: 600;
+  font-size: 24px;
+  font-weight: 700;
   color: var(--tx);
-  margin-bottom: 8px;
-  letter-spacing: -0.3px;
+  margin-bottom: 10px;
+  letter-spacing: -0.5px;
 }
 
 .form-header p {
   font-size: 13px;
   color: var(--tx3);
+  line-height: 1.5;
 }
 
 .login-field {
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 
 .login-field label {
@@ -354,25 +361,21 @@ body {
   margin-bottom: 10px;
 }
 
-.login-field .input-icon {
+.input-icon {
   position: relative;
 }
 
-.login-field .input-icon span {
+.input-icon-symbol {
   position: absolute;
-  left: 15px;
+  left: 16px;
   top: 50%;
   transform: translateY(-50%);
   font-size: 16px;
   opacity: 0.5;
-  transition: opacity 0.2s;
+  pointer-events: none;
 }
 
-.login-field input:focus + span {
-  opacity: 1;
-}
-
-.login-field input {
+.input-icon input {
   width: 100%;
   background: var(--s2);
   border: 1.5px solid var(--bd);
@@ -386,13 +389,18 @@ body {
   transition: all 0.2s ease;
 }
 
-.login-field input:focus {
+.input-icon input:focus {
   border-color: var(--acc);
   box-shadow: 0 0 0 3px rgba(26,54,93,0.12);
   background: var(--s1);
 }
 
-.login-field input::placeholder {
+.input-icon input:focus + .input-icon-symbol,
+.input-icon input:focus ~ .input-icon-symbol {
+  opacity: 1;
+}
+
+.input-icon input::placeholder {
   color: var(--tx3);
   opacity: 0.5;
   font-weight: 400;
@@ -403,12 +411,12 @@ body {
 }
 
 .pwd-wrap input {
-  padding-right: 48px;
+  padding-right: 50px;
 }
 
 .pwd-eye {
   position: absolute;
-  right: 15px;
+  right: 16px;
   top: 50%;
   transform: translateY(-50%);
   background: none;
@@ -419,6 +427,7 @@ body {
   color: var(--tx2);
   transition: all 0.2s;
   padding: 5px;
+  z-index: 2;
 }
 
 .pwd-eye:hover {
@@ -429,21 +438,21 @@ body {
 .login-btn {
   width: 100%;
   background: linear-gradient(135deg, #1A365D, #2C5282);
-  color: #fff;
+  color: white;
   border: none;
   border-radius: 14px;
-  padding: 14px 20px;
+  padding: 15px 20px;
   font-family: var(--mono);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   letter-spacing: 1px;
   transition: all 0.2s ease;
-  margin-top: 16px;
+  margin-top: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .login-btn:hover {
@@ -456,10 +465,12 @@ body {
   transform: translateY(1px);
 }
 
-.login-btn:disabled {
-  opacity: 0.6;
-  transform: none;
-  cursor: not-allowed;
+.btn-arrow {
+  transition: transform 0.2s ease;
+}
+
+.login-btn:hover .btn-arrow {
+  transform: translateX(4px);
 }
 
 .login-err {
@@ -485,7 +496,7 @@ body {
   font-size: 10px;
   color: var(--tx3);
   text-align: center;
-  margin-top: 32px;
+  margin-top: 36px;
   padding-top: 20px;
   border-top: 1px solid var(--bd);
 }
@@ -521,12 +532,12 @@ body {
 @media (max-width: 850px) {
   .login-container {
     flex-direction: column;
-    max-width: 480px;
+    max-width: 500px;
     min-height: auto;
   }
   
   .login-brand {
-    padding: 32px 28px;
+    padding: 36px 32px;
     text-align: center;
   }
   
@@ -535,34 +546,38 @@ body {
   }
   
   .login-form {
-    padding: 36px 28px;
+    padding: 40px 32px;
   }
   
   .brand-logo {
-    font-size: 28px;
+    font-size: 32px;
   }
   
   .brand-subtitle {
-    font-size: 18px;
+    font-size: 20px;
   }
   
   .form-header h2 {
-    font-size: 20px;
+    font-size: 22px;
   }
 }
 
 @media (max-width: 480px) {
-  .login-form {
-    padding: 28px 20px;
+  .login-brand {
+    padding: 28px 24px;
   }
   
-  .login-field input {
-    padding: 12px 12px 12px 42px;
+  .login-form {
+    padding: 32px 24px;
+  }
+  
+  .input-icon input {
+    padding: 12px 12px 12px 44px;
     font-size: 13px;
   }
   
   .login-btn {
-    padding: 12px;
+    padding: 12px 16px;
     font-size: 13px;
   }
 }
@@ -1971,13 +1986,13 @@ input[type=text] {
     <div class="login-brand">
       <div class="brand-header">
         <div class="brand-logo">DRRO</div>
-        <div class="brand-title">DIRECTION DES RESSOURCES</div>
+        <div class="brand-title">Autoroute Du Maroc</div>
         <div class="brand-subtitle">الطـــرق الـسيـــارة بالمغـــرب</div>
         <div class="brand-year">INVENTAIRE 2026</div>
       </div>
       <div class="brand-footer">
         <div>ELASSALI IDRISS</div>
-        <div style="margin-top: 8px; font-size: 10px;">Système d'inventaire centralisé</div>
+        <div class="brand-footer-sub">Système d'inventaire centralisé</div>
       </div>
     </div>
     
@@ -1993,15 +2008,15 @@ input[type=text] {
       <div class="login-field">
         <label>👤 NOM D'UTILISATEUR</label>
         <div class="input-icon">
-          <span>👤</span>
+          <span class="input-icon-symbol">👤</span>
           <input type="text" id="loginUsername" placeholder="ex: elbouhali.haitam, karim, admin" autocomplete="off" value="elbouhali.haitam">
         </div>
       </div>
       
       <div class="login-field">
         <label>🔐 MOT DE PASSE</label>
-        <div class="pwd-wrap input-icon">
-          <span>🔒</span>
+        <div class="input-icon pwd-wrap">
+          <span class="input-icon-symbol">🔒</span>
           <input type="password" id="loginPwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
           <button type="button" class="pwd-eye" onclick="togglePwd()" id="pwdEye">👁</button>
         </div>
@@ -2009,11 +2024,11 @@ input[type=text] {
       
       <button class="login-btn" id="loginBtn" onclick="doLogin()">
         <span>Se connecter</span>
-        <span>→</span>
+        <span class="btn-arrow">→</span>
       </button>
       
       <div class="login-footer">
-        <span id="loginFooterDate">—</span> — ELASSALI IDRISS
+        <span id="loginFooterDate">09/06/2026</span> — ELASSALI IDRISS
       </div>
     </div>
   </div>
