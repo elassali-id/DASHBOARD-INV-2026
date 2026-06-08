@@ -3125,28 +3125,28 @@ function openEditModal(gi) {
   
   let html = '';
   
-  // 1. ID Immobilisation (NON MODIFIABLE avec 🔒)
+  // 1. ID Immobilisation (MODIFIABLE)
   let idImmoValue = row.ID_Imobilisation || row.ID_Immobilisation || row['ID Immobilisation'] || '';
   html += `<div class="modal-field">
-    <label><span class="lock-icon">🔒</span> ID IMMOBILISATION</label>
-    <input type="text" class="readonly-field" value="${esc(idImmoValue)}" readonly disabled>
+    <label>🏷️ ID IMMOBILISATION</label>
+    <input type="text" id="mf_id_immo" value="${esc(idImmoValue)}" placeholder="ID Immobilisation">
   </div>`;
   
-  // 2. Numéro de série
+  // 2. Numéro de série (MODIFIABLE)
   let serieValue = row.Numerie || row.NUMERIE || row['COM-ALU'] || '';
   html += `<div class="modal-field">
     <label>🔢 NUMÉRO DE SÉRIE</label>
     <input type="text" id="mf_serie" value="${esc(serieValue)}" placeholder="Numéro de série">
   </div>`;
   
-  // 3. Libellé article (pleine largeur)
+  // 3. Libellé article (MODIFIABLE - pleine largeur)
   let libValue = row.Lib_Article || row.LIB_ARTICLE || row['Libellé article'] || '';
   html += `<div class="modal-field full-width">
     <label>📦 LIBELLÉ ARTICLE</label>
     <input type="text" id="mf_libelle" value="${esc(libValue)}" placeholder="Libellé de l'article" style="width:100%">
   </div>`;
   
-  // 4. Observation
+  // 4. Observation (MODIFIABLE)
   let obsValue = row.Observation || row.OBSERVATION || '';
   let obsUpper = obsValue.toString().toUpperCase();
   let isDiscord = obsUpper.startsWith('DISCORDANCE');
@@ -3163,62 +3163,62 @@ function openEditModal(gi) {
     </select>
   </div>`;
   
-  // 5. Code article
+  // 5. Code article (MODIFIABLE)
   let codeValue = row.Cod_Article || row.COD_ARTICLE || row['Code article'] || '';
   html += `<div class="modal-field">
     <label>🔢 CODE ARTICLE</label>
     <input type="text" id="mf_code_article" value="${esc(codeValue)}" placeholder="Code article">
   </div>`;
   
-  // 6. N° Marché
+  // 6. N° Marché (MODIFIABLE)
   html += `<div class="modal-field">
     <label>📋 N° MARCHÉ</label>
     <input type="text" id="mf_marche" value="${esc(row.Marche || row['N° Marché'] || row.N_MARCHE || '')}" placeholder="Numéro de marché">
   </div>`;
   
-  // 7. PU
+  // 7. PU (MODIFIABLE)
   html += `<div class="modal-field">
     <label>💰 PU</label>
     <input type="text" id="mf_pu" value="${esc(row.PU || row.Prix || '')}" placeholder="Prix unitaire">
   </div>`;
   
-  // 8. Marque
+  // 8. Marque (MODIFIABLE)
   html += `<div class="modal-field">
     <label>🏷️ MARQUE</label>
     <input type="text" id="mf_marque" value="${esc(row.Marque || row.LIB_MARQUE || '')}" placeholder="Marque">
   </div>`;
   
-  // 9. Modèle
+  // 9. Modèle (MODIFIABLE)
   html += `<div class="modal-field">
     <label>📐 MODÈLE</label>
     <input type="text" id="mf_modele" value="${esc(row.Modele || row.LIB_MODELE || '')}" placeholder="Modèle">
   </div>`;
   
-  // 10. NUMÉRIE (NON MODIFIABLE avec 🔒)
+  // 10. NUMÉRIE (MODIFIABLE)
   html += `<div class="modal-field">
-    <label><span class="lock-icon">🔒</span> NUMÉRIE</label>
-    <input type="text" class="readonly-field" value="${esc(serieValue)}" readonly disabled>
+    <label>🔢 NUM-SÉRIE</label>
+    <input type="text" id="mf_numerie" value="${esc(serieValue)}" placeholder="Numérie">
   </div>`;
   
   // 11. LOCALISATION (MODIFIABLE)
   let locValue = row.Localisation || row.LOCALISATION || row.Emplacement || '';
   html += `<div class="modal-field">
-    <label>LOCALISATION</label>
-    <input type="text" class="readonly-field" value="${esc(locValue)}" placeholder="LOCALISATION">
+    <label>📍 LOCALISATION</label>
+    <input type="text" id="mf_localisation" value="${esc(locValue)}" placeholder="Localisation">
   </div>`;
   
   // 12. GARE (MODIFIABLE)
   let gareValue = row.Gare || row.GARE || '';
   html += `<div class="modal-field">
-    <label>GARE</label>
-    <input type="text" class="readonly-field" value="${esc(gareValue)}" placeholder="La GARE">
+    <label>🎫 GARE</label>
+    <input type="text" id="mf_gare" value="${esc(gareValue)}" placeholder="Gare">
   </div>`;
   
   // 13. INVENTORISTE (NON MODIFIABLE avec 🔒)
   let invValue = row.Inventoriste || row.INVENTORISTE || '';
   html += `<div class="modal-field">
-    <label><span class="lock-icon">👤</span> INVENTORISTE</label>
-    <input type="text" id="mf_inventoriste" value="${esc(invValue)}" readonly disabled>
+    <label><span class="lock-icon">🔒</span> 👤 INVENTORISTE</label>
+    <input type="text" class="readonly-field" value="${esc(invValue)}" readonly disabled>
   </div>`;
   
   // 14. DATE D'INVENTAIRE (NON MODIFIABLE avec 🔒)
@@ -3233,14 +3233,14 @@ function openEditModal(gi) {
     }
   }
   html += `<div class="modal-field">
-    <label><span class="lock-icon">📅</span> DATE D'INVENTAIRE</label>
-    <input type="text" id="mf_date_inventaire" value="${esc(dateInvValue)}" placeholder="DD/MM/YYYY HH:MM:SS">
+    <label><span class="lock-icon">🔒</span> 📅 DATE D'INVENTAIRE</label>
+    <input type="text" class="readonly-field" value="${esc(dateInvValue)}" readonly disabled>
   </div>`;
   
   // 15. DATE DE MODIFICATION (NON MODIFIABLE avec 🔒)
   let dateModifValue = row.Date_modification || row['Date de modification'] || row.DATE_MODIFICATION || '';
   html += `<div class="modal-field">
-    <label><span class="lock-icon">📅</span> DATE DE MODIFICATION</label>
+    <label><span class="lock-icon">🔒</span> 📅 DATE DE MODIFICATION</label>
     <input type="text" class="readonly-field" value="${esc(dateModifValue) || 'Non modifiée'}" readonly disabled>
   </div>`;
   
