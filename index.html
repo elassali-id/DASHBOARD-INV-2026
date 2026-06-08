@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DRRO — INVENTAIRE 2026</title>
+<title>DRRO — GMAO - Gestion des articles par localisation</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
@@ -79,1402 +79,270 @@ body {
   transition: background .3s, color .3s;
 }
 
-:focus-visible {
-  outline: 2px solid var(--acc);
-  outline-offset: 2px;
-  border-radius: 6px;
+/* ==================== STYLES GMAO ==================== */
+.gmao-container {
+  display: flex;
+  gap: 20px;
+  min-height: 600px;
 }
 
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--bd2) transparent;
+.gmao-sidebar {
+  width: 320px;
+  flex-shrink: 0;
+  background: var(--s1);
+  border-radius: var(--r2);
+  border: 1.5px solid var(--bd);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
 }
 
-*::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+.gmao-sidebar-header {
+  padding: 16px;
+  background: var(--s2);
+  border-bottom: 1.5px solid var(--bd);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--tx);
+  text-transform: uppercase;
+  letter-spacing: .08em;
 }
 
-*::-webkit-scrollbar-track {
-  background: transparent;
+.gmao-tree {
+  padding: 12px;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
 }
 
-*::-webkit-scrollbar-thumb {
-  background: var(--bd2);
-  border-radius: 8px;
-  border: 2px solid var(--bg);
+.gmao-tree-item {
+  margin-bottom: 4px;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: .001ms !important;
-    transition-duration: .001ms !important;
-  }
-}
-
-#loadScreen {
-  position: fixed;
-  inset: 0;
-  background: var(--bg);
-  z-index: 9999;
+.gmao-tree-header {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  border-radius: var(--r);
+  transition: .15s;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--tx);
+  background: var(--s2);
 }
 
-#loadScreen > div {
-  width: 420px;
-  max-width: 90vw;
-  text-align: center;
+.gmao-tree-header:hover {
+  background: var(--s3);
 }
 
-.spinner {
-  width: 52px;
-  height: 52px;
-  margin: 24px auto;
-  border: 3px solid var(--bd);
-  border-top: 3px solid var(--acc);
+.gmao-tree-header.active {
+  background: var(--grad);
+  color: white;
+}
+
+.gmao-tree-icon {
+  font-size: 16px;
+  width: 24px;
+}
+
+.gmao-tree-children {
+  margin-left: 28px;
+  border-left: 1.5px solid var(--bd);
+  padding-left: 8px;
+}
+
+.gmao-tree-child {
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: var(--r);
+  font-size: 12px;
+  color: var(--tx2);
+  transition: .15s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gmao-tree-child:hover {
+  background: var(--s3);
+  color: var(--tx);
+}
+
+.gmao-tree-child.active {
+  background: color-mix(in srgb, var(--acc) 12%, var(--s1));
+  color: var(--acc);
+  font-weight: 600;
+  border-left: 3px solid var(--acc);
+}
+
+.gmao-content {
+  flex: 1;
+  background: var(--s1);
+  border-radius: var(--r2);
+  border: 1.5px solid var(--bd);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.gmao-header {
+  padding: 16px 20px;
+  border-bottom: 1.5px solid var(--bd);
+  background: var(--s2);
+}
+
+.gmao-header h3 {
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--tx);
+  margin-bottom: 6px;
+}
+
+.gmao-header p {
+  font-size: 11px;
+  color: var(--tx3);
+  font-family: var(--mono);
+}
+
+.gmao-table-wrap {
+  flex: 1;
+  overflow: auto;
+  padding: 16px;
+}
+
+.gmao-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.gmao-table th {
+  text-align: left;
+  padding: 12px 12px;
+  background: var(--thead);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--tx3);
+  text-transform: uppercase;
+  border-bottom: 1.5px solid var(--bd);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.gmao-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--bd);
+  color: var(--tx2);
+  vertical-align: top;
+}
+
+.gmao-table tr:hover td {
+  background: var(--s3);
+}
+
+.gmao-actions {
+  display: flex;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.gmao-stats {
+  display: flex;
+  gap: 20px;
+  padding: 12px 20px;
+  border-top: 1.5px solid var(--bd);
+  background: var(--s2);
+  font-size: 11px;
+  font-family: var(--mono);
+  color: var(--tx3);
+  flex-wrap: wrap;
+}
+
+.gmao-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gmao-stat-value {
+  font-weight: 700;
+  color: var(--acc);
+  font-size: 14px;
+}
+
+/* Badges */
+.obs-ok {
+  background: color-mix(in srgb, var(--acc3) 14%, var(--s1));
+  color: var(--acc3);
+  border: 1px solid var(--acc3);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.obs-av {
+  background: color-mix(in srgb, var(--amber) 14%, var(--s1));
+  color: var(--amber);
+  border: 1px solid var(--amber);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.obs-disc {
+  background: color-mix(in srgb, var(--red) 14%, var(--s1));
+  color: var(--red);
+  border: 1px solid var(--red);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: .15s;
+}
+
+.btn-icon:hover {
+  background: var(--s3);
+}
+
+.spinner-small {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--bd);
+  border-top-color: var(--acc);
   border-radius: 50%;
-  animation: spin .9s linear infinite;
+  animation: spin .6s linear infinite;
+  display: inline-block;
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
-.load-bar {
-  width: 100%;
-  height: 8px;
-  background: var(--s3);
-  border: 1px solid var(--bd);
-  border-radius: 999px;
-  overflow: hidden;
-}
-
-.load-fill {
-  width: 0%;
-  height: 100%;
-  background: var(--grad);
-  border-radius: 999px;
-  transition: width .3s ease;
-}
-
-.load-status {
-  margin-top: 14px;
-  font-family: var(--mono);
-  font-size: 13px;
-  color: var(--tx2);
-}
-
-.theme-toggle {
-  background: var(--s2);
-  border: 1.5px solid var(--bd);
-  border-radius: 99px;
-  width: 38px;
-  height: 38px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 16px;
-  transition: .2s;
-  color: var(--tx2);
-  flex-shrink: 0;
-}
-
-.theme-toggle:hover {
-  border-color: var(--acc);
-  transform: translateY(-1px);
-}
-
-.theme-toggle-login {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 10000;
-}
-
-#loginScreen {
-  position: fixed;
-  inset: 0;
-  background: var(--bg);
-  z-index: 9998;
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  overflow-y: auto;
-  padding: 20px 0;
-}
-
-.login-box {
-  background: var(--s1);
-  border: 1.5px solid var(--bd);
-  border-radius: var(--r3);
-  padding: 36px 44px;
-  width: 100%;
-  max-width: 460px;
-  box-shadow: var(--shadow-lg);
-  position: relative;
-  overflow: hidden;
-}
-
-.login-box::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: var(--grad);
-}
-
-.login-zone-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.zone-btn {
-  border: 1.5px solid var(--bd);
-  border-radius: var(--r2);
-  padding: 16px 8px;
-  text-align: center;
-  cursor: pointer;
-  background: var(--s2);
-  transition: .18s;
-}
-
-.zone-btn:hover {
-  border-color: var(--acc);
-  background: var(--s3);
-  transform: translateY(-2px);
-}
-
-.zone-btn.sel {
-  border-color: var(--acc);
-  background: var(--s3);
-  box-shadow: 0 0 0 3px rgba(26,54,93,.18);
-}
-
-.zone-btn-icon {
-  font-size: 22px;
-  margin-bottom: 6px;
-}
-
-.zone-btn-label {
-  font-family: var(--mono);
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--tx);
-}
-
-.admin-btn-row {
-  margin-bottom: 16px;
-}
-
-.zone-btn.admin-zone {
-  border-color: #d4a017;
-  background: color-mix(in srgb, var(--gold) 12%, var(--s2));
-}
-
-.zone-btn.admin-zone:hover {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 3px rgba(200,149,26,.18);
-}
-
-.zone-btn.admin-zone.sel {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 3px rgba(200,149,26,.28);
-}
-
-.zone-btn.admin-zone .zone-btn-label {
-  color: var(--gold);
-}
-
-.login-field {
-  margin-bottom: 12px;
-}
-
-.login-field label {
-  display: block;
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--tx3);
-  margin-bottom: 6px;
-}
-
-.pwd-wrap {
-  position: relative;
-}
-
-.login-field input {
-  width: 100%;
-  background: var(--s2);
-  border: 1.5px solid var(--bd);
-  border-radius: var(--r);
-  padding: 10px 40px 10px 14px;
-  font-family: var(--sans);
-  font-size: 13px;
-  color: var(--tx);
-  outline: none;
-  transition: .15s;
-}
-
-.login-field input:focus {
-  border-color: var(--acc);
-  box-shadow: 0 0 0 3px rgba(26,54,93,.12);
-}
-
-.login-field input::placeholder {
-  color: var(--tx3);
-}
-
-.pwd-eye {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 15px;
-  opacity: .6;
-  color: var(--tx2);
-}
-
-.login-btn {
-  width: 100%;
-  background: var(--grad);
-  color: #fff;
-  border: none;
-  border-radius: var(--r2);
-  padding: 12px;
-  font-family: var(--mono);
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  letter-spacing: .06em;
-  transition: .18s;
-  margin-top: 4px;
-}
-
-.login-btn:hover {
-  filter: brightness(1.08);
-  transform: translateY(-1px);
-}
-
-.login-btn:disabled {
-  opacity: .5;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.login-err {
-  background: color-mix(in srgb, var(--red) 14%, var(--s1));
-  border: 1px solid var(--red);
-  color: var(--red);
-  border-radius: var(--r);
-  padding: 9px 14px;
-  font-size: 12px;
-  margin-bottom: 12px;
-  display: none;
-}
-
-.login-footer {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--tx3);
-  text-align: center;
-  margin-top: 16px;
-}
-
-header {
-  background: var(--s1);
-  border-bottom: 1.5px solid var(--bd);
-  height: var(--header-h);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 24px;
-  position: sticky;
-  top: 0;
-  z-index: 200;
-  box-shadow: var(--shadow-sm);
-}
-
-.hdr-right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.status-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  animation: pulse 2s ease infinite;
-  flex-shrink: 0;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: .5; }
-}
-
-.status-txt {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--tx2);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 200px;
-}
-
-.zone-badge-hdr {
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 700;
-  padding: 3px 10px;
-  border-radius: 5px;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.zone-badge-hdr.admin-badge {
-  background: color-mix(in srgb, var(--gold) 18%, var(--s1));
-  color: var(--gold);
-  border: 1px solid var(--gold);
-}
-
-.session-expiry-badge {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--tx3);
-  padding: 3px 8px;
-  border-radius: 5px;
-  border: 1px solid var(--bd);
-  background: var(--s2);
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.btn-logout {
-  font-family: var(--mono);
-  font-size: 10px;
-  padding: 6px 10px;
-  border-radius: 5px;
-  background: var(--s2);
-  border: 1.5px solid var(--bd);
-  color: var(--red);
-  cursor: pointer;
-  transition: .15s;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.btn-logout:hover {
-  border-color: var(--red);
-}
-
-.refresh-btn {
-  font-family: var(--mono);
-  font-size: 10px;
-  padding: 6px 10px;
-  border-radius: 5px;
-  background: transparent;
-  border: 1.5px solid var(--bd);
-  color: var(--tx3);
-  cursor: pointer;
-  transition: .15s;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.refresh-btn:hover {
-  border-color: var(--acc);
-  color: var(--acc);
-}
-
-.spinning {
-  opacity: .5;
-}
-
-nav {
-  background: var(--s1);
-  border-bottom: 1.5px solid var(--bd);
-  display: flex;
-  padding: 5px 24px;
-  gap: 2px;
-  position: sticky;
-  top: var(--header-h);
-  z-index: 190;
-  box-shadow: 0 2px 8px -4px rgba(26,54,93,.08);
-}
-
-.tab {
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  padding: 8px 18px;
-  cursor: pointer;
-  color: var(--tx3);
-  border: none;
-  background: none;
-  border-radius: var(--r);
-  transition: .15s;
-  white-space: nowrap;
-}
-
-.tab:hover {
-  color: var(--tx2);
-  background: var(--s3);
-}
-
-.tab.on {
-  color: #fff;
-  background: var(--grad);
-}
-
-main {
-  padding: 0 !important;
-  width: 100%;
-  max-width: 100% !important;
-}
-
-.panel:not(#panel-tableau) {
-  padding: 20px;
-}
-
-.panel {
-  display: none;
-}
-
-.panel.on {
-  display: block;
-  animation: fade .3s ease;
-}
-
-@keyframes fade {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-.sec-title {
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: var(--tx3);
-  margin-bottom: 14px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.sec-title::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--bd);
-}
-
-.alert {
-  background: color-mix(in srgb, var(--amber) 12%, var(--s1));
-  border: 1.5px solid var(--amber);
-  border-radius: var(--r2);
-  padding: 14px 18px;
-  margin-bottom: 20px;
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  font-size: 13px;
-  color: var(--tx);
-}
-
-.alert.ok {
-  background: color-mix(in srgb, var(--acc3) 12%, var(--s1));
-  border-color: var(--acc3);
-}
-
-.alert.update {
-  background: color-mix(in srgb, var(--blue) 12%, var(--s1));
-  border-color: var(--blue);
-}
-
-.alert.update .btn-refresh-inline {
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 600;
-  background: var(--blue);
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 5px 14px;
-  cursor: pointer;
-  margin-top: 6px;
-  display: inline-block;
-}
-
-.error-banner {
-  background: color-mix(in srgb, var(--red) 20%, var(--s1));
-  border-left: 4px solid var(--red);
-  padding: 12px 16px;
-  margin-bottom: 16px;
-  border-radius: var(--r);
-  font-size: 12px;
-}
-
-.error-banner button {
-  margin-left: 12px;
-  padding: 4px 12px;
-  background: var(--red);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 14px;
-  margin-bottom: 20px;
-}
-
-.kpi {
-  background: var(--s1);
-  border: 1.5px solid var(--bd);
-  border-radius: var(--r2);
-  padding: 18px;
-  position: relative;
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-  transition: transform .2s, box-shadow .2s;
-}
-
-.kpi::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: var(--kpi-color, var(--acc));
-}
-
-.kpi:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow);
-}
-
-.kpi-label {
-  font-family: var(--mono);
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: var(--tx3);
-  margin-bottom: 8px;
-}
-
-.kpi-val {
-  font-family: var(--mono);
-  font-size: 26px;
-  font-weight: 600;
-  color: var(--kpi-color, var(--acc));
-  line-height: 1;
-}
-
-.kpi-sub {
-  font-size: 11px;
-  color: var(--tx3);
-  margin-top: 6px;
-}
-
-.kpi-zone-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 20px;
-}
-
-.kpi-zone-card {
-  background: var(--s1);
-  border: 1.5px solid var(--bd);
-  border-radius: var(--r2);
-  padding: 20px;
-  position: relative;
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-  transition: transform .2s, box-shadow .2s;
-}
-
-.kpi-zone-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: var(--zcolor, var(--acc));
-}
-
-.kpi-zone-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow);
-}
-
-.kpi-zone-title {
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--zcolor, var(--acc));
-  margin-bottom: 14px;
-}
-
-.kpi-zone-main {
-  font-family: var(--mono);
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--zcolor, var(--acc));
-  margin-bottom: 10px;
-}
-
-.kpi-zone-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 0;
-  border-bottom: 1px solid var(--bd);
-  font-size: 12px;
-}
-
-.kpi-zone-row:last-child {
-  border-bottom: none;
-}
-
-.kpi-zone-lbl {
-  color: var(--tx2);
-}
-
-.kpi-zone-val {
-  font-family: var(--mono);
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--tx);
-}
-
-.charts-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 20px;
-}
-
-.wide {
-  grid-column: 1/-1;
-}
-
-.card {
-  background: var(--s1);
-  border: 1.5px solid var(--bd);
-  border-radius: var(--r3);
-  padding: 20px;
-  box-shadow: var(--shadow-sm);
-}
-
-.card-title {
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--tx3);
-  margin-bottom: 16px;
-}
-
-.src-cebs, .src-cej, .src-aebb, .obs-ok, .obs-av, .obs-disc, .obs-nd {
-  display: inline-block;
-  white-space: nowrap;
-}
-
-.src-cebs {
-  background: color-mix(in srgb, var(--blue) 16%, var(--s1));
-  color: var(--blue);
-  border: 1px solid var(--blue);
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 5px;
-}
-
-.src-cej {
-  background: color-mix(in srgb, var(--acc) 16%, var(--s1));
-  color: var(--acc);
-  border: 1px solid var(--acc);
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 5px;
-}
-
-.src-aebb {
-  background: color-mix(in srgb, var(--acc3) 16%, var(--s1));
-  color: var(--acc3);
-  border: 1px solid var(--acc3);
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 5px;
-}
-
-.obs-ok {
-  background: color-mix(in srgb, var(--acc3) 16%, var(--s1));
-  color: var(--acc3);
-  border: 1px solid var(--acc3);
-  font-family: var(--mono);
-  font-size: 10px;
-  padding: 2px 8px;
-  border-radius: 5px;
-}
-
-.obs-av {
-  background: color-mix(in srgb, var(--amber) 16%, var(--s1));
-  color: var(--amber);
-  border: 1px solid var(--amber);
-  font-family: var(--mono);
-  font-size: 10px;
-  padding: 2px 8px;
-  border-radius: 5px;
-}
-
-.obs-disc {
-  background: color-mix(in srgb, var(--red) 16%, var(--s1));
-  color: var(--red);
-  border: 1px solid var(--red);
-  font-family: var(--mono);
-  font-size: 10px;
-  padding: 2px 8px;
-  border-radius: 5px;
-}
-
-.obs-nd {
-  background: var(--s3);
-  color: var(--tx3);
-  border: 1px solid var(--bd);
-  font-family: var(--mono);
-  font-size: 10px;
-  padding: 2px 8px;
-  border-radius: 5px;
-}
-
-#panel-tableau {
-  display: none;
-  flex-direction: column;
-  height: calc(100vh - var(--header-h) - var(--nav-h));
-  overflow: hidden;
-  width: 100%;
-}
-
-#panel-tableau.on {
-  display: flex;
-}
-
-.tbl-hdr {
-  background: var(--s1);
-  border-bottom: 1px solid var(--bd);
-  padding: 10px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 15px;
-  width: 100%;
-  box-shadow: var(--shadow-sm);
-  flex-shrink: 0;
-  flex-wrap: wrap;
-}
-
-.tbl-controls {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  flex: 1;
-}
-
-.tbl-body-wrap {
-  flex: 1;
-  min-height: 0;
-  overflow: auto;
-  background: var(--s1);
-  width: 100%;
-}
-
-.tbl-wrap {
-  width: 100%;
-  overflow-x: auto;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 800px;
-}
-
-thead th {
-  background: var(--thead);
-  padding: 12px 15px;
-  text-align: left;
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--tx3);
-  text-transform: uppercase;
-  border-bottom: 1.5px solid var(--bd);
-  white-space: nowrap;
-  cursor: pointer;
-  user-select: none;
-  position: sticky;
-  top: 0;
-  z-index: 150;
-}
-
-thead th.th-act {
-  cursor: default;
-  width: 50px;
-  text-align: center;
-}
-
-thead th:not(.th-act):hover {
-  background: var(--s3);
-}
-
-tbody tr:hover td {
-  background: var(--s3);
-}
-
-td {
-  padding: 9px 15px;
-  color: var(--tx2);
-  border-bottom: 1px solid var(--bd);
-  font-size: 12px;
-  white-space: nowrap;
-}
-
-td.td-act {
-  text-align: center;
-  padding: 5px 8px;
-}
-
-.pag {
-  background: var(--s1);
-  border-top: 1px solid var(--bd);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 24px;
-  flex-shrink: 0;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-input[type=text], select {
-  background: var(--s2);
-  border: 1.5px solid var(--bd);
-  border-radius: var(--r);
-  padding: 7px 10px;
-  font-family: var(--sans);
-  font-size: 12px;
-  color: var(--tx);
-  outline: none;
-  transition: .15s;
-}
-
-input[type=text]:focus, select:focus {
-  border-color: var(--acc);
-  box-shadow: 0 0 0 3px rgba(26,54,93,.12);
-}
-
-input[type=text]::placeholder {
-  color: var(--tx3);
-}
-
-input[type=text] {
-  width: 200px;
-}
-
-.pag-info {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--tx3);
-}
-
-.pag-btns {
-  display: flex;
-  gap: 3px;
-  flex-wrap: wrap;
-}
-
-.pb {
-  background: var(--s2);
-  border: 1.5px solid var(--bd);
-  border-radius: 5px;
-  padding: 4px 9px;
-  font-size: 10px;
-  font-family: var(--mono);
-  color: var(--tx2);
-  cursor: pointer;
-}
-
-.pb:hover {
-  border-color: var(--acc);
-  color: var(--acc);
-}
-
-.pb.on {
-  background: var(--acc);
-  color: #fff;
-  border-color: var(--acc);
-}
-
-.pb:disabled {
-  opacity: .3;
-  cursor: default;
-}
-
-.pagesize {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--tx3);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.pagesize select {
-  padding: 4px 8px;
-  font-size: 10px;
-}
-
-.btn-tbl-edit {
-  background: color-mix(in srgb, var(--blue) 12%, var(--s1));
-  border: 1px solid var(--blue);
-  color: var(--blue);
-  border-radius: 5px;
-  padding: 4px 10px;
-  font-size: 10px;
-  font-family: var(--mono);
-  cursor: pointer;
-  transition: .15s;
-}
-
-.btn-tbl-edit:hover {
-  background: color-mix(in srgb, var(--blue) 22%, var(--s1));
-}
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  border-radius: var(--r);
-  font-size: 12px;
-  font-family: var(--mono);
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
-  transition: .15s;
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-.btn-acc {
-  background: var(--grad);
-  color: #fff;
-}
-
-.btn-acc:hover {
-  filter: brightness(1.08);
-  transform: translateY(-1px);
-}
-
-.btn-out {
-  background: transparent;
-  border: 1.5px solid var(--bd);
-  color: var(--tx2);
-}
-
-.btn-out:hover {
-  border-color: var(--acc);
-  color: var(--acc);
-  transform: translateY(-1px);
-}
-
-.btn-grn {
-  background: color-mix(in srgb, var(--acc3) 14%, var(--s1));
-  border: 1.5px solid var(--acc3);
+/* Onglet GMAO */
+.tab-gmao {
+  background: color-mix(in srgb, var(--acc3) 10%, var(--s1));
   color: var(--acc3);
 }
 
-.btn-grn:hover {
-  filter: brightness(1.05);
-  transform: translateY(-1px);
-}
-
-.btn-gold {
-  background: color-mix(in srgb, var(--amber) 16%, var(--s1));
-  border: 1.5px solid var(--amber);
-  color: var(--amber);
-}
-
-.btn-gold:hover {
-  filter: brightness(1.05);
-  transform: translateY(-1px);
-}
-
-.btn-red {
-  background: color-mix(in srgb, var(--red) 14%, var(--s1));
-  border: 1.5px solid var(--red);
-  color: var(--red);
-}
-
-.btn-red:hover {
-  background: color-mix(in srgb, var(--red) 24%, var(--s1));
-  transform: translateY(-1px);
-}
-
-.btn-sm {
-  padding: 5px 10px;
-  font-size: 10px;
-}
-
-.dl-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 14px;
-  margin-top: 14px;
-}
-
-.dl-card {
-  background: var(--s1);
-  border: 1.5px solid var(--bd);
-  border-radius: var(--r2);
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  box-shadow: var(--shadow-sm);
-  transition: transform .2s, box-shadow .2s;
-}
-
-.dl-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow);
-}
-
-.dl-icon {
-  width: 46px;
-  height: 46px;
-  border-radius: var(--r2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 22px;
-  flex-shrink: 0;
-}
-
-.dl-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.dl-name {
-  font-size: 13px;
-  font-weight: 700;
-  margin-bottom: 3px;
-  color: var(--tx);
-}
-
-.dl-meta {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--tx3);
-}
-
-.dl-btns {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  flex-shrink: 0;
-}
-
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.45);
-  z-index: 5000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-.modal-box {
-  background: var(--s1);
-  border: 1.5px solid var(--bd);
-  border-radius: var(--r3);
-  padding: 28px 32px;
-  width: 100%;
-  max-width: 640px;
-  max-height: 92vh;
-  overflow-y: auto;
-  box-shadow: var(--shadow-lg);
-  position: relative;
-}
-
-.modal-box::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: var(--grad);
-}
-
-.modal-title {
-  font-family: var(--mono);
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--tx);
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.modal-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 4px;
-}
-
-.modal-field {
-  margin-bottom: 0;
-}
-
-.modal-field.full {
-  grid-column: 1/-1;
-}
-
-.modal-field label {
-  display: block;
-  font-family: var(--mono);
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--tx3);
-  margin-bottom: 5px;
-}
-
-.modal-field input, .modal-field select {
-  width: 100%;
-  background: var(--s2);
-  border: 1.5px solid var(--bd);
-  border-radius: var(--r);
-  padding: 8px 12px;
-  font-family: var(--sans);
-  font-size: 12px;
-  color: var(--tx);
-  outline: none;
-  transition: .15s;
-}
-
-.modal-field input:focus, .modal-field select:focus {
-  border-color: var(--acc);
-  box-shadow: 0 0 0 3px rgba(26,54,93,.12);
-}
-  
-.modal-field.full input {
-  font-size: 13px;
-  padding: 10px 12px;
-}
-
-.modal-grid {
-  row-gap: 14px;
-  column-gap: 16px;
-}
-  
-.modal-field input[readonly], 
-.modal-field input:disabled {
-  background: var(--s3) !important;
-  color: var(--tx3) !important;
-  border: 1.5px solid var(--bd) !important;
-  cursor: not-allowed !important;
-  font-style: italic !important;
-  opacity: 0.8;
-}
-
-.modal-field:has(input[readonly]:disabled) label::after {
-  content: " 🔒";
-  font-size: 10px;
-  opacity: 0.6;
-}
-  
-.modal-field:has(input[placeholder*="automatiquement"]) label::after {
-  content: "";
-}
-  
-.modal-sep {
-  grid-column: 1/-1;
-  height: 1px;
-  background: var(--bd);
-  margin: 8px 0;
-}
-
-.modal-btns {
-  display: flex;
-  gap: 8px;
-  justify-content: space-between;
-  margin-top: 20px;
-  flex-wrap: wrap;
-  border-top: 1px solid var(--bd);
-  padding-top: 16px;
-}
-
-.modal-btns-right {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.confirm-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.55);
-  z-index: 6000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-.confirm-box {
-  background: var(--s1);
-  border: 1.5px solid var(--bd);
-  border-radius: var(--r3);
-  padding: 28px 32px;
-  width: 100%;
-  max-width: 520px;
-  box-shadow: var(--shadow-lg);
-  position: relative;
-}
-
-.confirm-box::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: var(--grad);
-}
-
-.confirm-box.danger::before {
-  background: var(--red);
-}
-
-.confirm-box.danger {
-  border-color: var(--red);
-}
-
-.confirm-icon {
-  font-size: 48px;
-  text-align: center;
-  margin-bottom: 12px;
-}
-
-.confirm-title {
-  font-family: var(--mono);
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--tx);
-  margin-bottom: 12px;
-  text-align: center;
-}
-
-.confirm-msg {
-  font-size: 13px;
-  color: var(--tx2);
-  margin-bottom: 20px;
-  line-height: 1.5;
-  text-align: center;
-  padding: 16px;
-  background: var(--s2);
-  border-radius: var(--r2);
-  white-space: normal;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  max-height: 350px;
-  overflow-y: auto;
-}
-
-.confirm-details {
-  background: var(--s3);
-  border-radius: var(--r);
-  padding: 14px;
-  margin-top: 10px;
-  text-align: left;
-  word-break: break-word;
-}
-
-.confirm-details p {
-  margin: 6px 0;
-  line-height: 1.4;
-}
-
-.confirm-details .label {
-  font-weight: 700;
-  color: var(--tx);
-  margin-right: 10px;
-  min-width: 130px;
-  display: inline-block;
-}
-
-.confirm-btns {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  margin-top: 16px;
-}
-
-.confirm-btns .btn {
-  min-width: 120px;
-  justify-content: center;
-  padding: 10px 20px;
-}
-
+/* Toast */
 .toast {
   position: fixed;
   bottom: 24px;
@@ -1491,7 +359,6 @@ input[type=text] {
   transition: .2s;
   pointer-events: none;
   z-index: 9999;
-  box-shadow: var(--shadow);
   max-width: 360px;
 }
 
@@ -1504,384 +371,72 @@ input[type=text] {
   background: var(--red);
   color: #fff;
 }
-
-.toast.info {
-  background: var(--blue);
-  color: #fff;
-}
-
-.spin-inline {
-  display: inline-block;
-  width: 14px;
-  height: 14px;
-  border: 2px solid rgba(255,255,255,.4);
-  border-top: 2px solid #fff;
-  border-radius: 50%;
-  animation: spin .7s linear infinite;
-  vertical-align: middle;
-  margin-right: 6px;
-}
-
-.btn-short {
-  display: none;
-}
-
-.btn-full {
-  display: inline;
-}
-
-@media (max-width: 768px) {
-  header {
-    height: auto;
-    min-height: 52px;
-    padding: 8px 12px;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-  
-  .hdr-right {
-    gap: 5px;
-  }
-  
-  .status-txt {
-    display: none;
-  }
-  
-  .btn-short {
-    display: inline;
-  }
-  
-  .btn-full {
-    display: none;
-  }
-  
-  .refresh-btn, .btn-logout {
-    padding: 5px 8px;
-    font-size: 9px;
-  }
-  
-  .theme-toggle {
-    width: 32px;
-    height: 32px;
-    font-size: 13px;
-  }
-  
-  nav {
-    padding: 4px 8px;
-    overflow-x: auto;
-    flex-wrap: nowrap;
-  }
-  
-  .tab {
-    padding: 7px 11px;
-    font-size: 10px;
-    flex-shrink: 0;
-  }
-  
-  #panel-tableau {
-    height: calc(100vh - 100px);
-  }
-  
-  .tbl-hdr {
-    flex-direction: column;
-    padding: 8px 10px;
-  }
-  
-  .tbl-controls {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px;
-    width: 100%;
-  }
-  
-  .tbl-controls input[type=text] {
-    grid-column: 1/-1;
-    width: 100%;
-  }
-  
-  .tbl-body-wrap {
-    overflow-x: auto;
-  }
-  
-  table {
-    min-width: 640px;
-  }
-  
-  thead th {
-    font-size: 8px;
-    padding: 7px;
-  }
-  
-  td {
-    padding: 6px 7px;
-    font-size: 10px;
-  }
-  
-  .pag {
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    padding: 8px;
-  }
-  
-  .kpi-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-  
-  .kpi-val {
-    font-size: 20px;
-  }
-  
-  .kpi-zone-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .charts-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .dl-grid {
-    grid-column: 1fr;
-  }
-  
-  .modal-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .modal-box {
-    padding: 20px 16px;
-  }
-  
-  .login-box {
-    padding: 24px 18px;
-    max-width: 95vw;
-  }
-  
-  .confirm-box {
-    padding: 20px 16px;
-    max-width: 95vw;
-  }
-  
-  .confirm-details .label {
-    min-width: 100px;
-  }
-}
 </style>
 </head>
 <body>
 
-<div id="loadScreen">
-  <div>
-    <div style="font-family:var(--mono);font-size:22px;font-weight:700;letter-spacing:.12em;text-align:center;line-height:1.5;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">Autoroutes Du Maroc</div>
-    <div style="font-family:'Segoe UI',Arial,sans-serif;font-size:20px;font-weight:700;letter-spacing:.18em;text-align:center;line-height:1.5;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;direction:rtl">الطـــرق الـسيـــارة بالمغـــرب</div>
-    <div style="font-family:var(--mono);font-size:18px;font-weight:600;letter-spacing:.32em;color:var(--tx);text-align:center;margin-top:8px">INVENTAIRE 2026</div>
-    <div style="font-family:var(--mono);font-size:11px;letter-spacing:.25em;color:var(--tx3);text-align:center;margin-top:6px">ELASSALI IDRISS</div>
-    <div class="spinner"></div>
-    <div class="load-bar"><div class="load-fill" id="loadFill"></div></div>
-    <div class="load-status" id="loadStatus">Initialisation...</div>
-  </div>
-</div>
-
-<div id="loginScreen">
-  <button class="theme-toggle theme-toggle-login" onclick="toggleTheme()" id="themeBtnLogin">🌙</button>
-  <div class="login-box">
-    <div style="margin-bottom:22px">
-      <div style="font-family:var(--mono);font-size:15px;font-weight:700;letter-spacing:.10em;text-align:center;line-height:1.6;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">Autoroutes Du Maroc</div>
-      <div style="font-family:'Segoe UI',Arial,sans-serif;font-size:15px;font-weight:700;letter-spacing:.15em;text-align:center;line-height:1.6;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;direction:rtl">الطـــرق الـسيـــارة بالمغـــرب</div>
-      <div style="font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.32em;color:var(--tx);text-align:center;margin-top:4px">INVENTAIRE 2026</div>
-      <div style="font-family:var(--mono);font-size:9px;letter-spacing:.25em;color:var(--tx3);text-align:center;margin-top:6px">ELASSALI IDRISS</div>
-    </div>
-    <div style="font-size:12px;color:var(--tx3);margin-bottom:20px;text-align:center">Sélectionnez votre zone et saisissez votre code d'accès</div>
-    <div class="login-zone-grid">
-      <div class="zone-btn" id="zBtn-CEBS" onclick="selectZone('CEBS')"><div class="zone-btn-icon">📘</div><div class="zone-btn-label">CEBS</div></div>
-      <div class="zone-btn" id="zBtn-CEJ"  onclick="selectZone('CEJ')"><div class="zone-btn-icon">📗</div><div class="zone-btn-label">CEJ</div></div>
-      <div class="zone-btn" id="zBtn-AEBB" onclick="selectZone('AEBB')"><div class="zone-btn-icon">📙</div><div class="zone-btn-label">AEBB</div></div>
-    </div>
-    <div class="admin-btn-row">
-      <div class="zone-btn admin-zone" id="zBtn-ADMIN" onclick="selectZone('ADMIN')" style="display:flex;align-items:center;gap:10px;padding:12px 16px">
-        <div style="font-size:22px">🧭</div>
-        <div><div class="zone-btn-label" style="font-size:11px">DRRO — TOUTES ZONES</div></div>
-      </div>
-    </div>
-    <div id="loginErr" class="login-err"></div>
-    <div class="login-field">
-      <label>Code d'accès</label>
-      <div class="pwd-wrap">
-        <input type="password" id="loginPwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
-        <button type="button" class="pwd-eye" onclick="togglePwd()" id="pwdEye">👁</button>
-      </div>
-    </div>
-    <button class="login-btn" id="loginBtn" onclick="doLogin()">Accéder →</button>
-    <div class="login-footer"><span id="loginFooterDate">—</span> — ELASSALI IDRISS</div>
-  </div>
-</div>
-
-<div id="appShell" style="display:none">
-<header>
-  <div style="display:flex;align-items:center;gap:15px;flex-shrink:0;overflow:hidden;min-width:0">
-    <span style="font-family:var(--mono);font-size:22px;font-weight:800;letter-spacing:.16em;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;white-space:nowrap;flex-shrink:0">DRRO</span>
-    <span style="width:1.5px;height:24px;background:var(--bd2);flex-shrink:0;opacity:.8"></span>
-    <div style="display:flex;flex-direction:column;line-height:1.2;flex-shrink:0">
-      <span style="font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.15em;color:var(--tx);white-space:nowrap">INVENTAIRE 2026</span>
-      <span style="font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--tx3);white-space:nowrap">ELASSALI IDRISS</span>
+<div id="appShell" style="display:block">
+<header style="background:var(--s1);border-bottom:1.5px solid var(--bd);padding:0 24px;height:54px;display:flex;align-items:center;justify-content:space-between">
+  <div style="display:flex;align-items:center;gap:15px">
+    <span style="font-family:var(--mono);font-size:22px;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">DRRO</span>
+    <div>
+      <div style="font-family:var(--mono);font-size:12px;font-weight:700">GMAO - Gestion des articles par localisation</div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--tx3)">ELASSALI IDRISS</div>
     </div>
   </div>
-  <div class="hdr-right">
-    <span id="hdrZoneBadge" class="zone-badge-hdr"></span>
-    <span id="sessionExpiryBadge" class="session-expiry-badge" style="display:none"></span>
-    <div class="status-dot" id="statusDot" style="background:var(--tx3);box-shadow:none"></div>
-    <span class="status-txt" id="statusTxt">Chargement...</span>
-    <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
-    <button class="refresh-btn" id="refreshBtn" onclick="reloadData()">
-      <span class="btn-full">↺ Actualiser</span><span class="btn-short">↺</span>
-    </button>
-    <button class="btn-logout" onclick="doLogout()">
-      <span class="btn-full">⎋ Déconnexion</span><span class="btn-short">⎋</span>
-    </button>
+  <div style="display:flex;align-items:center;gap:8px">
+    <button class="theme-toggle" onclick="toggleTheme()" style="background:var(--s2);border:1.5px solid var(--bd);border-radius:99px;width:36px;height:36px;cursor:pointer">🌙</button>
+    <button onclick="loadData()" style="background:var(--s2);border:1.5px solid var(--bd);border-radius:5px;padding:6px 12px;cursor:pointer">↺ Actualiser</button>
   </div>
 </header>
-<nav id="mainNav"></nav>
-<main>
 
-<div class="panel on" id="panel-overview">
-  <div id="errorBanner" style="display:none" class="error-banner"></div>
-  <div id="alertZone"></div>
-  <div id="updateAlertZone"></div>
-  <div class="sec-title">Indicateurs — <span id="ovZoneLabel">—</span></div>
-  <div class="kpi-grid">
-    <div class="kpi" style="--kpi-color:var(--acc)"><div class="kpi-label">Total articles</div><div class="kpi-val" id="kTotal">—</div><div class="kpi-sub">zone courante</div></div>
-    <div class="kpi" style="--kpi-color:var(--acc3)"><div class="kpi-label">Conformes</div><div class="kpi-val" id="kOk">—</div><div class="kpi-sub" id="kOkP">—</div></div>
-    <div class="kpi" style="--kpi-color:var(--amber)"><div class="kpi-label">À vérifier</div><div class="kpi-val" id="kAv">—</div><div class="kpi-sub" id="kAvP">—</div></div>
-    <div class="kpi" style="--kpi-color:var(--red)"><div class="kpi-label">Discordances</div><div class="kpi-val" id="kDisc">—</div><div class="kpi-sub" id="kDiscP">—</div></div>
-    <div class="kpi" style="--kpi-color:var(--tx3)"><div class="kpi-label">Non renseigné</div><div class="kpi-val" id="kNd">—</div><div class="kpi-sub" id="kNdP">—</div></div>
-    <div class="kpi" style="--kpi-color:var(--blue)"><div class="kpi-label">Gares couvertes</div><div class="kpi-val" id="kGares">—</div><div class="kpi-sub">gares distinctes</div></div>
-    <div class="kpi" style="--kpi-color:var(--acc3)"><div class="kpi-label">Inventoristes</div><div class="kpi-val" id="kInvs">—</div><div class="kpi-sub">agents actifs</div></div>
-  </div>
-  <div id="adminZoneCards" style="display:none">
-    <div class="sec-title">Récapitulatif par zone</div>
-    <div class="kpi-zone-grid" id="zoneCardsGrid"></div>
-  </div>
-  <div class="sec-title">Observations</div>
-  <div class="charts-grid">
-    <div class="card"><div class="card-title">Répartition des observations</div><div style="position:relative;height:260px"><canvas id="cObs"></canvas></div></div>
-    <div class="card"><div class="card-title">Articles par inventoriste</div><div style="position:relative;height:260px"><canvas id="cInv"></canvas></div></div>
-  </div>
-  <div class="sec-title">Répartition par gare</div>
-  <div class="charts-grid">
-    <div class="card"><div class="card-title">Articles par gare — TOP 15</div><div style="position:relative;height:300px"><canvas id="cGare"></canvas></div></div>
-    <div class="card"><div class="card-title">Observations par gare — TOP 10</div><div style="position:relative;height:300px"><canvas id="cGareObs"></canvas></div></div>
-  </div>
-  <div class="sec-title">Libellés d'articles</div>
-  <div class="charts-grid">
-    <div class="card wide"><div class="card-title">Top 10 libellés d'articles</div><div style="position:relative;height:260px"><canvas id="cLib"></canvas></div></div>
-  </div>
-  <div id="adminChartSection" style="display:none">
-    <div class="sec-title">Comparaison inter-zones</div>
-    <div class="charts-grid">
-      <div class="card"><div class="card-title">Observations par zone</div><div style="position:relative;height:260px"><canvas id="cZoneObs"></canvas></div></div>
-      <div class="card"><div class="card-title">Taux de conformité par zone</div><div style="position:relative;height:260px"><canvas id="cZoneConf"></canvas></div></div>
-    </div>
-  </div>
-</div>
-
-<div class="panel" id="panel-tableau">
-  <div class="tbl-hdr">
-    <span id="tblCount" style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--tx);white-space:nowrap">—</span>
-    <div class="tbl-controls">
-      <input type="text" id="srch" placeholder="🔍 Recherche..." oninput="applyFilters()">
-      <select id="fSrc" onchange="applyFilters()" style="display:none">
-        <option value="">Toutes zones</option>
-        <option value="CEBS">CEBS</option><option value="CEJ">CEJ</option><option value="AEBB">AEBB</option>
-      </select>
-      <select id="fObs" onchange="applyFilters()">
-        <option value="">Toutes observations</option>
-        <option value="CONFORME">CONFORME</option><option value="A VERIFIER">A VERIFIER</option>
-        <option value="DISCORDANCE">DISCORDANCE</option><option value="vide">Non renseigné</option>
-      </select>
-      <select id="fGare" onchange="applyFilters()"><option value="">Toutes gares</option></select>
-      <select id="fLoc" onchange="applyFilters()"><option value="">Toutes localisations</option></select>
-      <select id="fInv" onchange="applyFilters()"><option value="">Tous inventoristes</option></select>
-      <button class="btn btn-out btn-sm" onclick="exportFiltered()">↓ Export Excel</button>
-    </div>
-  </div>
-  <div class="tbl-body-wrap">
-    <div class="tbl-wrap">
-      <table id="inventoryTable">
-        <thead><tr id="tblHead"></tr></thead>
-        <tbody id="tBody"></tbody>
-      </table>
-    </div>
-  </div>
-  <div class="pag">
-    <span class="pag-info" id="pagInfo">—</span>
-    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-      <div class="pagesize">Lignes / page :
-        <select id="pageSize" onchange="changePageSize()">
-          <option value="50">50</option><option value="100">100</option>
-          <option value="200">200</option><option value="500">500</option><option value="all">Toutes</option>
-        </select>
+<main style="padding:20px">
+  <div class="gmao-container">
+    <!-- Arborescence gauche -->
+    <div class="gmao-sidebar">
+      <div class="gmao-sidebar-header">📂 Arborescence des localisations</div>
+      <div class="gmao-tree" id="gmaoTree">
+        <div style="padding:20px;text-align:center;color:var(--tx3)">
+          <div class="spinner-small" style="margin:0 auto 10px"></div>
+          Chargement...
+        </div>
       </div>
-      <div class="pag-btns" id="pagBtns"></div>
     </div>
-  </div>
-</div>
-
-<div class="panel" id="panel-telechargement">
-  <div class="sec-title">Fichiers source — Inventaires zones</div>
-  <div class="dl-grid" id="dlGrid"></div>
-  <div id="bddDlSection" style="display:none">
-    <div class="sec-title" style="margin-top:24px">Base de données consolidée</div>
-    <div class="dl-grid">
-      <div class="dl-card">
-        <div class="dl-icon" style="background:color-mix(in srgb,var(--acc3) 14%,var(--s1))">📥</div>
-        <div class="dl-info"><div class="dl-name">BDD-DRRO.xlsx</div><div class="dl-meta">Base consolidée · Toutes zones</div></div>
-        <div class="dl-btns"><a class="btn btn-grn" href="https://docs.google.com/spreadsheets/d/1VQVo9ZCkXyFIo5nwdfFzqnW9kub3dHxm/export?format=xlsx" target="_blank" rel="noopener">↓ Télécharger</a></div>
+    
+    <!-- Contenu droit -->
+    <div class="gmao-content">
+      <div class="gmao-header">
+        <h3 id="gmaoTitle">🏭 GMAO - Gestion des articles</h3>
+        <p id="gmaoSubtitle">Sélectionnez une localisation dans l'arborescence pour voir les articles</p>
       </div>
-      <div class="dl-card">
-        <div class="dl-icon" style="background:color-mix(in srgb,var(--gold) 14%,var(--s1))">🔗</div>
-        <div class="dl-info"><div class="dl-name">BDD-DRRO dans Drive</div><div class="dl-meta">Visualiser dans Google Sheets</div></div>
-        <div class="dl-btns"><a class="btn btn-gold" href="https://docs.google.com/spreadsheets/d/1VQVo9ZCkXyFIo5nwdfFzqnW9kub3dHxm/edit" target="_blank" rel="noopener">↗ Ouvrir</a></div>
+      <div class="gmao-table-wrap">
+        <table class="gmao-table" id="gmaoTable">
+          <thead>
+            <tr>
+              <th>Code article</th>
+              <th>Libellé article</th>
+              <th>ID Immobilisation</th>
+              <th>Numéro de série</th>
+              <th>Marque</th>
+              <th>Modèle</th>
+              <th>Observation</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="gmaoTbody">
+            <tr><td colspan="8" style="text-align:center;padding:40px">Sélectionnez une localisation dans l'arborescence</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="gmao-stats" id="gmaoStats">
+        <div class="gmao-stat"><span>📊 Total articles</span><span class="gmao-stat-value" id="gmaoTotal">0</span></div>
+        <div class="gmao-stat"><span>✅ Conformes</span><span class="gmao-stat-value" id="gmaoOk">0</span></div>
+        <div class="gmao-stat"><span>⚠️ À vérifier</span><span class="gmao-stat-value" id="gmaoAv">0</span></div>
+        <div class="gmao-stat"><span>❌ Discordances</span><span class="gmao-stat-value" id="gmaoDisc">0</span></div>
       </div>
     </div>
   </div>
-  <div class="sec-title" style="margin-top:24px">Exporter les données filtrées</div>
-  <div class="card">
-    <div class="card-title">Export depuis le tableau de données filtrées</div>
-    <p style="font-size:12px;color:var(--tx3);margin-bottom:14px">Les exports respectent les filtres actifs dans l'onglet Données.</p>
-    <div style="display:flex;gap:8px;flex-wrap:wrap" id="exportBtns"></div>
-  </div>
-</div>
-
 </main>
-</div>
-
-<div class="modal-overlay" id="modalOverlay" style="display:none" onclick="if(event.target===this)closeModal()">
-  <div class="modal-box">
-    <div class="modal-title">
-      <span id="modalTitle">Modifier</span>
-      <span id="modalZoneBadge" style="font-family:var(--mono);font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:var(--s3);color:var(--tx3)"></span>
-    </div>
-    <div class="modal-grid" id="modalFields"></div>
-    <div class="modal-btns">
-      <button class="btn btn-red btn-sm" id="modalDeleteBtn" onclick="askDeleteFromModal()" style="display:none">🗑 Supprimer cette ligne</button>
-      <div class="modal-btns-right">
-        <button class="btn btn-out" onclick="closeModal()">✕ Annuler</button>
-        <button class="btn btn-acc" id="modalSaveBtn" onclick="submitModal()">✓ Enregistrer</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="confirm-overlay" id="confirmOverlay" style="display:none">
-  <div class="confirm-box" id="confirmBox">
-    <div class="confirm-icon" id="confirmIcon">⚠️</div>
-    <div class="confirm-title" id="confirmTitle">Confirmer l'action</div>
-    <div class="confirm-msg" id="confirmMsg"></div>
-    <div class="confirm-btns">
-      <button class="btn btn-out" onclick="closeConfirm()">✕ Annuler</button>
-      <button class="btn btn-acc" id="confirmOkBtn" onclick="executeConfirmed()">✓ Confirmer</button>
-    </div>
-  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -1895,7 +450,6 @@ const SECRET_TOKEN = '1ppRNrQPgcKOHoBeKI40g35RPFW07bkqDkyw14_6O2mm7flNYVpLOYqWQ'
 
 const ZONE_CONFIG = {
   CEBS: {
-    pwdHash: 'eac8a3fd67a18fc94babbc4d47928a98889ea3f1418283b54dd9342b7275a9b4',
     sheetId: '1W5V8YkeGYvJaaSoAcGV1lRT2-BzgzWBOupRuEeqgRIA',
     apiUrl: 'https://script.google.com/macros/s/AKfycbxK2vwVWBGXCWSNq_tkvzMkbo7eYhVEHsCdDNdQk_6XkGD7bSUuDZa6v2jJaofQumTgcQ/exec',
     color: '#1a4fa8', color2: 'rgba(26,79,168,0.65)',
@@ -1903,7 +457,6 @@ const ZONE_CONFIG = {
     icon: '📘', badgeClass: 'src-cebs', zcolor: '#1a4fa8'
   },
   CEJ: {
-    pwdHash: 'a43cb71e0ab7f5d7e2849f38fbb4bb01e79fb27cc20688e8d45b692ebd6e3cdf',
     sheetId: '1Y6gNYoJGL13gXj4SdmCKUXa-tbSbyWP6WyDgbjMXG3I',
     apiUrl: 'https://script.google.com/macros/s/AKfycbyQvuGk-4Ee9_pMrcNfitgpgFI3SWLiYAkk-EeAscfHuHvCM9IguaMI3bFbOAtK_xD1/exec',
     color: '#5b3dc4', color2: 'rgba(91,61,196,0.65)',
@@ -1911,56 +464,22 @@ const ZONE_CONFIG = {
     icon: '📗', badgeClass: 'src-cej', zcolor: '#5b3dc4'
   },
   AEBB: {
-    pwdHash: 'b81ec7c1b0f0b711c77b52cf3efacdae4c8e585ce5c80b4c056ea7fbc6dfd218',
     sheetId: '1krHCtAzSB53cAMKZJ6YXb9K881d__KOKo2yC_hfMxeA',
     apiUrl: 'https://script.google.com/macros/s/AKfycbyy1Y2R0ihtSBH1SUwbAYe5hIWpTKmSEXjR_p6A9G1biZm7kthMm6SBp2kTWwdm1NKH/exec',
     color: '#1d9e75', color2: 'rgba(29,158,117,0.65)',
     dlHref: 'https://docs.google.com/spreadsheets/d/1krHCtAzSB53cAMKZJ6YXb9K881d__KOKo2yC_hfMxeA/export?format=xlsx',
     icon: '📙', badgeClass: 'src-aebb', zcolor: '#1d9e75'
-  },
-  ADMIN: {
-    pwdHash: '61abf6b31686359bac1755390b8c420403f3f85de7d06607dc2250b707c1cb79'
   }
 };
 
 const EXPORT_URL = id => `https://docs.google.com/spreadsheets/d/${id}/export?format=xlsx`;
-const SESSION_KEY = 'drro-session-v3';
-const SESSION_HOURS = 8;
-
-// ═══════════════════════════════════════════════════════
-//  FONCTIONS DE GESTION DES DATES
-// ═══════════════════════════════════════════════════════
-
-function formatDateToFrench(date) {
-  if (!date) return '—';
-  const d = date instanceof Date ? date : new Date(date);
-  if (isNaN(d.getTime())) return '—';
-  const jour = d.getDate().toString().padStart(2, '0');
-  const mois = (d.getMonth() + 1).toString().padStart(2, '0');
-  const annee = d.getFullYear();
-  const heures = d.getHours().toString().padStart(2, '0');
-  const minutes = d.getMinutes().toString().padStart(2, '0');
-  const secondes = d.getSeconds().toString().padStart(2, '0');
-  return `${jour}/${mois}/${annee} ${heures}:${minutes}:${secondes}`;
-}
-
-function isFrenchDateTime(str) {
-  if (!str) return false;
-  return /^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}:\d{2}$/.test(str);
-}
 
 // ═══ STATE ═══
-let currentZone = null, isAdmin = false, selectedLoginZone = null;
-let zoneData = [], filteredData = [];
-let page = 1, PG = 50, sortCol = null, sortDir = 1;
-let charts = {}, lastCounts = {}, sourceHeaders = [];
-let updateCheckInterval = null, sessionExpiryInterval = null;
-let isLoading = false, locCol = null;
-let modalRowIndex = null, modalZone = null, pendingAction = null;
-let savedFilters = null, savedPage = 1;
-let zoneLoadErrors = {};
+let zoneData = [];
+let gmaoCurrentFilter = null;
+let gmaoCurrentData = [];
 
-// ═══ FONCTIONS UTILITAIRES ═══
+// ═══ UTILITAIRES ═══
 function esc(v) {
   return (v == null ? '' : v.toString()).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
@@ -1969,18 +488,8 @@ function fmt(n) {
   return (+n).toLocaleString('fr');
 }
 
-function pct(a, b) {
-  return b ? Math.round(a / b * 100) + '%' : '—';
-}
-
-function set(id, v) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = v;
-}
-
 function toast(msg, type = '') {
   const t = document.getElementById('toast');
-  if (!t) return;
   t.textContent = msg;
   t.className = 'toast' + (type ? ` ${type}` : '');
   t.classList.add('show');
@@ -1988,1389 +497,248 @@ function toast(msg, type = '') {
   t._tid = setTimeout(() => t.classList.remove('show'), 3500);
 }
 
-// ═══ SESSION ═══
-function saveSession(z) {
-  try { localStorage.setItem(SESSION_KEY, JSON.stringify({ zone: z, expiry: Date.now() + SESSION_HOURS * 3600000 })); } catch (e) {}
+function formatDateToFrench(date) {
+  if (!date) return '—';
+  const d = date instanceof Date ? date : new Date(date);
+  if (isNaN(d.getTime())) return '—';
+  return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}`;
 }
 
-function clearSession() {
-  try { localStorage.removeItem(SESSION_KEY); } catch (e) {}
+// ═══ OBSERVATION BADGE ═══
+function obsBadge(v) {
+  const u = (v || '').toString().toUpperCase().trim();
+  if (u === 'CONFORME') return `<span class="obs-ok">✓ CONFORME</span>`;
+  if (u === 'A VERIFIER') return `<span class="obs-av">⚠ A VÉRIFIER</span>`;
+  if (u.startsWith('DISCORDANCE')) return `<span class="obs-disc">❌ ${esc(v)}</span>`;
+  return `<span style="color:var(--tx3)">—</span>`;
 }
 
-function readSession() {
+// ═══ CHARGEMENT DES DONNÉES ═══
+async function loadData() {
+  toast('Chargement des données...', 'info');
   try {
-    const r = localStorage.getItem(SESSION_KEY);
-    if (!r) return null;
-    const s = JSON.parse(r);
-    if (!s || Date.now() > s.expiry) {
-      clearSession();
-      return null;
-    }
-    return s;
-  } catch (e) { return null; }
+    await loadAllZones();
+    buildGmaoTree();
+    toast(`✓ ${fmt(zoneData.length)} articles chargés`, 'info');
+  } catch (e) {
+    console.error(e);
+    toast('Erreur de chargement', 'err');
+  }
 }
 
-function startSessionCountdown(expiry) {
-  if (isAdmin) {
-    const b = document.getElementById('sessionExpiryBadge');
-    if (b) b.style.display = 'none';
+async function loadAllZones() {
+  const zones = ['CEBS', 'CEJ', 'AEBB'];
+  let allData = [];
+  let loadedCount = 0;
+  
+  for (const zone of zones) {
+    try {
+      const cfg = ZONE_CONFIG[zone];
+      if (!cfg) continue;
+      const url = EXPORT_URL(cfg.sheetId);
+      const response = await fetch(url, { mode: 'cors' });
+      if (!response.ok) continue;
+      const buf = await response.arrayBuffer();
+      const { rows } = parseXLSX(buf);
+      allData = allData.concat(rows.map(r => ({ ...r, Source: zone })));
+      loadedCount++;
+    } catch (e) {
+      console.error(`Erreur ${zone}:`, e);
+    }
+  }
+  
+  zoneData = allData;
+  console.log(`Chargé: ${zoneData.length} articles de ${loadedCount}/3 zones`);
+}
+
+function parseXLSX(buf) {
+  const wb = XLSX.read(buf, { type: 'array', cellDates: true });
+  const ws = wb.Sheets['ARTICLES'] || wb.Sheets[wb.SheetNames[0]];
+  const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+  return { rows };
+}
+
+// ═══ ARBRESCENCE GMAO ═══
+function buildGmaoTree() {
+  const treeContainer = document.getElementById('gmaoTree');
+  if (!treeContainer) return;
+  
+  // Structure: Zone → Gare → Localisation
+  const structure = {};
+  
+  zoneData.forEach(article => {
+    const zone = article.Source || 'Inconnue';
+    const gare = article.Gare || article.GARE || 'Sans gare';
+    const localisation = article.Localisation || article.localisation || 'Sans localisation';
+    
+    if (!structure[zone]) structure[zone] = {};
+    if (!structure[zone][gare]) structure[zone][gare] = new Set();
+    structure[zone][gare].add(localisation);
+  });
+  
+  let html = '';
+  for (const [zone, gares] of Object.entries(structure)) {
+    html += `<div class="gmao-tree-item">
+      <div class="gmao-tree-header" onclick="toggleGmaoNode(this)" data-zone="${zone}">
+        <span class="gmao-tree-icon">🏭</span>
+        <span><strong>${zone}</strong></span>
+        <span style="margin-left:auto;font-size:10px;opacity:0.6">▼</span>
+      </div>
+      <div class="gmao-tree-children" style="display:block;">`;
+    
+    for (const [gare, localisations] of Object.entries(gares)) {
+      html += `<div class="gmao-tree-item">
+        <div class="gmao-tree-header" onclick="toggleGmaoNode(this)" data-zone="${zone}" data-gare="${gare}">
+          <span class="gmao-tree-icon">🏢</span>
+          <span>Gare ${gare}</span>
+          <span style="margin-left:auto;font-size:10px;opacity:0.6">▼</span>
+        </div>
+        <div class="gmao-tree-children" style="display:block;">`;
+      
+      for (const localisation of localisations) {
+        const localisationClean = localisation.replace(/'/g, "\\'");
+        html += `<div class="gmao-tree-child" onclick="selectGmaoLocation('${zone}', '${gare}', '${localisationClean}')">
+          <span class="gmao-tree-icon">📍</span>
+          <span>${esc(localisation)}</span>
+        </div>`;
+      }
+      html += `</div></div>`;
+    }
+    html += `</div></div>`;
+  }
+  
+  treeContainer.innerHTML = html || '<div style="padding:20px;text-align:center;color:var(--tx3)">Aucune donnée disponible</div>';
+}
+
+function toggleGmaoNode(element) {
+  const children = element.nextElementSibling;
+  if (children) {
+    const isOpen = children.style.display !== 'none';
+    children.style.display = isOpen ? 'none' : 'block';
+    const arrow = element.querySelector('span:last-child');
+    if (arrow) arrow.textContent = isOpen ? '▶' : '▼';
+  }
+}
+
+function selectGmaoLocation(zone, gare, localisation) {
+  // Mettre à jour l'UI active
+  document.querySelectorAll('.gmao-tree-child').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.gmao-tree-header').forEach(el => el.classList.remove('active'));
+  event.target.closest('.gmao-tree-child')?.classList.add('active');
+  
+  // Filtrer les données
+  gmaoCurrentData = zoneData.filter(article => {
+    const articleZone = article.Source;
+    const articleGare = article.Gare || article.GARE;
+    const articleLocalisation = article.Localisation || article.localisation;
+    return articleZone === zone && articleGare === gare && articleLocalisation === localisation;
+  });
+  
+  gmaoCurrentFilter = { zone, gare, localisation };
+  
+  // Mettre à jour l'en-tête
+  document.getElementById('gmaoTitle').innerHTML = `📍 ${zone} - Gare ${gare} - ${localisation}`;
+  document.getElementById('gmaoSubtitle').innerHTML = `${gmaoCurrentData.length} article(s) dans cette localisation`;
+  
+  // Afficher les statistiques
+  const total = gmaoCurrentData.length;
+  const ok = gmaoCurrentData.filter(a => {
+    const obs = (a.Observation || '').toString().toUpperCase().trim();
+    return obs === 'CONFORME';
+  }).length;
+  const av = gmaoCurrentData.filter(a => {
+    const obs = (a.Observation || '').toString().toUpperCase().trim();
+    return obs === 'A VERIFIER';
+  }).length;
+  const disc = gmaoCurrentData.filter(a => {
+    const obs = (a.Observation || '').toString().toUpperCase().trim();
+    return obs.startsWith('DISCORDANCE');
+  }).length;
+  
+  document.getElementById('gmaoTotal').textContent = total;
+  document.getElementById('gmaoOk').textContent = ok;
+  document.getElementById('gmaoAv').textContent = av;
+  document.getElementById('gmaoDisc').textContent = disc;
+  
+  // Afficher le tableau
+  renderGmaoTable();
+}
+
+function renderGmaoTable() {
+  const tbody = document.getElementById('gmaoTbody');
+  if (!tbody) return;
+  
+  if (gmaoCurrentData.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--tx3)">📭 Aucun article dans cette localisation</td></tr>';
     return;
   }
-  if (sessionExpiryInterval) clearInterval(sessionExpiryInterval);
-  const badge = document.getElementById('sessionExpiryBadge');
-  if (!badge) return;
-  const tick = () => {
-    const rem = expiry - Date.now();
-    if (rem <= 0) {
-      clearInterval(sessionExpiryInterval);
-      toast('Session expirée', 'err');
-      setTimeout(doLogout, 1500);
-      return;
-    }
-    badge.style.display = '';
-    const h = Math.floor(rem / 3600000), m = Math.floor((rem % 3600000) / 60000);
-    badge.textContent = h > 0 ? `⏱ ${h}h${String(m).padStart(2, '0')}` : `⏱ ${m}min`;
-    badge.style.color = rem < 600000 ? 'var(--amber)' : 'var(--tx3)';
-    badge.style.borderColor = rem < 600000 ? 'var(--amber)' : 'var(--bd)';
-  };
-  tick();
-  sessionExpiryInterval = setInterval(tick, 30000);
+  
+  tbody.innerHTML = gmaoCurrentData.map(article => {
+    const codeArticle = article.Cod_Article || article.COD_ARTICLE || '—';
+    const libelle = article.Lib_Article || article.LIB_ARTICLE || '—';
+    const idImmo = article.ID_Imobilisation || article.ID_Immobilisation || '—';
+    const numSerie = article.NumSerie || article.NUMERIE || article.NUM_SERIE || '—';
+    const marque = article.Lib_Marque || article.MARQUE || '—';
+    const modele = article.Lib_Modele || article.MODELE || '—';
+    const observation = article.Observation || '';
+    
+    return `<tr>
+      <td style="font-family:var(--mono);font-size:11px">${esc(codeArticle)}</td>
+      <td><strong>${esc(libelle)}</strong></td>
+      <td style="font-family:var(--mono);font-size:11px">${esc(idImmo)}</td>
+      <td style="font-family:var(--mono);font-size:11px">${esc(numSerie)}</td>
+      <td>${esc(marque)}</td>
+      <td>${esc(modele)}</td>
+      <td>${obsBadge(observation)}</td>
+      <td class="gmao-actions">
+        <button class="btn-icon" onclick="viewArticleDetail(${zoneData.indexOf(article)})" title="Voir détails">👁️</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function viewArticleDetail(index) {
+  const article = zoneData[index];
+  if (!article) return;
+  
+  const details = [
+    `📦 Libellé: ${article.Lib_Article || '—'}`,
+    `🔢 Code article: ${article.Cod_Article || '—'}`,
+    `🏷️ ID Immobilisation: ${article.ID_Imobilisation || article.ID_Immobilisation || '—'}`,
+    `🔧 Marque: ${article.Lib_Marque || '—'}`,
+    `📟 Modèle: ${article.Lib_Modele || '—'}`,
+    `🔢 Numéro série: ${article.NumSerie || article.NUMERIE || '—'}`,
+    `📍 Localisation: ${article.Localisation || '—'}`,
+    `🏢 Gare: ${article.Gare || '—'}`,
+    `📋 Observation: ${article.Observation || '—'}`
+  ].join('\n');
+  
+  alert(details);
 }
 
 // ═══ THEME ═══
 function applyTheme(t) {
   document.documentElement.setAttribute('data-theme', t);
-  try { localStorage.setItem('drro-theme', t); } catch (e) {}
+  try { localStorage.setItem('drro-theme', t); } catch(e) {}
   const ic = t === 'dark' ? '☀️' : '🌙';
-  ['themeBtn', 'themeBtnLogin'].forEach(id => {
-    const b = document.getElementById(id);
-    if (b) b.textContent = ic;
-  });
-  refreshChartTheme();
+  const btns = document.querySelectorAll('.theme-toggle');
+  btns.forEach(btn => { if(btn) btn.textContent = ic; });
 }
 
 function toggleTheme() {
-  applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  const current = document.documentElement.getAttribute('data-theme');
+  applyTheme(current === 'dark' ? 'light' : 'dark');
 }
 
 function initTheme() {
   let t = 'light';
-  try {
-    t = localStorage.getItem('drro-theme') || (window.matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light');
-  } catch (e) {}
+  try { t = localStorage.getItem('drro-theme') || (window.matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light'); } catch(e) {}
   applyTheme(t);
 }
 
-function togglePwd() {
-  const i = document.getElementById('loginPwd');
-  const e = document.getElementById('pwdEye');
-  if (i && e) {
-    i.type = i.type === 'password' ? 'text' : 'password';
-    e.textContent = i.type === 'password' ? '👁' : '🙈';
-  }
-}
-
-function cssVar(n) {
-  return getComputedStyle(document.documentElement).getPropertyValue(n).trim();
-}
-
-async function sha256Hex(s) {
-  const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
-  return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join('');
-}
-
-// ═══ STICKY HEIGHTS ═══
-function syncStickyHeights() {
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    const hdr = document.querySelector('header');
-    const nav = document.getElementById('mainNav');
-    if (!hdr || !nav) return;
-    const hh = hdr.getBoundingClientRect().height;
-    const nh = nav.getBoundingClientRect().height;
-    if (!hh || !nh) return;
-    document.documentElement.style.setProperty('--header-h', hh + 'px');
-    document.documentElement.style.setProperty('--nav-h', nh + 'px');
-    const pt = document.getElementById('panel-tableau');
-    if (pt && pt.classList.contains('on')) pt.style.height = `calc(100vh - ${hh + nh}px)`;
-  }));
-}
-
-// ═══ LOGIN ═══
-function selectZone(z) {
-  selectedLoginZone = z;
-  document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('sel'));
-  const btn = document.getElementById('zBtn-' + z);
-  if (btn) btn.classList.add('sel');
-  const pwdInput = document.getElementById('loginPwd');
-  if (pwdInput) pwdInput.focus();
-}
-
-async function doLogin() {
-  const err = document.getElementById('loginErr');
-  const btn = document.getElementById('loginBtn');
-  const pwd = document.getElementById('loginPwd').value.trim();
-  
-  if (!selectedLoginZone) {
-    if (err) { err.textContent = 'Veuillez sélectionner une zone.'; err.style.display = 'block'; }
-    return;
-  }
-  
-  if (btn) btn.disabled = true;
-  if (btn) btn.textContent = 'Vérification...';
-  
-  const hash = await sha256Hex(pwd);
-  
-  if (btn) { btn.disabled = false; btn.textContent = 'Accéder →'; }
-  
-  const cfg = ZONE_CONFIG[selectedLoginZone];
-  if (!cfg || hash !== cfg.pwdHash) {
-    if (err) { err.textContent = 'Code incorrect pour : ' + selectedLoginZone; err.style.display = 'block'; }
-    const pwdField = document.getElementById('loginPwd');
-    if (pwdField) pwdField.value = '';
-    return;
-  }
-  
-  if (err) err.style.display = 'none';
-  currentZone = selectedLoginZone;
-  isAdmin = (currentZone === 'ADMIN');
-  saveSession(currentZone);
-  launchApp();
-  const s = readSession();
-  if (s) startSessionCountdown(s.expiry);
-}
-
-function launchApp() {
-  const loginScreen = document.getElementById('loginScreen');
-  const appShell = document.getElementById('appShell');
-  if (loginScreen) loginScreen.style.display = 'none';
-  if (appShell) appShell.style.display = 'block';
-  setupHeader();
-  buildNav();
-  buildDlSection();
-  buildExportBtns();
-  syncStickyHeights();
-  [100, 400, 900].forEach(d => setTimeout(syncStickyHeights, d));
-  reloadData();
-}
-
-function setupHeader() {
-  const badge = document.getElementById('hdrZoneBadge');
-  const ovLabel = document.getElementById('ovZoneLabel');
-  const cfg = ZONE_CONFIG[currentZone] || {};
-  
-  if (isAdmin) {
-    if (badge) { badge.textContent = 'ADMIN'; badge.className = 'zone-badge-hdr admin-badge'; }
-  } else {
-    if (badge) { badge.textContent = currentZone; badge.className = 'zone-badge-hdr ' + (cfg.badgeClass || ''); }
-  }
-  
-  if (ovLabel) ovLabel.textContent = isAdmin ? 'Toutes zones' : currentZone;
-  
-  const srcFilter = document.getElementById('fSrc');
-  if (srcFilter) srcFilter.style.display = isAdmin ? '' : 'none';
-  
-  const adminCards = document.getElementById('adminZoneCards');
-  if (adminCards) adminCards.style.display = isAdmin ? 'block' : 'none';
-  
-  const adminChart = document.getElementById('adminChartSection');
-  if (adminChart) adminChart.style.display = isAdmin ? 'block' : 'none';
-}
-
-function doLogout() {
-  clearSession();
-  if (sessionExpiryInterval) { clearInterval(sessionExpiryInterval); sessionExpiryInterval = null; }
-  if (updateCheckInterval) { clearInterval(updateCheckInterval); updateCheckInterval = null; }
-  
-  currentZone = null;
-  isAdmin = false;
-  selectedLoginZone = null;
-  zoneData = [];
-  filteredData = [];
-  lastCounts = {};
-  sourceHeaders = [];
-  locCol = null;
-  isLoading = false;
-  savedFilters = null;
-  zoneLoadErrors = {};
-  
-  Object.keys(charts).forEach(k => { try { charts[k].destroy(); } catch (e) {} });
-  charts = {};
-  
-  document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('sel'));
-  
-  const pwdField = document.getElementById('loginPwd');
-  if (pwdField) pwdField.value = '';
-  
-  const errDiv = document.getElementById('loginErr');
-  if (errDiv) errDiv.style.display = 'none';
-  
-  const expiryBadge = document.getElementById('sessionExpiryBadge');
-  if (expiryBadge) expiryBadge.style.display = 'none';
-  
-  const appShell = document.getElementById('appShell');
-  const loginScreen = document.getElementById('loginScreen');
-  if (appShell) appShell.style.display = 'none';
-  if (loginScreen) loginScreen.style.display = 'flex';
-  
-  showTab('overview');
-}
-
-// ═══ NAV ═══
-function buildNav() {
-  const nav = document.getElementById('mainNav');
-  if (nav) {
-    nav.innerHTML = `
-      <button class="tab on" onclick="showTab('overview')">Vue d'ensemble</button>
-      <button class="tab" onclick="showTab('tableau')">Données</button>
-      <button class="tab" onclick="showTab('telechargement')">Téléchargement</button>`;
-  }
-  setTimeout(syncStickyHeights, 20);
-}
-
-// ═══ LOAD DATA ═══
-async function reloadData() {
-  if (!currentZone || isLoading) return;
-  isLoading = true;
-  
-  const refreshBtn = document.getElementById('refreshBtn');
-  if (refreshBtn) refreshBtn.classList.add('spinning');
-  
-  clearUpdateAlert();
-  zoneData = [];
-  filteredData = [];
-  sourceHeaders = [];
-  locCol = null;
-  zoneLoadErrors = {};
-  setStatus('Chargement...', false);
-  
-  try {
-    if (isAdmin) await loadAdminData();
-    else await loadSingleZone(currentZone);
-    displayZoneErrors();
-  } catch (error) {
-    console.error('Erreur de chargement:', error);
-    showErrorBanner('Erreur de chargement: ' + error.message);
-    setStatus('Erreur de chargement', false);
-  } finally {
-    isLoading = false;
-    if (refreshBtn) refreshBtn.classList.remove('spinning');
-  }
-}
-
-function displayZoneErrors() {
-  const errorBanner = document.getElementById('errorBanner');
-  if (!errorBanner) return;
-  const errors = Object.values(zoneLoadErrors);
-  if (errors.length > 0 && !isAdmin) {
-    errorBanner.style.display = 'block';
-    errorBanner.innerHTML = `
-      <strong>⚠️ Problème de chargement</strong><br>
-      ${errors.join('<br>')}
-      <button onclick="reloadData()">Réessayer</button>
-    `;
-  } else {
-    errorBanner.style.display = 'none';
-  }
-}
-
-function showErrorBanner(msg) {
-  const errorBanner = document.getElementById('errorBanner');
-  if (errorBanner) {
-    errorBanner.style.display = 'block';
-    errorBanner.innerHTML = `<strong>⚠️ Erreur</strong><br>${msg}<button onclick="reloadData()">Réessayer</button>`;
-  }
-}
-
-async function loadSingleZone(zone) {
-  setProgress(20, `Chargement ${zone}...`);
-  try {
-    const url = EXPORT_URL(ZONE_CONFIG[zone].sheetId);
-    const response = await fetch(url, { mode: 'cors' });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const buf = await response.arrayBuffer();
-    const { rows, headers } = parseXLSX(buf);
-    
-    if (!rows || rows.length === 0) throw new Error('Aucune donnée trouvée');
-    
-    sourceHeaders = headers;
-    zoneData = rows.map(r => ({ ...r, Source: zone }));
-    lastCounts[zone] = rows.length;
-    setProgress(100, 'OK');
-    
-    const loadScreen = document.getElementById('loadScreen');
-    if (loadScreen) loadScreen.style.display = 'none';
-    
-    updateAll();
-    setStatus(`${zone} — ${fmt(rows.length)} articles`, true);
-    startUpdateWatcher();
-  } catch (e) {
-    console.error(`Erreur chargement ${zone}:`, e);
-    zoneLoadErrors[zone] = `Impossible de charger ${zone}: ${e.message}`;
-    
-    const loadScreen = document.getElementById('loadScreen');
-    if (loadScreen) loadScreen.style.display = 'none';
-    
-    showManualUpload(zone);
-    setStatus(`Fichier ${zone} non accessible`, false);
-    toast(`Erreur chargement ${zone}: ${e.message}`, 'err');
-  }
-}
-
-async function loadAdminData() {
-  const zones = ['CEBS', 'CEJ', 'AEBB'];
-  let hdrUnion = [];
-  let loadedCount = 0;
-  
-  for (let i = 0; i < zones.length; i++) {
-    const zone = zones[i];
-    setProgress(10 + i * 28, `Chargement ${zone}...`);
-    try {
-      const buf = await fetchBuf(EXPORT_URL(ZONE_CONFIG[zone].sheetId));
-      const { rows, headers } = parseXLSX(buf);
-      headers.forEach(h => { if (h && !hdrUnion.includes(h)) hdrUnion.push(h); });
-      zoneData = zoneData.concat(rows.map(r => ({ ...r, Source: zone })));
-      lastCounts[zone] = rows.length;
-      loadedCount++;
-    } catch (e) {
-      console.error(`Erreur chargement ${zone}:`, e);
-      zoneLoadErrors[zone] = `${zone}: ${e.message}`;
-      lastCounts[zone] = null;
-    }
-  }
-  
-  sourceHeaders = hdrUnion;
-  setProgress(100, 'OK');
-  
-  const loadScreen = document.getElementById('loadScreen');
-  if (loadScreen) loadScreen.style.display = 'none';
-  
-  if (zoneData.length > 0) {
-    updateAll();
-    setStatus(`Admin — ${fmt(zoneData.length)} articles (${loadedCount}/3 zones)`, loadedCount > 0);
-    startUpdateWatcher();
-    if (loadedCount < 3) {
-      showErrorBanner(`${3 - loadedCount} zone(s) non accessible(s). Vérifiez les accès Google Sheets.`);
-    }
-  } else {
-    setStatus('Aucun fichier accessible', false);
-    showErrorBanner('Impossible de charger les données. Vérifiez que les Google Sheets sont partagés.');
-  }
-}
-
-async function fetchBuf(url) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 30000);
-  try {
-    const res = await fetch(url, { mode: 'cors', signal: controller.signal });
-    clearTimeout(timeoutId);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    return res.arrayBuffer();
-  } catch (e) {
-    clearTimeout(timeoutId);
-    throw e;
-  }
-}
-
-function parseXLSX(buf) {
-  const wb = XLSX.read(buf, {type:'array',cellDates:true});
-  const ws = wb.Sheets['ARTICLES']||wb.Sheets[wb.SheetNames[0]];
-  let rows = XLSX.utils.sheet_to_json(ws,{defval:''});
-  const hr = XLSX.utils.sheet_to_json(ws,{header:1})[0]||[];
-  let headers = hr.map(h=>(h==null?'':h.toString())).filter(h=>h!=='');
-  if(!headers.length&&rows.length)headers=Object.keys(rows[0]);
-  
-  rows = rows.map(row => {
-    const cleanedRow = {};
-    for (const key in row) {
-      let value = row[key];
-      if (value instanceof Date && !isNaN(value.getTime())) {
-        cleanedRow[key] = formatDateToFrench(value);
-      } else if (typeof value === 'string' && value.includes('GMT') && value.includes('202')) {
-        const parsed = new Date(value);
-        if (!isNaN(parsed.getTime())) {
-          cleanedRow[key] = formatDateToFrench(parsed);
-        } else {
-          cleanedRow[key] = value;
-        }
-      } else {
-        cleanedRow[key] = value;
-      }
-    }
-    return cleanedRow;
-  });
-  
-  return{rows, headers};
-}
-
-function showManualUpload(zone) {
-  const alertZone = document.getElementById('alertZone');
-  if (alertZone) {
-    alertZone.innerHTML = `<div class="alert update" style="margin-top:12px">
-      <div>📂</div>
-      <div>
-        <strong>Fichier ${zone} non accessible</strong><br>
-        Veuillez télécharger manuellement le fichier Excel.
-        <input type="file" id="manualInput" accept=".xlsx" style="display:none" onchange="handleManual(this.files[0])">
-        <button class="btn-refresh-inline" style="margin-top:8px" onclick="document.getElementById('manualInput').click()">
-          📁 Sélectionner le fichier ${zone}.xlsx
-        </button>
-      </div>
-    </div>`;
-  }
-}
-
-function handleManual(file) {
-  if (!file) return;
-  const zone = isAdmin ? (['CEBS', 'CEJ', 'AEBB'].find(z => file.name.toUpperCase().includes(z)) || 'CEBS') : currentZone;
-  const reader = new FileReader();
-  reader.onload = e => {
-    const { rows, headers } = parseXLSX(e.target.result);
-    if (!sourceHeaders.length) sourceHeaders = headers;
-    zoneData = zoneData.filter(r => r.Source !== zone).concat(rows.map(r => ({ ...r, Source: zone })));
-    lastCounts[zone] = rows.length;
-    updateAll();
-    setStatus((isAdmin ? 'Admin' : 'Zone ' + zone) + ' — ' + fmt(zoneData.length) + ' articles', true);
-    toast(zone + ' chargé — ' + rows.length + ' articles');
-    const alertZone = document.getElementById('alertZone');
-    if (alertZone) alertZone.innerHTML = '';
-  };
-  reader.onerror = () => toast('Erreur de lecture du fichier', 'err');
-  reader.readAsArrayBuffer(file);
-}
-
-// ═══ UPDATE WATCHER ═══
-function startUpdateWatcher() {
-  if (updateCheckInterval) clearInterval(updateCheckInterval);
-  updateCheckInterval = setInterval(async () => {
-    const zones = isAdmin ? ['CEBS', 'CEJ', 'AEBB'] : [currentZone];
-    const changed = [];
-    for (const zone of zones) {
-      if (lastCounts[zone] == null) continue;
-      try {
-        const buf = await fetchBuf(EXPORT_URL(ZONE_CONFIG[zone].sheetId));
-        const { rows } = parseXLSX(buf);
-        if (rows.length !== lastCounts[zone]) changed.push(`${zone} (${lastCounts[zone]}→${rows.length})`);
-      } catch (e) {}
-    }
-    const updateAlert = document.getElementById('updateAlertZone');
-    if (updateAlert) {
-      if (changed.length) {
-        updateAlert.innerHTML = `<div class="alert update"><div class="alert-icon">🔄</div><div><p><strong>Mise à jour détectée !</strong> ${changed.join(', ')}</p><button class="btn-refresh-inline" onclick="reloadData()">↺ Actualiser</button></div></div>`;
-      } else {
-        updateAlert.innerHTML = '';
-      }
-    }
-  }, 120000);
-}
-
-function clearUpdateAlert() {
-  const z = document.getElementById('updateAlertZone');
-  if (z) z.innerHTML = '';
-}
-
-function setProgress(p, m) {
-  const fill = document.getElementById('loadFill');
-  const status = document.getElementById('loadStatus');
-  if (fill) fill.style.width = p + '%';
-  if (status) status.textContent = m;
-}
-
-function setStatus(txt, ok) {
-  const statusTxt = document.getElementById('statusTxt');
-  const dot = document.getElementById('statusDot');
-  if (statusTxt) statusTxt.textContent = txt;
-  if (dot) {
-    dot.style.background = ok ? 'var(--acc3)' : 'var(--amber)';
-    dot.style.boxShadow = ok ? '0 0 6px var(--acc3)' : '0 0 6px var(--amber)';
-  }
-}
-
-// ═══ KPIs ═══
-const obsVal = r => (r.Observation || '').toString().toUpperCase().trim();
-const gareVal = r => (r.Gare || '').toString().trim();
-const invVal = r => (r.Inventoriste || '').toString().trim().replace(/\s+/g, ' ');
-
-function findLocCol() {
-  locCol = sourceHeaders.find(h => /local/i.test(h)) || null;
-}
-
-const locVal = r => locCol ? (r[locCol] || '').toString().trim() : '';
-const isOk = r => obsVal(r) === 'CONFORME';
-const isAv = r => obsVal(r) === 'A VERIFIER';
-const isDisc = r => obsVal(r).startsWith('DISCORDANCE');
-const isNd = r => !obsVal(r);
-
-function updateAll() {
-  buildKPIs();
-  if (isAdmin) buildAdminZoneCards();
-  buildCharts();
-  populateFilters();
-  applyFilters();
-}
-
-function buildKPIs() {
-  const d = zoneData;
-  const n = d.length;
-  const ok = d.filter(isOk).length;
-  const av = d.filter(isAv).length;
-  const disc = d.filter(isDisc).length;
-  const nd = d.filter(isNd).length;
-  
-  set('kTotal', fmt(n));
-  set('kOk', fmt(ok));
-  set('kOkP', pct(ok, n) + ' du total');
-  set('kAv', fmt(av));
-  set('kAvP', pct(av, n) + ' du total');
-  set('kDisc', fmt(disc));
-  set('kDiscP', pct(disc, n) + ' du total');
-  set('kNd', fmt(nd));
-  set('kNdP', pct(nd, n) + ' du total');
-  set('kGares', [...new Set(d.map(gareVal).filter(Boolean))].length);
-  set('kInvs', [...new Set(d.map(invVal).filter(Boolean))].length);
-}
-
-function buildAdminZoneCards() {
-  const grid = document.getElementById('zoneCardsGrid');
-  if (!grid) return;
-  grid.innerHTML = ['CEBS', 'CEJ', 'AEBB'].map(zone => {
-    const cfg = ZONE_CONFIG[zone];
-    const d = zoneData.filter(r => r.Source === zone);
-    const n = d.length;
-    const ok = d.filter(isOk).length;
-    const av = d.filter(isAv).length;
-    const disc = d.filter(isDisc).length;
-    const nd = d.filter(isNd).length;
-    
-    return `<div class="kpi-zone-card" style="--zcolor:${cfg.zcolor}">
-      <div class="kpi-zone-title"><span class="${cfg.badgeClass}">${zone}</span></div>
-      <div class="kpi-zone-main">${fmt(n)}</div>
-      <div class="kpi-zone-row"><span class="kpi-zone-lbl">Conformes</span><span class="kpi-zone-val" style="color:var(--acc3)">${fmt(ok)} (${pct(ok, n)})</span></div>
-      <div class="kpi-zone-row"><span class="kpi-zone-lbl">À vérifier</span><span class="kpi-zone-val" style="color:var(--amber)">${fmt(av)} (${pct(av, n)})</span></div>
-      <div class="kpi-zone-row"><span class="kpi-zone-lbl">Discordances</span><span class="kpi-zone-val" style="color:var(--red)">${fmt(disc)} (${pct(disc, n)})</span></div>
-      <div class="kpi-zone-row"><span class="kpi-zone-lbl">Non renseigné</span><span class="kpi-zone-val" style="color:var(--tx3)">${fmt(nd)} (${pct(nd, n)})</span></div>
-      <div class="kpi-zone-row"><span class="kpi-zone-lbl">Gares</span><span class="kpi-zone-val">${[...new Set(d.map(gareVal).filter(Boolean))].length}</span></div>
-      <div class="kpi-zone-row"><span class="kpi-zone-lbl">Inventoristes</span><span class="kpi-zone-val">${[...new Set(d.map(invVal).filter(Boolean))].length}</span></div>
-    </div>`;
-  }).join('');
-}
-
-// ═══ CHARTS ═══
-function applyChartDefaults() {
-  if (typeof Chart !== 'undefined') {
-    Chart.defaults.color = cssVar('--tx2') || '#2C5282';
-    Chart.defaults.borderColor = cssVar('--bd') || '#E2E8F0';
-    Chart.defaults.font.family = "'IBM Plex Mono', monospace";
-    Chart.defaults.font.size = 11;
-  }
-}
-
-function refreshChartTheme() {
-  if (typeof Chart === 'undefined') return;
-  applyChartDefaults();
-  if (zoneData.length && Object.keys(charts).length) buildCharts();
-}
-
-function destroy(id) {
-  if (charts[id]) {
-    try { charts[id].destroy(); } catch (e) {}
-    delete charts[id];
-  }
-}
-
-function buildCharts() {
-  if (typeof Chart === 'undefined' || !zoneData.length) return;
-  applyChartDefaults();
-  
-  const d = zoneData;
-  const g = cssVar('--bd') || '#E2E8F0';
-  const s = cssVar('--s1') || '#FFF';
-  const mc = isAdmin ? (cssVar('--acc') || '#1A365D') : (ZONE_CONFIG[currentZone]?.color2 || cssVar('--acc'));
-  
-  destroy('cObs');
-  const cObs = document.getElementById('cObs');
-  if (cObs && d.length) {
-    charts['cObs'] = new Chart(cObs, {
-      type: 'doughnut',
-      data: {
-        labels: ['CONFORME', 'A VERIFIER', 'DISCORDANCE', 'N/R'],
-        datasets: [{
-          data: [d.filter(isOk).length, d.filter(isAv).length, d.filter(isDisc).length, d.filter(isNd).length],
-          backgroundColor: ['rgba(56,161,105,.85)', 'rgba(183,121,31,.85)', 'rgba(197,48,48,.85)', 'rgba(149,133,212,.5)'],
-          borderWidth: 2,
-          borderColor: s
-        }]
-      },
-      options: { responsive: true, maintainAspectRatio: false, cutout: '62%', plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, padding: 14 } } } }
-    });
-  }
-  
-  destroy('cInv');
-  const im = {};
-  d.forEach(r => { const k = invVal(r) || 'Inconnu'; im[k] = (im[k] || 0) + 1; });
-  const is2 = Object.entries(im).sort((a, b) => b[1] - a[1]).slice(0, 10);
-  const cInv = document.getElementById('cInv');
-  if (cInv) {
-    charts['cInv'] = new Chart(cInv, {
-      type: 'bar',
-      data: { labels: is2.map(x => x[0]), datasets: [{ label: 'Articles', data: is2.map(x => x[1]), backgroundColor: mc, borderRadius: 4 }] },
-      options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, grid: { color: g } }, y: { grid: { display: false } } } }
-    });
-  }
-  
-  destroy('cGare');
-  const gm = {};
-  d.forEach(r => { const k = gareVal(r) || 'N/A'; gm[k] = (gm[k] || 0) + 1; });
-  const gs = Object.entries(gm).sort((a, b) => b[1] - a[1]);
-  const cGare = document.getElementById('cGare');
-  if (cGare) {
-    charts['cGare'] = new Chart(cGare, {
-      type: 'bar',
-      data: { labels: gs.slice(0, 15).map(x => 'G' + x[0]), datasets: [{ label: 'Articles', data: gs.slice(0, 15).map(x => x[1]), backgroundColor: mc, borderRadius: 4 }] },
-      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { maxRotation: 45 } }, y: { beginAtZero: true, grid: { color: g } } } }
-    });
-  }
-  
-  destroy('cGareObs');
-  const t10 = gs.slice(0, 10).map(x => x[0]);
-  const cGareObs = document.getElementById('cGareObs');
-  if (cGareObs) {
-    charts['cGareObs'] = new Chart(cGareObs, {
-      type: 'bar',
-      data: {
-        labels: t10.map(g2 => 'G' + g2),
-        datasets: [
-          { label: 'Conforme', data: t10.map(g2 => d.filter(r => gareVal(r) === g2 && isOk(r)).length), backgroundColor: 'rgba(56,161,105,.75)' },
-          { label: 'A vérifier', data: t10.map(g2 => d.filter(r => gareVal(r) === g2 && isAv(r)).length), backgroundColor: 'rgba(183,121,31,.75)' },
-          { label: 'Discordance', data: t10.map(g2 => d.filter(r => gareVal(r) === g2 && isDisc(r)).length), backgroundColor: 'rgba(197,48,48,.75)' },
-          { label: 'N/R', data: t10.map(g2 => d.filter(r => gareVal(r) === g2 && isNd(r)).length), backgroundColor: 'rgba(149,133,212,.45)' }
-        ]
-      },
-      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10 } } }, scales: { x: { stacked: true, grid: { display: false }, ticks: { maxRotation: 45 } }, y: { stacked: true, grid: { color: g } } } }
-    });
-  }
-  
-  destroy('cLib');
-  const lm = {};
-  d.forEach(r => { const k = (r.Lib_Article || 'N/A').toString().split(' ').slice(0, 3).join(' '); lm[k] = (lm[k] || 0) + 1; });
-  const ls = Object.entries(lm).sort((a, b) => b[1] - a[1]).slice(0, 10);
-  const cLib = document.getElementById('cLib');
-  if (cLib) {
-    charts['cLib'] = new Chart(cLib, {
-      type: 'doughnut',
-      data: { labels: ls.map(x => x[0]), datasets: [{ data: ls.map(x => x[1]), borderColor: s, borderWidth: 2, backgroundColor: ['#1A365D', '#2C5282', '#38A169', '#B7791F', '#C53030', '#553C9A', '#0f6e56', '#854f0b', '#639922', '#DD6B20'] }] },
-      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } } } }
-    });
-  }
-  
-  if (isAdmin) {
-    const zs = ['CEBS', 'CEJ', 'AEBB'];
-    destroy('cZoneObs');
-    const cZoneObs = document.getElementById('cZoneObs');
-    if (cZoneObs) {
-      charts['cZoneObs'] = new Chart(cZoneObs, {
-        type: 'bar',
-        data: {
-          labels: zs,
-          datasets: [
-            { label: 'Conforme', data: zs.map(z => zoneData.filter(r => r.Source === z && isOk(r)).length), backgroundColor: 'rgba(56,161,105,.8)', borderRadius: 4 },
-            { label: 'A vérifier', data: zs.map(z => zoneData.filter(r => r.Source === z && isAv(r)).length), backgroundColor: 'rgba(183,121,31,.8)', borderRadius: 4 },
-            { label: 'Discordance', data: zs.map(z => zoneData.filter(r => r.Source === z && isDisc(r)).length), backgroundColor: 'rgba(197,48,48,.8)', borderRadius: 4 },
-            { label: 'N/R', data: zs.map(z => zoneData.filter(r => r.Source === z && isNd(r)).length), backgroundColor: 'rgba(149,133,212,.5)', borderRadius: 4 }
-          ]
-        },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10 } } }, scales: { x: { grid: { display: false } }, y: { beginAtZero: true, grid: { color: g } } } }
-      });
-    }
-    
-    destroy('cZoneConf');
-    const cZoneConf = document.getElementById('cZoneConf');
-    if (cZoneConf) {
-      charts['cZoneConf'] = new Chart(cZoneConf, {
-        type: 'bar',
-        data: {
-          labels: zs,
-          datasets: [{
-            label: '% Conforme',
-            data: zs.map(z => { const sub = zoneData.filter(r => r.Source === z); return sub.length ? Math.round(sub.filter(isOk).length / sub.length * 100) : 0; }),
-            backgroundColor: zs.map(z => ZONE_CONFIG[z].color2),
-            borderRadius: 8
-          }]
-        },
-        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, max: 100, grid: { color: g }, ticks: { callback: v => v + '%' } }, y: { grid: { display: false } } } }
-      });
-    }
-  }
-}
-
-// ═══ DOWNLOAD ═══
-function buildDlSection() {
-  const zones = isAdmin ? ['CEBS', 'CEJ', 'AEBB'] : [currentZone];
-  const dlGrid = document.getElementById('dlGrid');
-  if (dlGrid) {
-    dlGrid.innerHTML = zones.map(zone => {
-      const cfg = ZONE_CONFIG[zone];
-      return `<div class="dl-card">
-        <div class="dl-icon" style="background:var(--s3)">${cfg.icon}</div>
-        <div class="dl-info">
-          <div class="dl-name">INVENTAIRE-${zone}.xlsx</div>
-          <div class="dl-meta">Fichier source Google Sheets</div>
-        </div>
-        <div class="dl-btns">
-          <a class="btn btn-grn" href="${cfg.dlHref}" target="_blank" rel="noopener">↓ Télécharger</a>
-          <a class="btn btn-gold" href="https://docs.google.com/spreadsheets/d/${cfg.sheetId}/edit" target="_blank" rel="noopener">↗ Ouvrir</a>
-        </div>
-      </div>`;
-    }).join('');
-  }
-  
-  const bddSection = document.getElementById('bddDlSection');
-  if (bddSection) bddSection.style.display = isAdmin ? 'block' : 'none';
-}
-
-function buildExportBtns() {
-  const exportBtns = document.getElementById('exportBtns');
-  if (exportBtns) {
-    exportBtns.innerHTML = isAdmin
-      ? `<button class="btn btn-acc" onclick="exportFiltered()">↓ Exporter la sélection</button>
-         <button class="btn btn-out" onclick="exportAll()">↓ Tout exporter</button>
-         <button class="btn btn-out" onclick="exportByZone('CEBS')">↓ CEBS</button>
-         <button class="btn btn-out" onclick="exportByZone('CEJ')">↓ CEJ</button>
-         <button class="btn btn-out" onclick="exportByZone('AEBB')">↓ AEBB</button>`
-      : `<button class="btn btn-acc" onclick="exportFiltered()">↓ Exporter la sélection</button>
-         <button class="btn btn-out" onclick="exportAll()">↓ Exporter tout</button>`;
-  }
-}
-
-// ═══ FILTERS ═══
-function captureFilters() {
-  savedFilters = {
-    src: document.getElementById('fSrc')?.value || '',
-    obs: document.getElementById('fObs')?.value || '',
-    gare: document.getElementById('fGare')?.value || '',
-    loc: document.getElementById('fLoc')?.value || '',
-    inv: document.getElementById('fInv')?.value || '',
-    srch: document.getElementById('srch')?.value || ''
-  };
-  savedPage = page;
-}
-
-function restoreFilters() {
-  if (!savedFilters) return;
-  const fSrc = document.getElementById('fSrc');
-  if (fSrc) fSrc.value = savedFilters.src || '';
-  const fObs = document.getElementById('fObs');
-  if (fObs) fObs.value = savedFilters.obs || '';
-  const fGare = document.getElementById('fGare');
-  if (fGare) fGare.value = savedFilters.gare || '';
-  const fLoc = document.getElementById('fLoc');
-  if (fLoc) fLoc.value = savedFilters.loc || '';
-  const fInv = document.getElementById('fInv');
-  if (fInv) fInv.value = savedFilters.inv || '';
-  const srch = document.getElementById('srch');
-  if (srch) srch.value = savedFilters.srch || '';
-}
-
-function populateFilters() {
-  findLocCol();
-  const gares = [...new Set(zoneData.map(gareVal).filter(Boolean))].sort((a, b) => +a - +b);
-  const invs = [...new Set(zoneData.map(invVal).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'fr', { sensitivity: 'base' }));
-  const locs = [...new Set(zoneData.map(locVal).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'fr', { numeric: true, sensitivity: 'base' }));
-  
-  const prevGare = document.getElementById('fGare')?.value || '';
-  const prevInv = document.getElementById('fInv')?.value || '';
-  const prevLoc = document.getElementById('fLoc')?.value || '';
-  
-  const fGare = document.getElementById('fGare');
-  if (fGare) fGare.innerHTML = '<option value="">Toutes gares</option>' + gares.map(g => `<option value="${esc(g)}">${esc(g)}</option>`).join('');
-  
-  const fInv = document.getElementById('fInv');
-  if (fInv) fInv.innerHTML = '<option value="">Tous inventoristes</option>' + invs.map(i => `<option value="${esc(i)}">${esc(i)}</option>`).join('');
-  
-  const fLoc = document.getElementById('fLoc');
-  if (fLoc) fLoc.innerHTML = '<option value="">Toutes localisations</option>' + locs.map(l => `<option value="${esc(l)}">${esc(l)}</option>`).join('');
-  
-  if (prevGare && fGare) fGare.value = prevGare;
-  if (prevInv && fInv) fInv.value = prevInv;
-  if (prevLoc && fLoc) fLoc.value = prevLoc;
-}
-
-function applyFilters() {
-  const src = document.getElementById('fSrc')?.value || '';
-  const obs = document.getElementById('fObs')?.value || '';
-  const gare = document.getElementById('fGare')?.value || '';
-  const inv = document.getElementById('fInv')?.value || '';
-  const loc = document.getElementById('fLoc')?.value || '';
-  const srch = document.getElementById('srch')?.value || '';
-  const srchLower = srch.toLowerCase().trim();
-  
-  filteredData = zoneData.filter(r => {
-    const ov = obsVal(r);
-    if (src && r.Source !== src) return false;
-    if (gare && gareVal(r) !== gare) return false;
-    if (inv && invVal(r) !== inv) return false;
-    if (loc && locVal(r) !== loc) return false;
-    if (obs === 'vide' && ov) return false;
-    if (obs === 'DISCORDANCE' && !ov.startsWith('DISCORDANCE')) return false;
-    if (obs && obs !== 'vide' && obs !== 'DISCORDANCE' && ov !== obs) return false;
-    if (srchLower) {
-      const h = Object.keys(r).map(k => {
-        const v = r[k];
-        return v instanceof Date ? v.toLocaleDateString('fr') : (v == null ? '' : v.toString());
-      }).join(' ').toLowerCase();
-      if (!h.includes(srchLower)) return false;
-    }
-    return true;
-  });
-  
-  page = 1;
-  renderTable();
-}
-
-// ═══ TABLE ═══
-function displayCols() {
-  return (isAdmin ? ['Source'] : []).concat(sourceHeaders.filter(h => h && h !== 'Source'));
-}
-
-function obsBadge(v) {
-  const u = (v || '').toString().toUpperCase().trim();
-  if (u === 'CONFORME') return `<span class="obs-ok">CONFORME</span>`;
-  if (u === 'A VERIFIER') return `<span class="obs-av">A VÉRIFIER</span>`;
-  if (u.startsWith('DISCORDANCE')) return `<span class="obs-disc">${esc(v) || 'DISCORDANCE'}</span>`;
-  return `<span class="obs-nd">—</span>`;
-}
-
-function renderCell(r, c) {
-  if (c === 'Source') return `<td><span class="src-${(r.Source||'').toLowerCase()}">${r.Source||'—'}</span></td>`;
-  if (c === 'Observation') return `<td>${obsBadge(r.Observation)}</td>`;
-  if (/date/i.test(c)) {
-    let dateValue = r[c];
-    if (dateValue) {
-      if (typeof dateValue === 'string' && isFrenchDateTime(dateValue)) {
-        dateValue = dateValue;
-      } else if (dateValue instanceof Date) {
-        dateValue = formatDateToFrench(dateValue);
-      } else if (typeof dateValue === 'string' && dateValue.includes('GMT')) {
-        const parsedDate = new Date(dateValue);
-        if (!isNaN(parsedDate.getTime())) {
-          dateValue = formatDateToFrench(parsedDate);
-        }
-      } else if (typeof dateValue === 'string' && /^\d{4}-\d{2}-\d{2}/.test(dateValue)) {
-        dateValue = formatDateToFrench(new Date(dateValue));
-      }
-    }
-    return `<td style="font-family:var(--mono);font-size:10px">${dateValue || '—'}</td>`;
-  }
-  return `<td>${esc(r[c])||'—'}</td>`;
-}
-
-function buildTableHead() {
-  const cols = displayCols();
-  let h = cols.map(c => `<th onclick="sortTbl('${c.replace(/'/g, "\\'")}')">
-    ${esc(c === 'Source' ? 'ZONE' : c)}${sortCol === c ? ` <span style="opacity:.4;font-size:8px">${sortDir === 1 ? '▲' : '▼'}</span>` : ''}
-  </th>`).join('');
-  if (isAdmin) h = `<th class="th-act">✏</th>` + h;
-  const tblHead = document.getElementById('tblHead');
-  if (tblHead) tblHead.innerHTML = h;
-}
-
-function sortTbl(col) {
-  if (sortCol === col) sortDir *= -1;
-  else { sortCol = col; sortDir = 1; }
-  filteredData.sort((a, b) => (a[col] || '').toString().localeCompare((b[col] || '').toString(), 'fr', { numeric: true }) * sortDir);
-  renderTable();
-}
-
-function changePageSize() {
-  const v = document.getElementById('pageSize')?.value;
-  PG = v === 'all' ? Number.MAX_SAFE_INTEGER : (+v || 50);
-  page = 1;
-  renderTable();
-}
-
-function renderTable() {
-  buildTableHead();
-  const cols = displayCols();
-  const n = filteredData.length;
-  const pages = Math.max(1, Math.ceil(n / PG));
-  if (page > pages) page = pages;
-  const slice = PG >= n ? filteredData : filteredData.slice((page - 1) * PG, page * PG);
-  
-  const tblCount = document.getElementById('tblCount');
-  if (tblCount) tblCount.textContent = `${fmt(n)} articles`;
-  
-  const colSpan = cols.length + (isAdmin ? 1 : 0);
-  const tBody = document.getElementById('tBody');
-  
-  if (tBody) {
-    tBody.innerHTML = n === 0
-      ? `<tr><td colspan="${Math.max(1, colSpan)}" style="text-align:center;color:var(--tx3);padding:2rem">Aucun résultat</td></tr>`
-      : slice.map(r => {
-          const gi = zoneData.indexOf(r);
-          const cells = cols.map(c => renderCell(r, c)).join('');
-          if (!isAdmin) return `<tr>${cells}</tr>`;
-          return `<tr><td class="td-act"><button class="btn-tbl-edit" onclick="openEditModal(${gi})" title="Modifier cette ligne">✏</button></td>${cells}</tr>`;
-        }).join('');
-  }
-  
-  const pagInfo = document.getElementById('pagInfo');
-  if (pagInfo) pagInfo.textContent = PG >= n ? `${fmt(n)} résultats` : `Page ${page}/${pages} — ${fmt(n)} résultats`;
-  
-  if (PG >= n) {
-    const pagBtns = document.getElementById('pagBtns');
-    if (pagBtns) pagBtns.innerHTML = '';
-    return;
-  }
-  
-  const rp = [...new Set([1, page - 1, page, page + 1, pages].filter(p => p >= 1 && p <= pages))].sort((a, b) => a - b);
-  let html = `<button class="pb" onclick="goPage(${page - 1})" ${page === 1 ? 'disabled' : ''}>‹</button>`;
-  let prev = null;
-  rp.forEach(p => {
-    if (prev && p - prev > 1) html += `<span style="color:var(--tx3);padding:0 4px;font-size:10px">…</span>`;
-    html += `<button class="pb${p === page ? ' on' : ''}" onclick="goPage(${p})">${p}</button>`;
-    prev = p;
-  });
-  html += `<button class="pb" onclick="goPage(${page + 1})" ${page === pages ? 'disabled' : ''}>›</button>`;
-  
-  const pagBtns = document.getElementById('pagBtns');
-  if (pagBtns) pagBtns.innerHTML = html;
-}
-
-function goPage(p) {
-  const pages = Math.max(1, Math.ceil(filteredData.length / PG));
-  if (p < 1 || p > pages) return;
-  page = p;
-  renderTable();
-}
-
-// ═══ MODAL EDIT ═══
-function openEditModal(gi) {
-  const row = zoneData[gi];
-  if (!row) return;
-  const zone = row.Source || currentZone;
-  const headers = sourceHeaders.filter(h => h && h !== 'Source');
-  modalRowIndex = gi;
-  modalZone = zone;
-  const cfg = ZONE_CONFIG[zone] || {};
-  
-  // Récupérer l'ID Immobilisation pour le titre
-  const idImmo = row.ID_Imobilisation || row.ID_Immobilisation || row['ID Immobilisation'] || 'Sans ID';
-  
-  const modalTitle = document.getElementById('modalTitle');
-  if (modalTitle) modalTitle.textContent = `✏ Modifier l'article - ${idImmo}`;
-  
-  const badge = document.getElementById('modalZoneBadge');
-  if (badge) {
-    badge.textContent = zone;
-    badge.style.background = `color-mix(in srgb, ${cfg.zcolor || 'var(--acc)'} 14%, var(--s1))`;
-    badge.style.color = cfg.zcolor || 'var(--acc)';
-    badge.style.border = `1px solid ${cfg.zcolor || 'var(--acc)'}`;
-  }
-  
-  const deleteBtn = document.getElementById('modalDeleteBtn');
-  if (deleteBtn) deleteBtn.style.display = '';
-  
-  // Ordre personnalisé des champs
-  const order = [
-    'ID_Imobilisation', 'ID_Immobilisation', 'ID Immobilisation',
-    'Numérie', 'NUMERIE', 'COM-ALU',
-    'Lib_Article', 'LIB_ARTICLE', 'Libellé article',
-    'Observation',
-    'Gare', 'GARE',
-    'Localisation', 'LOCALISATION',
-    'Marque', 'LIB_MARQUE', 'MARQUE',
-    'Modèle', 'LIB_MODELE', 'MODELE',
-    'N° Marché', 'N_MARCHE', 'NUMERO_MARCHE',
-    'PU', 'Prix unitaire',
-    'Code article', 'COD_ARTICLE', 'Cod_Article',
-    'Inventoriste', 'INVENTORISTE',
-    'Date inventaire', 'Date_Inventaire', "Date d'inventaire",
-    'Date modification', 'Date_Modification', 'Date de modification'
-  ];
-  
-  // Trier les headers selon l'ordre défini
-  const sortedHeaders = [...headers].sort((a, b) => {
-    const indexA = order.findIndex(o => a && a.toLowerCase().includes(o.toLowerCase()));
-    const indexB = order.findIndex(o => b && b.toLowerCase().includes(o.toLowerCase()));
-    if (indexA === -1 && indexB === -1) return 0;
-    if (indexA === -1) return 1;
-    if (indexB === -1) return -1;
-    return indexA - indexB;
-  });
-  
-  const modalFields = document.getElementById('modalFields');
-  if (modalFields) {
-    modalFields.innerHTML = sortedHeaders.map(h => {
-      let val = row[h] != null ? row[h] : '';
-      const isObs = h === 'Observation';
-      const isLibArticle = h && (h.toLowerCase() === 'lib_article' || h.toLowerCase() === 'libellé article');
-      const isDate = /date/i.test(h);
-      // Détection des champs protégés
-      const isProtected = h && (h.toLowerCase() === "date d'inventaire" ||
-                                 h.toLowerCase() === 'inventoriste');
-      const isDateModification = h && (h.toLowerCase() === 'date modification' || 
-                                        h.toLowerCase() === 'date_modification' ||
-                                        h.toLowerCase() === 'date de modification');
-      let fld;
-      
-      if (isObs) {
-        const u = val.toString().toUpperCase();
-        const isD = u.startsWith('DISCORDANCE');
-        const dt = isD && val.toString().length > 11 ? val.toString().slice(11).trim() : '';
-        const sv = u === 'CONFORME' ? 'CONFORME' : u === 'A VERIFIER' ? 'A VERIFIER' : isD ? 'DISCORDANCE' : '';
-        fld = `<select id="mf_obs_sel" onchange="toggleDiscText()" style="width:100%;background:var(--s2);border:1.5px solid var(--bd);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--tx);outline:none;margin-bottom:6px">
-          <option value="">— Non renseigné —</option>
-          <option value="CONFORME"${sv === 'CONFORME' ? ' selected' : ''}>CONFORME</option>
-          <option value="A VERIFIER"${sv === 'A VERIFIER' ? ' selected' : ''}>A VERIFIER</option>
-          <option value="DISCORDANCE"${sv === 'DISCORDANCE' ? ' selected' : ''}>DISCORDANCE</option>
-        </select>
-        <input type="text" id="mf_obs_disc" placeholder="Préciser..." value="${esc(dt)}"
-          style="width:100%;background:var(--s2);border:1.5px solid var(--bd);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--tx);outline:none;display:${sv === 'DISCORDANCE' ? 'block' : 'none'}">`;
-      } 
-      // Lib_Article : champ sur toute la largeur
-      else if (isLibArticle) {
-        fld = `<input type="text" id="mf_${h.replace(/\W/g, '_')}" value="${esc(val.toString())}" 
-          style="width:100%;background:var(--s2);border:1.5px solid var(--bd);border-radius:var(--r);padding:10px 12px;font-size:13px;color:var(--tx);outline:none">`;
-      }
-      // Champs protégés
-      else if (isProtected) {
-        fld = `<input type="text" value="${esc(val)}" 
-          style="width:100%;background:var(--s3);border:1.5px solid var(--bd);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--tx3);outline:none;cursor:not-allowed;font-style:italic"
-          readonly disabled>`;
-      }
-      else if (isDateModification) {
-        const displayValue = isFrenchDateTime(val) ? val : (val && val !== '—' ? val : '');
-        fld = `<input type="text" value="${esc(displayValue)}" 
-          style="width:100%;background:var(--s3);border:1.5px solid var(--bd);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--tx3);outline:none;font-style:italic"
-          readonly disabled
-          placeholder="Sera mis à jour automatiquement">`;
-      }
-      else if (isDate) {
-        const displayValue = val && val !== '—' ? val : '';
-        fld = `<input type="text" id="mf_${h.replace(/\W/g, '_')}" value="${esc(displayValue)}" placeholder="DD/MM/YYYY">`;
-      } 
-      else {
-        fld = `<input type="text" id="mf_${h.replace(/\W/g, '_')}" value="${esc(val.toString())}">`;
-      }
-      
-      // Lib_Article occupe toute la largeur
-      const isFullWidth = isLibArticle || isObs;
-      return `<div class="modal-field${isFullWidth ? ' full' : ''}"><label>${esc(h)}</label>${fld}</div>`;
-    }).join('');
-  }
-  
-  const overlay = document.getElementById('modalOverlay');
-  if (overlay) overlay.style.display = 'flex';
-  setTimeout(() => { const f = document.querySelector('#modalFields input:not([readonly])'); if (f) f.focus(); }, 80);
-}
-
-function toggleDiscText() {
-  const sel = document.getElementById('mf_obs_sel');
-  const disc = document.getElementById('mf_obs_disc');
-  if (sel && disc) disc.style.display = sel.value === 'DISCORDANCE' ? 'block' : 'none';
-}
-
-function closeModal() {
-  const overlay = document.getElementById('modalOverlay');
-  if (overlay) overlay.style.display = 'none';
-}
-
-function submitModal() {
-  const row = zoneData[modalRowIndex];
-  const zone = modalZone || (row && row.Source) || currentZone;
-  const headers = sourceHeaders.filter(h => h && h !== 'Source');
-  const data = {};
-  
-  headers.forEach(h => {
-    const isDateModification = h === 'Date modification' || h === 'Date_Modification' || 
-                                h === 'Date de modification' || h === 'Date_modification' ||
-                                (h && h.toLowerCase().includes('date') && h.toLowerCase().includes('modif'));
-    
-    if (h === 'Observation') {
-      const sel = document.getElementById('mf_obs_sel');
-      const disc = document.getElementById('mf_obs_disc');
-      if (sel) data[h] = sel.value === 'DISCORDANCE' && disc && disc.value.trim() ? 'DISCORDANCE ' + disc.value.trim() : sel.value;
-    } 
-    else if (isDateModification) {
-    }
-    else {
-      const el = document.getElementById('mf_' + h.replace(/\W/g, '_'));
-      if (el && el.value !== undefined) {
-        data[h] = el.value;
-      }
-    }
-  });
-  
-  const zoneRows = zoneData.filter(r => r.Source === zone);
-  const idxInZone = zoneRows.indexOf(row);
-  const sheetRow = idxInZone + 2;
-  
-  const changes = headers.filter(h => {
-    const isDateModif = h === 'Date modification' || h === 'Date_Modification' || 
-                        h === 'Date de modification' || h === 'Date_modification' ||
-                        (h && h.toLowerCase().includes('date') && h.toLowerCase().includes('modif'));
-    if (isDateModif) return false;
-    return (data[h] != null ? data[h] : '').toString() !== (row[h] != null ? row[h] : '').toString();
-  });
-  
-  if (changes.length === 0) {
-    toast('Aucune modification détectée', 'info');
-    return;
-  }
-  
-  let msg = `<strong>${zone}</strong>`;
-  msg += `<div class="confirm-details">`;
-  
-  const idImmo = row.ID_Imobilisation || row.ID_Immobilisation || row['ID Immobilisation'] || '';
-  if (idImmo) {
-    msg += `<p><span class="label">🏷️ ID Immobilisation:</span> <strong style="color:var(--acc)">${esc(idImmo)}</strong></p>`;
-  } else {
-    msg += `<p><span class="label">🏷️ ID Immobilisation:</span> <em>non renseigné</em></p>`;
-  }
-  
-  if (row.Lib_Article) msg += `<p><span class="label">📦 Libellé article:</span> ${esc(row.Lib_Article)}</p>`;
-  if (row.Cod_Article) msg += `<p><span class="label">🔢 Code article:</span> ${esc(row.Cod_Article)}</p>`;
-  msg += `<p style="margin-top:8px;border-top:1px solid var(--bd);padding-top:8px"><span class="label">✏️ Champs modifiés:</span> ${changes.join(', ')}</p>`;
-  msg += `<p><span class="label">🕐 Date modification:</span> sera mise à jour automatiquement</p>`;
-  msg += `</div>`;
-  
-  pendingAction = { type: 'update', rowIndex: sheetRow, data, zone, globalIdx: modalRowIndex };
-  closeModal();
-  openConfirm(msg, '✏️', 'Confirmer la modification', 'var(--grad)', '✓ Enregistrer');
-}
-
-function askDeleteFromModal() {
-  const row = zoneData[modalRowIndex];
-  if (!row) return;
-  const zone = modalZone || (row && row.Source) || currentZone;
-  const zoneRows = zoneData.filter(r => r.Source === zone);
-  const idxInZone = zoneRows.indexOf(row);
-  const sheetRow = idxInZone + 2;
-  
-  let msg = `<strong>${zone}</strong>`;
-  msg += `<div class="confirm-details">`;
-  
-  const idImmo = row.ID_Imobilisation || row.ID_Immobilisation || row['ID Immobilisation'] || '';
-  if (idImmo) {
-    msg += `<p><span class="label">🏷️ ID Immobilisation:</span> <strong style="color:var(--red)">${esc(idImmo)}</strong></p>`;
-  } else {
-    msg += `<p><span class="label">🏷️ ID Immobilisation:</span> <em>non renseigné</em></p>`;
-  }
-  
-  if (row.Lib_Article) msg += `<p><span class="label">📦 Libellé article:</span> ${esc(row.Lib_Article)}</p>`;
-  if (row.Cod_Article) msg += `<p><span class="label">🔢 Code article:</span> ${esc(row.Cod_Article)}</p>`;
-  msg += `<p><span class="label">📋 Observation:</span> ${obsBadge(row.Observation)}</p>`;
-  msg += `</div>`;
-  msg += `<p style="color:var(--red);margin-top:8px;font-weight:700">⚠️ Cette action est irréversible !</p>`;
-  
-  pendingAction = { type: 'delete', rowIndex: sheetRow, data: {}, zone, globalIdx: modalRowIndex };
-  closeModal();
-  openConfirm(msg, '🗑️', 'Confirmer la suppression', 'var(--red)', '✕ Supprimer définitivement');
-}
-
-function openConfirm(msg, icon = '⚠️', title = 'Confirmer', btnGrad = 'var(--grad)', btnLabel = '✓ Confirmer') {
-  const confirmIcon = document.getElementById('confirmIcon');
-  const confirmTitle = document.getElementById('confirmTitle');
-  const confirmMsg = document.getElementById('confirmMsg');
-  const confirmBox = document.getElementById('confirmBox');
-  const okBtn = document.getElementById('confirmOkBtn');
-  
-  if (confirmIcon) confirmIcon.textContent = icon;
-  if (confirmTitle) confirmTitle.textContent = title;
-  if (confirmMsg) confirmMsg.innerHTML = msg;
-  
-  if (confirmBox && okBtn) {
-    if (btnGrad === 'var(--red)') {
-      confirmBox.classList.add('danger');
-      okBtn.className = 'btn btn-red';
-    } else {
-      confirmBox.classList.remove('danger');
-      okBtn.className = 'btn btn-acc';
-    }
-    okBtn.textContent = btnLabel;
-  }
-  
-  const overlay = document.getElementById('confirmOverlay');
-  if (overlay) overlay.style.display = 'flex';
-}
-
-function closeConfirm() {
-  const overlay = document.getElementById('confirmOverlay');
-  if (overlay) overlay.style.display = 'none';
-  pendingAction = null;
-}
-
-async function executeConfirmed() {
-  if (!pendingAction) return;
-  const action = pendingAction;
-  closeConfirm();
-  
-  const cfg = ZONE_CONFIG[action.zone];
-  if (!cfg || !cfg.apiUrl) {
-    toast('URL Apps Script manquante pour ' + action.zone, 'err');
-    return;
-  }
-  
-  captureFilters();
-  toast('⏳ Enregistrement...', 'info');
-  
-  try {
-    const res = await fetch(cfg.apiUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({
-        token: SECRET_TOKEN,
-        zone: action.zone,
-        action: action.type,
-        rowIndex: action.rowIndex,
-        data: action.data
-      })
-    });
-    
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const result = await res.json();
-    
-    if (result.success) {
-      toast('✓ ' + result.message);
-      if (action.type === 'update') {
-        patchZoneDataRow(action.zone, action.rowIndex, action.data);
-        if (result.dateModification) {
-          const row = zoneData[action.globalIdx];
-          for (const key in row) {
-            if (key === 'Date modification' || key === 'Date_Modification' || 
-                key === 'Date de modification' || key === 'Date_modification' ||
-                (key && key.toLowerCase().includes('date') && key.toLowerCase().includes('modif'))) {
-              row[key] = result.dateModification;
-              break;
-            }
-          }
-        }
-      } else if (action.type === 'delete') {
-        removeZoneDataRow(action.zone, action.rowIndex);
-      }
-      
-      populateFilters();
-      restoreFilters();
-      applyFilters();
-      
-      const maxPages = Math.max(1, Math.ceil(filteredData.length / PG));
-      page = Math.min(savedPage, maxPages);
-      renderTable();
-      buildKPIs();
-      if (isAdmin) buildAdminZoneCards();
-    } else {
-      toast('Erreur : ' + (result.error || 'Inconnue'), 'err');
-    }
-  } catch (e) {
-    toast('Erreur réseau — ' + e.message, 'err');
-    console.error('DRRO API:', e);
-  }
-  pendingAction = null;
-}
-
-function patchZoneDataRow(zone, sheetRowIndex, newData) {
-  const realIdx = sheetRowIndex - 2;
-  const zoneRows = zoneData.filter(r => r.Source === zone);
-  if (realIdx < 0 || realIdx >= zoneRows.length) return false;
-  const target = zoneRows[realIdx];
-  const globalIdx = zoneData.indexOf(target);
-  if (globalIdx === -1) return false;
-  Object.keys(newData).forEach(k => { zoneData[globalIdx][k] = newData[k]; });
-  return true;
-}
-
-function removeZoneDataRow(zone, sheetRowIndex) {
-  const realIdx = sheetRowIndex - 2;
-  const zoneRows = zoneData.filter(r => r.Source === zone);
-  if (realIdx < 0 || realIdx >= zoneRows.length) return false;
-  const target = zoneRows[realIdx];
-  const globalIdx = zoneData.indexOf(target);
-  if (globalIdx === -1) return false;
-  zoneData.splice(globalIdx, 1);
-  return true;
-}
-
-// ═══ EXPORT ═══
-function exportFiltered() {
-  exportData(filteredData, 'inventaire_' + (isAdmin ? 'admin' : 'zone_' + currentZone) + '_filtre');
-}
-
-function exportAll() {
-  exportData(zoneData, 'inventaire_' + (isAdmin ? 'toutes_zones' : currentZone) + '_complet');
-}
-
-function exportByZone(z) {
-  exportData(zoneData.filter(r => r.Source === z), 'inventaire_' + z);
-}
-
-function exportData(data, name) {
-  if (!data.length) {
-    toast('Aucune donnée à exporter', 'err');
-    return;
-  }
-  
-  const cols = displayCols();
-  const ordered = data.map(r => {
-    const o = {};
-    cols.forEach(c => { o[c] = (r[c] == null ? '' : r[c]); });
-    return o;
-  });
-  
-  const ws = XLSX.utils.json_to_sheet(ordered, { header: cols });
-  ws['!cols'] = cols.map(c => {
-    let w = c.length;
-    ordered.forEach(o => {
-      const v = (o[c] == null ? '' : o[c]).toString();
-      if (v.length > w) w = v.length;
-    });
-    return { wch: Math.min(60, Math.max(10, w + 2)) };
-  });
-  
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'ARTICLES');
-  XLSX.writeFile(wb, name + '_' + new Date().toISOString().slice(0, 10) + '.xlsx');
-  toast('Export téléchargé — ' + fmt(data.length) + ' lignes');
-}
-
-// ═══ TABS ═══
-function showTab(id) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
-  const panel = document.getElementById('panel-' + id);
-  if (panel) panel.classList.add('on');
-  const tabs = document.querySelectorAll('.tab');
-  const idx = { 'overview': 0, 'tableau': 1, 'telechargement': 2 }[id];
-  if (idx != null && tabs[idx]) tabs[idx].classList.add('on');
-  setTimeout(syncStickyHeights, 50);
-}
-
-// ═══ INIT ═══
+// ═══ INITIALISATION ═══
 initTheme();
-(function() {
-  const f = document.getElementById('loginFooterDate');
-  if (f) f.textContent = new Date().toLocaleDateString('fr');
-})();
-
-window.addEventListener('load', () => {
-  initTheme();
-  setProgress(100, 'Prêt');
-  setTimeout(() => {
-    const loadScreen = document.getElementById('loadScreen');
-    if (loadScreen) loadScreen.style.display = 'none';
-    const s = readSession();
-    if (s && ZONE_CONFIG[s.zone]) {
-      currentZone = s.zone;
-      isAdmin = (currentZone === 'ADMIN');
-      selectedLoginZone = s.zone;
-      launchApp();
-      startSessionCountdown(s.expiry);
-    } else {
-      const loginScreen = document.getElementById('loginScreen');
-      if (loginScreen) loginScreen.style.display = 'flex';
-    }
-  }, 700);
-});
-
-window.addEventListener('resize', syncStickyHeights);
+loadData();
 </script>
 </body>
 </html>
