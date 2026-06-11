@@ -60,77 +60,48 @@ body { background: var(--bg); color: var(--tx); font-family: var(--sans); min-he
 .theme-toggle { background: var(--s2); border: 1.5px solid var(--bd); border-radius: 99px; width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; transition: .2s; color: var(--tx2); flex-shrink: 0; }
 .theme-toggle:hover { border-color: var(--acc); transform: translateY(-1px); }
 
-#loginScreen { position: fixed; inset: 0; background: linear-gradient(135deg, var(--bg) 0%, var(--s2) 100%); z-index: 9998; display: flex; align-items: center; justify-content: center; overflow-y: auto; padding: 20px; }
+/* ========== LOGIN PAGE (simplified) ========== */
+#loginScreen { position: fixed; inset: 0; background: var(--bg); z-index: 9998; display: flex; align-items: center; justify-content: center; overflow-y: auto; padding: 20px; }
 
-.login-container { display: flex; width: 100%; max-width: 1100px; min-height: 580px; background: var(--s1); border-radius: 28px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); overflow: hidden; animation: fadeInUp 0.5s ease-out; transition: transform 0.3s ease, box-shadow 0.3s ease; }
-.login-container:hover { transform: translateY(-4px); box-shadow: 0 30px 60px -15px rgba(0,0,0,0.3); }
+.login-container { width: 100%; max-width: 440px; animation: fadeInUp 0.4s ease-out; }
 
-.login-brand { flex: 1.2; background: linear-gradient(135deg, #0a2b3e 0%, #1a4a6f 50%, #2c6288 100%); padding: 50px 42px; display: flex; flex-direction: column; justify-content: space-between; color: white; position: relative; overflow: hidden; }
-.login-brand::before { content: ''; position: absolute; top: -30%; right: -30%; width: 160%; height: 160%; background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%); pointer-events: none; }
-.login-brand::after { content: 'DRRO'; position: absolute; bottom: -20px; right: -20px; font-size: 140px; font-weight: 800; opacity: 0.06; font-family: var(--mono); pointer-events: none; }
+/* DRRO Logo SVG badge */
+.drro-logo-wrap { text-align: center; margin-bottom: 32px; }
+.drro-logo-svg { display: inline-block; }
 
-.brand-header { position: relative; z-index: 2; }
-.brand-logo-container { margin-bottom: 24px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-.brand-logo-img { height: 60px; width: auto; filter: brightness(0) invert(1); }
-.brand-logo-text { font-family: var(--mono); font-size: 32px; font-weight: 700; letter-spacing: 4px; display: inline-block; border-bottom: 3px solid rgba(255,255,255,0.3); padding-bottom: 8px; }
-.brand-title { font-size: 12px; opacity: 0.75; letter-spacing: 2px; margin-top: 24px; font-weight: 500; }
-.brand-subtitle { font-family: 'Segoe UI', Arial, sans-serif; font-size: 24px; font-weight: 500; letter-spacing: 1px; margin-top: 12px; direction: rtl; opacity: 0.9; }
-.brand-year { font-size: 13px; opacity: 0.7; margin-top: 24px; letter-spacing: 2px; font-weight: 500; }
-.brand-footer { position: relative; z-index: 2; margin-top: auto; }
-.brand-footer div:first-child { font-size: 13px; font-weight: 500; letter-spacing: 1px; margin-bottom: 6px; }
-.brand-footer-sub { font-size: 10px; opacity: 0.5; letter-spacing: 0.5px; }
+.login-card { background: var(--s1); border: 1.5px solid var(--bd); border-radius: 20px; padding: 36px 40px 32px; box-shadow: var(--shadow); }
 
-.login-form { flex: 0.9; padding: 50px 48px; display: flex; flex-direction: column; justify-content: center; background: var(--s1); }
-.form-header { margin-bottom: 40px; }
-.form-header h2 { font-family: var(--mono); font-size: 24px; font-weight: 700; color: var(--tx); margin-bottom: 10px; letter-spacing: -0.5px; }
-.form-header p { font-size: 13px; color: var(--tx3); line-height: 1.5; }
+.login-card-header { text-align: center; margin-bottom: 32px; }
+.login-card-title { font-family: var(--mono); font-size: 20px; font-weight: 700; color: var(--tx); letter-spacing: -0.3px; margin-bottom: 6px; }
+.login-card-sub { font-size: 13px; color: var(--tx3); }
 
-.login-field { margin-bottom: 28px; }
-.login-field label { display: block; font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--tx3); margin-bottom: 10px; }
-.input-icon { position: relative; }
-.input-icon-symbol { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-size: 16px; opacity: 0.5; pointer-events: none; }
-.input-icon input { width: 100%; background: var(--s2); border: 1.5px solid var(--bd); border-radius: 14px; padding: 14px 16px 14px 48px; font-family: var(--sans); font-size: 14px; font-weight: 500; color: var(--tx); outline: none; transition: all 0.2s ease; }
-.input-icon input:focus { border-color: var(--acc); box-shadow: 0 0 0 3px rgba(26,54,93,0.12); background: var(--s1); }
-.input-icon input::placeholder { color: var(--tx3); opacity: 0.5; font-weight: 400; }
-.pwd-wrap { position: relative; }
-.pwd-wrap input { padding-right: 50px; }
-.pwd-eye { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 18px; opacity: 0.5; color: var(--tx2); transition: all 0.2s; padding: 5px; z-index: 2; }
-.pwd-eye:hover { opacity: 1; transform: translateY(-50%) scale(1.05); }
+.login-field { margin-bottom: 20px; }
+.login-field label { display: block; font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--tx3); margin-bottom: 8px; }
+.input-wrap { position: relative; }
+.input-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); font-size: 15px; opacity: 0.45; pointer-events: none; }
+.input-wrap input { width: 100%; background: var(--s2); border: 1.5px solid var(--bd); border-radius: 10px; padding: 11px 14px 11px 42px; font-family: var(--sans); font-size: 14px; color: var(--tx); outline: none; transition: border-color .15s, box-shadow .15s; }
+.input-wrap input:focus { border-color: var(--acc); box-shadow: 0 0 0 3px rgba(26,54,93,.1); background: var(--s1); }
+.input-wrap input::placeholder { color: var(--tx3); opacity: 0.5; }
+.pwd-wrap input { padding-right: 46px; }
+.pwd-eye { position: absolute; right: 13px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 17px; opacity: 0.45; color: var(--tx2); padding: 4px; transition: opacity .15s; }
+.pwd-eye:hover { opacity: 0.9; }
 
-.login-btn { width: 100%; background: linear-gradient(135deg, #1A365D, #2C5282); color: white; border: none; border-radius: 14px; padding: 15px 20px; font-family: var(--mono); font-size: 14px; font-weight: 600; cursor: pointer; letter-spacing: 1px; transition: all 0.2s ease; margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 12px; }
-.login-btn:hover { transform: translateY(-2px); filter: brightness(1.05); box-shadow: 0 10px 25px -5px rgba(26,54,93,0.3); }
+.login-btn { width: 100%; background: var(--grad); color: #fff; border: none; border-radius: 10px; padding: 13px; font-family: var(--mono); font-size: 13px; font-weight: 600; letter-spacing: 0.8px; cursor: pointer; transition: filter .15s, transform .15s; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.login-btn:hover { filter: brightness(1.07); transform: translateY(-1px); }
 .login-btn:active { transform: translateY(1px); }
-.btn-arrow { transition: transform 0.2s ease; }
+.btn-arrow { transition: transform .2s; }
 .login-btn:hover .btn-arrow { transform: translateX(4px); }
 
-.login-err { background: rgba(197,48,48,0.12); border: 1px solid var(--red); color: var(--red); border-radius: 12px; padding: 12px 16px; font-size: 12px; margin-bottom: 24px; display: none; align-items: center; gap: 10px; }
-.login-err::before { content: '⚠️'; font-size: 14px; }
+.login-err { background: rgba(197,48,48,0.1); border: 1px solid var(--red); color: var(--red); border-radius: 9px; padding: 10px 14px; font-size: 12px; margin-bottom: 20px; display: none; }
 
-.login-footer { font-family: var(--mono); font-size: 10px; color: var(--tx3); text-align: center; margin-top: 36px; padding-top: 20px; border-top: 1px solid var(--bd); }
+.login-footer { text-align: center; margin-top: 20px; font-family: var(--mono); font-size: 10px; color: var(--tx3); letter-spacing: 0.5px; }
 
-.theme-toggle-login { position: fixed; top: 20px; right: 20px; z-index: 10000; background: var(--s2); border: 1.5px solid var(--bd); border-radius: 50px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; transition: all 0.2s; backdrop-filter: blur(10px); box-shadow: var(--shadow-sm); }
-.theme-toggle-login:hover { transform: scale(1.05); border-color: var(--acc); box-shadow: var(--shadow); }
+.theme-toggle-login { position: fixed; top: 18px; right: 18px; z-index: 10000; background: var(--s1); border: 1.5px solid var(--bd); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 17px; transition: all .2s; }
+.theme-toggle-login:hover { border-color: var(--acc); transform: scale(1.05); }
 
-@media (max-width: 850px) {
-  .login-container { flex-direction: column; max-width: 500px; min-height: auto; }
-  .login-brand { padding: 36px 32px; text-align: center; }
-  .login-brand::after { display: none; }
-  .login-form { padding: 40px 32px; }
-  .brand-logo-text { font-size: 28px; }
-  .brand-logo-img { height: 45px; }
-  .form-header h2 { font-size: 22px; }
-  .brand-logo-container { justify-content: center; }
-}
-@media (max-width: 480px) {
-  .login-brand { padding: 28px 24px; }
-  .login-form { padding: 32px 24px; }
-  .input-icon input { padding: 12px 12px 12px 44px; font-size: 13px; }
-  .login-btn { padding: 12px 16px; font-size: 13px; }
-}
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-@keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-
-/* HEADER STYLES */
+/* ========== APP SHELL ========== */
 header { background: var(--s1); border-bottom: 1.5px solid var(--bd); height: var(--header-h); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; position: sticky; top: 0; z-index: 200; box-shadow: var(--shadow-sm); }
 .hdr-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .status-dot { width: 7px; height: 7px; border-radius: 50%; animation: pulse 2s ease infinite; flex-shrink: 0; }
@@ -331,6 +302,7 @@ input[type=text] { width: 200px; }
   .modal-buttons-right { width: 100%; justify-content: center; }
   .modal-buttons .btn-red { width: 100%; justify-content: center; }
   .modal-title { flex-direction: column; gap: 8px; text-align: center; }
+  .login-card { padding: 28px 24px 24px; }
 }
 </style>
 </head>
@@ -338,10 +310,13 @@ input[type=text] { width: 200px; }
 
 <div id="loadScreen">
   <div>
-    <!-- Logo ADM intégré en base64 -->
-    <div style="display: flex; justify-content: center; margin-bottom: 20px;">
-      <img src="data:image/png;base64,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" alt="ADM Logo" style="height: 70px; width: auto;">
-    </div>
+    <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin:0 auto 16px;display:block">
+      <rect width="80" height="80" rx="18" fill="#1A365D"/>
+      <text x="40" y="30" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-weight="700" font-size="14" fill="white" letter-spacing="2">DRRO</text>
+      <line x1="16" y1="37" x2="64" y2="37" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+      <text x="40" y="52" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-weight="400" font-size="8" fill="rgba(255,255,255,0.7)" letter-spacing="1.5">INVENTAIRE</text>
+      <text x="40" y="64" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-weight="600" font-size="11" fill="rgba(255,255,255,0.9)" letter-spacing="1">2026</text>
+    </svg>
     <div style="font-family:var(--mono);font-size:18px;font-weight:600;letter-spacing:.32em;color:var(--tx);text-align:center;margin-top:8px">INVENTAIRE 2026</div>
     <div style="font-family:var(--mono);font-size:11px;letter-spacing:.25em;color:var(--tx3);text-align:center;margin-top:6px">ELASSALI IDRISS</div>
     <div class="spinner"></div>
@@ -352,63 +327,63 @@ input[type=text] { width: 200px; }
 
 <div id="loginScreen">
   <button class="theme-toggle theme-toggle-login" onclick="toggleTheme()" id="themeBtnLogin">🌙</button>
-  
+
   <div class="login-container">
-    <div class="login-brand">
-      <div class="brand-header">
-        <div class="brand-logo-container">
-          <!-- Logo ADM intégré en base64 -->
-          <img class="brand-logo-img" src="data:image/png;base64,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" alt="ADM Logo">
-          <span class="brand-logo-text">DRRO</span>
-        </div>
-        <div class="brand-title">DIRECTION DES RESSOURCES</div>
-        <div class="brand-subtitle">الطـــرق الـسيـــارة بالمغـــرب</div>
-        <div class="brand-year">INVENTAIRE 2026</div>
-      </div>
-      <div class="brand-footer">
-        <div>ELASSALI IDRISS</div>
-        <div class="brand-footer-sub">Système d'inventaire centralisé</div>
-      </div>
+
+    <!-- Logo DRRO SVG -->
+    <div class="drro-logo-wrap">
+      <svg class="drro-logo-svg" width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="120" height="120" rx="28" fill="#1A365D"/>
+        <!-- Accent bar top -->
+        <rect x="0" y="0" width="120" height="5" rx="4" fill="#F6CB46"/>
+        <!-- Road stripes motif -->
+        <rect x="22" y="68" width="76" height="5" rx="2.5" fill="rgba(255,255,255,0.12)"/>
+        <rect x="22" y="78" width="76" height="3" rx="1.5" fill="rgba(255,255,255,0.07)"/>
+        <!-- DRRO text -->
+        <text x="60" y="54" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-weight="700" font-size="26" fill="white" letter-spacing="3">DRRO</text>
+        <!-- Subtitle -->
+        <text x="60" y="100" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-weight="400" font-size="9" fill="rgba(255,255,255,0.55)" letter-spacing="2.5">INVENTAIRE 2026</text>
+      </svg>
     </div>
-    
-    <div class="login-form">
-      <div class="form-header">
-        <h2>Connexion</h2>
-        <p>Identifiez-vous avec vos accès personnels</p>
+
+    <div class="login-card">
+      <div class="login-card-header">
+        <div class="login-card-title">Connexion</div>
+        <div class="login-card-sub">Identifiez-vous avec vos accès personnels</div>
       </div>
-      
+
       <div id="loginErr" class="login-err"></div>
-      
+
       <div class="login-field">
-        <label>👤 NOM D'UTILISATEUR</label>
-        <div class="input-icon">
-          <span class="input-icon-symbol">👤</span>
-          <input type="text" id="loginUsername" placeholder="ex: elbouhali.haitam, karim, admin" autocomplete="off" value="elbouhali.haitam">
+        <label>Nom d'utilisateur</label>
+        <div class="input-wrap">
+          <span class="input-icon">👤</span>
+          <input type="text" id="loginUsername" placeholder="ex: elbouhali.haitam" autocomplete="off" value="elbouhali.haitam">
         </div>
       </div>
-      
+
       <div class="login-field">
-        <label>🔐 MOT DE PASSE</label>
-        <div class="input-icon pwd-wrap">
-          <span class="input-icon-symbol">🔒</span>
+        <label>Mot de passe</label>
+        <div class="input-wrap pwd-wrap">
+          <span class="input-icon">🔒</span>
           <input type="password" id="loginPwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
           <button type="button" class="pwd-eye" onclick="togglePwd()" id="pwdEye">👁</button>
         </div>
       </div>
-      
+
       <button class="login-btn" id="loginBtn" onclick="doLogin()">
         <span>Se connecter</span>
         <span class="btn-arrow">→</span>
       </button>
-      
-      <div class="login-footer">
-        <span id="loginFooterDate">09/06/2026</span> — ELASSALI IDRISS
-      </div>
     </div>
+
+    <div class="login-footer">
+      <span id="loginFooterDate">—</span> — ELASSALI IDRISS
+    </div>
+
   </div>
 </div>
 
-<!-- Le reste du HTML (appShell, modals, etc.) est identique à votre version originale -->
 <div id="appShell" style="display:none">
 <header>
   <div style="display:flex;align-items:center;gap:15px;flex-shrink:0;overflow:hidden;min-width:0">
@@ -569,10 +544,6 @@ input[type=text] { width: 200px; }
 <div class="toast" id="toast"></div>
 
 <script>
-// ============================================================
-// CONFIGURATION
-// ============================================================
-
 const SECRET_TOKEN = '1ppRNrQPgcKOHoBeKI40g35RPFW07bkqDkyw14_6O2mm7flNYVpLOYqWQ';
 
 const ZONE_CONFIG = {
@@ -718,14 +689,9 @@ function initTheme() {
 }
 function togglePwd() {
   const i = document.getElementById('loginPwd'), e = document.getElementById('pwdEye');
-  if (i && e) { 
-    if (i.type === 'password') {
-      i.type = 'text';
-      e.textContent = '🙈';
-    } else {
-      i.type = 'password';
-      e.textContent = '👁';
-    }
+  if (i && e) {
+    if (i.type === 'password') { i.type = 'text'; e.textContent = '🙈'; }
+    else { i.type = 'password'; e.textContent = '👁'; }
   }
 }
 function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
@@ -748,12 +714,12 @@ async function doLogin() {
   const username = document.getElementById('loginUsername')?.value.trim().toLowerCase();
   const password = document.getElementById('loginPwd')?.value;
   if (!username || !password) { if (err) { err.textContent = "Veuillez saisir votre nom d'utilisateur et mot de passe"; err.style.display = 'block'; } return; }
-  if (btn) { btn.disabled = true; btn.textContent = 'Connexion...'; }
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span>Connexion...</span>'; }
   try {
     const user = await authenticateUser(username, password);
     if (!user) {
       if (err) { err.textContent = 'Nom d\'utilisateur ou mot de passe incorrect'; err.style.display = 'block'; }
-      if (btn) { btn.disabled = false; btn.textContent = 'Se connecter →'; }
+      if (btn) { btn.disabled = false; btn.innerHTML = '<span>Se connecter</span><span class="btn-arrow">→</span>'; }
       document.getElementById('loginPwd').value = '';
       return;
     }
@@ -764,7 +730,7 @@ async function doLogin() {
   } catch (error) {
     if (err) { err.textContent = 'Erreur: ' + error.message; err.style.display = 'block'; }
   } finally {
-    if (btn) { btn.disabled = false; btn.textContent = 'Se connecter →'; }
+    if (btn) { btn.disabled = false; btn.innerHTML = '<span>Se connecter</span><span class="btn-arrow">→</span>'; }
   }
 }
 
